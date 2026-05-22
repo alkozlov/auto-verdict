@@ -13,5 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AutoVerdict.Contracts\AutoVerdict.Contracts.csproj" />
+    <ProjectReference Include="..\AutoVerdict.Application\AutoVerdict.Application.csproj" />
+    <ProjectReference Include="..\AutoVerdict.Infrastructure\AutoVerdict.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

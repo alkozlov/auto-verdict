@@ -1,3 +1,5 @@
+using AutoVerdict.Application.AI;
+using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,9 @@ public static class DependencyInjection
         {
             options.UseNpgsql(connectionString);
         });
+
+        services.Configure<ClaudeOptions>(configuration.GetSection(ClaudeOptions.SectionName));
+        services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
 
         return services;
     }
