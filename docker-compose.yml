@@ -103,7 +103,7 @@ services:
       - seaweedfs_data:/data
       - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:9333/cluster/status"]
+      test: ["CMD-SHELL", "nc -z $$(hostname -i) 9333 && nc -z $$(hostname -i) 8333"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -117,7 +117,6 @@ services:
       - |
         mc alias set local http://seaweedfs:8333 dev-access-key dev-secret-key --api S3v4
         mc mb --ignore-existing local/auto-verdict-local
-        mc anonymous set none local/auto-verdict-local
     depends_on:
       seaweedfs:
         condition: service_healthy
