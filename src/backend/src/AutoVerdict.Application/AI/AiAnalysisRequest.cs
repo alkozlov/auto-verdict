@@ -1,7 +1,9 @@
+using AutoVerdict.Contracts.Listing;
+
 namespace AutoVerdict.Application.AI;
 
 public sealed record AiAnalysisRequest(
     Guid CheckId,
-    string VehicleIdentifier,
-    byte[] DocumentBytes,
-    string ContentType = "application/octet-stream");
+    CarListingSnapshot Listing,
+    byte[] ScreenshotBytes,
+    string ScreenshotContentType = "image/png");

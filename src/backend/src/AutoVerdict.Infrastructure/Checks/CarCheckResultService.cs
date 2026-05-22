@@ -19,6 +19,46 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
 
         var now = DateTimeOffset.UtcNow;
 
+        await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
+
+        int rows = await db.Database.ExecuteSqlAsync(
+            $"""
+            UPDATE user_credits
+            SET "Balance" = "Balance" - 1, "UpdatedAt" = NOW()
+            WHERE "UserId" = {check.UserId} AND "Balance" >= 1
+            """,
+            cancellationToken);
+
+        if (rows == 0)
+            throw new InsufficientCreditsException();
+
+        db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        {
+            Id = Guid.NewGuid(),
+            UserId = check.UserId,
+            Amount = -1,
+            Reason = "car_check_completed",
+            ReferenceId = checkId,
+            CreatedAt = now,
+        });
+
+        var vehicleIdentifier = result.Listing.Title
+            ?? $"{result.Listing.Make} {result.Listing.Model}".Trim();
+
+        check.VehicleIdentifier = string.IsNullOrWhiteSpace(vehicleIdentifier)
+            ? result.Listing.ListingUrl
+            : vehicleIdentifier;
+        check.ListingUrl = result.Listing.ListingUrl;
+        check.DocumentStorageKey = result.Listing.ScreenshotStorageKey;
+        check.Title = result.Listing.Title;
+        check.Make = result.Listing.Make;
+        check.Model = result.Listing.Model;
+        check.Year = result.Listing.Year;
+        check.MileageKm = result.Listing.MileageKm;
+        check.Price = result.Listing.Price;
+        check.Currency = result.Listing.Currency;
+        check.ScreenshotStorageKey = result.Listing.ScreenshotStorageKey;
+
         db.CarReports.Add(new CarReport
         {
             Id = Guid.NewGuid(),
@@ -42,6 +82,7 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         check.UpdatedAt = now;
 
         await db.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
     }
 
     public async Task RecordFailureAsync(
@@ -56,24 +97,6 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         check.Status = CarCheckStatus.Failed;
         check.FailureReason = reason;
         check.UpdatedAt = now;
-
-        // Refund the credit that was deducted when the check was created.
-        await db.UserCredits
-            .Where(c => c.UserId == check.UserId)
-            .ExecuteUpdateAsync(
-                s => s.SetProperty(c => c.Balance, c => c.Balance + 1)
-                       .SetProperty(c => c.UpdatedAt, now),
-                cancellationToken);
-
-        db.CreditLedgerEntries.Add(new CreditLedgerEntry
-        {
-            Id = Guid.NewGuid(),
-            UserId = check.UserId,
-            Amount = 1,
-            Reason = "check_failure_refund",
-            ReferenceId = checkId,
-            CreatedAt = now,
-        });
 
         await db.SaveChangesAsync(cancellationToken);
     }

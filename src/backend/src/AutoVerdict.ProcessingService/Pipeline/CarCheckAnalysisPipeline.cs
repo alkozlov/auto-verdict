@@ -1,11 +1,13 @@
 using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Messages;
+using AutoVerdict.ProcessingService.Parsing;
 
 namespace AutoVerdict.ProcessingService.Pipeline;
 
 public sealed class CarCheckAnalysisPipeline(
     IDocumentStorageClient storage,
+    ICarListingParser listingParser,
     IAiAnalysisProvider aiProvider,
     ILogger<CarCheckAnalysisPipeline> logger)
 {
@@ -13,22 +15,34 @@ public sealed class CarCheckAnalysisPipeline(
         CarCheckRequestedMessage message,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation(
-            "Downloading document {StorageKey} for check {CheckId}.",
-            message.DocumentStorageKey, message.CheckId);
-
-        (byte[] documentBytes, string contentType) =
-            await storage.DownloadAsync(message.DocumentStorageKey, cancellationToken);
+        var screenshotStorageKey = $"checks/{message.UserId}/{message.CheckId}/otomoto-full-page.png";
 
         logger.LogInformation(
-            "Document downloaded ({Bytes} bytes, {ContentType}). Invoking AI analysis for check {CheckId}.",
-            documentBytes.Length, contentType, message.CheckId);
+            "Parsing listing {ListingUrl} for check {CheckId}.",
+            message.ListingUrl, message.CheckId);
+
+        var parsed = await listingParser.ParseAsync(
+            message.CheckId,
+            message.ListingUrl,
+            screenshotStorageKey,
+            cancellationToken);
+
+        await using var screenshotStream = new MemoryStream(parsed.ScreenshotBytes);
+        await storage.UploadAsync(
+            screenshotStorageKey,
+            screenshotStream,
+            parsed.ScreenshotContentType,
+            cancellationToken);
+
+        logger.LogInformation(
+            "Uploaded full-page listing screenshot {StorageKey} ({Bytes} bytes).",
+            screenshotStorageKey, parsed.ScreenshotBytes.Length);
 
         var request = new AiAnalysisRequest(
             message.CheckId,
-            message.VehicleIdentifier,
-            documentBytes,
-            contentType);
+            parsed.Listing,
+            parsed.ScreenshotBytes,
+            parsed.ScreenshotContentType);
 
         AiAnalysisResult result = await aiProvider.AnalyzeAsync(request, cancellationToken);
 

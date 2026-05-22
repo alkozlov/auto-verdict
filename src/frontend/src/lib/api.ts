@@ -24,7 +24,14 @@ export interface MeResponse {
 
 export interface CarCheckResponse {
   checkId: string;
-  vehicleIdentifier: string;
+  listingUrl: string;
+  title: string | null;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  mileageKm: number | null;
+  price: number | null;
+  currency: string | null;
   status: "Pending" | "Processing" | "Completed" | "Failed";
   report: VehicleReport | null;
   failureReason: string | null;
@@ -33,13 +40,36 @@ export interface CarCheckResponse {
 }
 
 export interface VehicleReport {
-  vehicleIdentifier: string;
-  verdict: string;
-  ownership: { ownersCount: number; commercialUseDetected: boolean; notes: string | null };
-  mileage: { inconsistencyDetected: boolean; lastRecordedKm: number | null; notes: string | null };
-  accidents: { totalCount: number; severeDamageDetected: boolean; notes: string | null };
-  service: { regularMaintenanceConfirmed: boolean; lastServiceDate: string | null; notes: string | null };
-  legal: { pledgeDetected: boolean; stolenDetected: boolean; wantedDetected: boolean; notes: string | null };
+  carSummary: string;
+  listingFacts: {
+    listingUrl: string;
+    title: string | null;
+    make: string | null;
+    model: string | null;
+    year: number | null;
+    mileageKm: number | null;
+    price: number | null;
+    currency: string | null;
+    sellerType: string | null;
+    location: string | null;
+    attributes: Record<string, string>;
+  };
+  modelRisks: string[];
+  listingRisks: string[];
+  dealRisks: string[];
+  estimatedCosts: {
+    purchasePrice: number | null;
+    registrationFee: number | null;
+    insuranceCost: number | null;
+    potentialRepairs: number | null;
+    total: number | null;
+    currency: string;
+    notes: string;
+  };
+  sellerQuestions: string[];
+  inspectionChecklist: string[];
+  recommendation: string;
+  disclaimer: string;
 }
 
 export interface FileUploadResponse {
@@ -55,11 +85,11 @@ export const api = {
     list: (page = 1, pageSize = 20) =>
       request<CarCheckResponse[]>(`/checks?page=${page}&pageSize=${pageSize}`),
     get: (id: string) => request<CarCheckResponse>(`/checks/${id}`),
-    create: (vehicleIdentifier: string, documentStorageKey: string) =>
+    create: (listingUrl: string) =>
       request<CarCheckResponse>("/checks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vehicleIdentifier, documentStorageKey }),
+        body: JSON.stringify({ listingUrl }),
       }),
   },
 

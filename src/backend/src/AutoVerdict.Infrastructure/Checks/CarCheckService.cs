@@ -13,43 +13,25 @@ public sealed class CarCheckService(AppDbContext db) : ICarCheckService
 {
     public async Task<CarCheck> CreateAsync(
         Guid userId,
-        string vehicleIdentifier,
-        string documentStorageKey,
+        string listingUrl,
         CancellationToken cancellationToken = default)
     {
         await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        // Atomically deduct one credit — WHERE guard prevents going below zero.
-        int rows = await db.Database.ExecuteSqlAsync(
-            $"""
-            UPDATE user_credits
-            SET "Balance" = "Balance" - 1, "UpdatedAt" = NOW()
-            WHERE "UserId" = {userId} AND "Balance" >= 1
-            """,
-            cancellationToken);
-
-        if (rows == 0)
+        bool hasAvailableCredit = await db.UserCredits
+            .AnyAsync(c => c.UserId == userId && c.Balance >= 1, cancellationToken);
+        if (!hasAvailableCredit)
             throw new InsufficientCreditsException();
 
         var checkId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
 
-        db.CreditLedgerEntries.Add(new CreditLedgerEntry
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            Amount = -1,
-            Reason = "car_check",
-            ReferenceId = checkId,
-            CreatedAt = now,
-        });
-
         var check = new CarCheck
         {
             Id = checkId,
             UserId = userId,
-            VehicleIdentifier = vehicleIdentifier,
-            DocumentStorageKey = documentStorageKey,
+            VehicleIdentifier = listingUrl,
+            ListingUrl = listingUrl,
             Status = CarCheckStatus.Pending,
             CreatedAt = now,
             UpdatedAt = now,
@@ -57,7 +39,7 @@ public sealed class CarCheckService(AppDbContext db) : ICarCheckService
         db.CarChecks.Add(check);
 
         var outboxPayload = JsonSerializer.Serialize(new CarCheckRequestedMessage(
-            checkId, userId, vehicleIdentifier, documentStorageKey, now));
+            checkId, userId, listingUrl, now));
 
         db.OutboxMessages.Add(new OutboxMessage
         {

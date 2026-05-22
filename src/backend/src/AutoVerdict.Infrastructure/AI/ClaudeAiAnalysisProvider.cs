@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using Anthropic;
 using Anthropic.Models.Messages;
@@ -63,6 +62,7 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
 
         return new AiAnalysisResult(
             report,
+            request.Listing,
             ProviderName,
             _options.Model,
             response.Usage.InputTokens,
@@ -71,103 +71,103 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
 
     private static string BuildSystemPrompt() =>
         """
-        You are a vehicle history analyst. Given vehicle document data, produce a structured
-        vehicle history report. Be factual and conservative — only report what the data supports.
-        Respond with valid JSON matching the provided schema exactly.
+        You analyze used-car listings in Poland for inexperienced private buyers.
+        Be conservative and practical. Distinguish model/technical risks from deal,
+        seller, wording, missing-information, and transaction risks. Do not make
+        unsupported claims. Use "unknown" or explain uncertainty when the listing
+        data is insufficient. Return valid JSON matching the schema exactly.
         """;
 
     private static List<ContentBlockParam> BuildUserContent(AiAnalysisRequest request)
     {
-        var prompt = $"Analyze the vehicle document for identifier \"{request.VehicleIdentifier}\" and produce a comprehensive history report.";
+        var listingJson = JsonSerializer.Serialize(request.Listing, JsonOptions);
+        var prompt =
+            $"""
+            Analyze this Otomoto listing for a family buying a relatively recent used car in Poland.
 
-        if (IsPdf(request.DocumentBytes) || request.ContentType == "application/pdf")
-        {
-            return
-            [
-                new DocumentBlockParam
-                {
-                    Source = new Base64PdfSource
-                    {
-                        Data = Convert.ToBase64String(request.DocumentBytes),
-                    },
-                },
-                new TextBlockParam { Text = prompt },
-            ];
-        }
+            Goals:
+            1. Identify practical ownership and model risks.
+            2. Identify purchase/sale transaction risks, inconsistencies, omissions, and seller questions.
+            3. Estimate final private-buyer costs in Poland using conservative assumptions.
+            4. Give a clear recommendation and checklist for follow-up.
 
-        // Treat as UTF-8 text
-        string text = Encoding.UTF8.GetString(request.DocumentBytes);
+            Extracted listing data:
+            {listingJson}
+            """;
+
         return
         [
-            new TextBlockParam
+            new TextBlockParam { Text = prompt },
+            new ImageBlockParam
             {
-                Text = $"{prompt}\n\nDocument:\n{text}",
+                Source = new Base64ImageSource
+                {
+                    Data = Convert.ToBase64String(request.ScreenshotBytes),
+                    MediaType = request.ScreenshotContentType,
+                },
             },
         ];
     }
-
-    private static bool IsPdf(byte[] bytes) =>
-        bytes.Length >= 4
-        && bytes[0] == 0x25  // %
-        && bytes[1] == 0x50  // P
-        && bytes[2] == 0x44  // D
-        && bytes[3] == 0x46; // F
 
     private static Dictionary<string, JsonElement> BuildReportSchema()
     {
         const string schemaJson = """
             {
               "type": "object",
-              "required": ["VehicleIdentifier","Verdict","Ownership","Mileage","Accidents","Service","Legal"],
+              "required": [
+                "CarSummary",
+                "ListingFacts",
+                "ModelRisks",
+                "ListingRisks",
+                "DealRisks",
+                "EstimatedCosts",
+                "SellerQuestions",
+                "InspectionChecklist",
+                "Recommendation",
+                "Disclaimer"
+              ],
               "properties": {
-                "VehicleIdentifier": { "type": "string" },
-                "Verdict": { "type": "string" },
-                "Ownership": {
+                "CarSummary": { "type": "string" },
+                "ListingFacts": {
                   "type": "object",
-                  "required": ["OwnersCount","CommercialUseDetected"],
+                  "required": ["ListingUrl", "Attributes"],
                   "properties": {
-                    "OwnersCount": { "type": "integer" },
-                    "CommercialUseDetected": { "type": "boolean" },
-                    "Notes": { "type": ["string","null"] }
+                    "ListingUrl": { "type": "string" },
+                    "Title": { "type": ["string", "null"] },
+                    "Make": { "type": ["string", "null"] },
+                    "Model": { "type": ["string", "null"] },
+                    "Year": { "type": ["integer", "null"] },
+                    "MileageKm": { "type": ["integer", "null"] },
+                    "Price": { "type": ["number", "null"] },
+                    "Currency": { "type": ["string", "null"] },
+                    "SellerType": { "type": ["string", "null"] },
+                    "Location": { "type": ["string", "null"] },
+                    "Attributes": {
+                      "type": "object",
+                      "additionalProperties": { "type": "string" }
+                    }
                   }
                 },
-                "Mileage": {
+                "ModelRisks": { "type": "array", "items": { "type": "string" } },
+                "ListingRisks": { "type": "array", "items": { "type": "string" } },
+                "DealRisks": { "type": "array", "items": { "type": "string" } },
+                "EstimatedCosts": {
                   "type": "object",
-                  "required": ["InconsistencyDetected"],
+                  "required": ["Currency", "Notes"],
                   "properties": {
-                    "InconsistencyDetected": { "type": "boolean" },
-                    "LastRecordedKm": { "type": ["integer","null"] },
-                    "Notes": { "type": ["string","null"] }
+                    "PurchasePrice": { "type": ["number", "null"] },
+                    "RegistrationFee": { "type": ["number", "null"] },
+                    "InsuranceCost": { "type": ["number", "null"] },
+                    "PotentialRepairs": { "type": ["number", "null"] },
+                    "Total": { "type": ["number", "null"] },
+                    "Currency": { "type": "string" },
+                    "Notes": { "type": "string" }
                   }
                 },
-                "Accidents": {
-                  "type": "object",
-                  "required": ["TotalCount","SevereDamageDetected"],
-                  "properties": {
-                    "TotalCount": { "type": "integer" },
-                    "SevereDamageDetected": { "type": "boolean" },
-                    "Notes": { "type": ["string","null"] }
-                  }
-                },
-                "Service": {
-                  "type": "object",
-                  "required": ["RegularMaintenanceConfirmed"],
-                  "properties": {
-                    "RegularMaintenanceConfirmed": { "type": "boolean" },
-                    "LastServiceDate": { "type": ["string","null"], "format": "date-time" },
-                    "Notes": { "type": ["string","null"] }
-                  }
-                },
-                "Legal": {
-                  "type": "object",
-                  "required": ["PledgeDetected","StolenDetected","WantedDetected"],
-                  "properties": {
-                    "PledgeDetected": { "type": "boolean" },
-                    "StolenDetected": { "type": "boolean" },
-                    "WantedDetected": { "type": "boolean" },
-                    "Notes": { "type": ["string","null"] }
-                  }
-                }
+                "SellerQuestions": { "type": "array", "items": { "type": "string" } },
+                "InspectionChecklist": { "type": "array", "items": { "type": "string" } },
+                "Recommendation": { "type": "string" },
+                "Disclaimer": { "type": "string" }
               }
             }
             """;

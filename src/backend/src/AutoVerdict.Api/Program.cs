@@ -200,19 +200,16 @@ app.MapPost("/api/checks", async (
     var userId = GetUserId(ctx);
     if (userId is null) return Results.Unauthorized();
 
-    if (string.IsNullOrWhiteSpace(request.VehicleIdentifier) ||
-        string.IsNullOrWhiteSpace(request.DocumentStorageKey))
-        return Results.BadRequest("VehicleIdentifier and DocumentStorageKey are required.");
+    if (!TryNormalizeOtomotoUrl(request.ListingUrl, out var listingUrl))
+        return Results.BadRequest("Only Otomoto.pl listing URLs are supported.");
 
     try
     {
-        var check = await checkService.CreateAsync(
-            userId.Value, request.VehicleIdentifier, request.DocumentStorageKey, ct);
+        var check = await checkService.CreateAsync(userId.Value, listingUrl, ct);
 
         return Results.Created(
             $"/api/checks/{check.Id}",
-            new CarCheckResponse(check.Id, check.VehicleIdentifier, check.Status,
-                Report: null, FailureReason: null, check.CreatedAt, CompletedAt: null));
+            ToResponse(check));
     }
     catch (InsufficientCreditsException)
     {
@@ -243,10 +240,7 @@ app.MapGet("/api/checks", async (
         .Take(pageSize)
         .ToListAsync(ct);
 
-    var items = checks.Select(c => new CarCheckResponse(
-        c.Id, c.VehicleIdentifier, c.Status,
-        c.Report?.ReportData, c.FailureReason, c.CreatedAt,
-        c.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? c.UpdatedAt : null));
+    var items = checks.Select(c => ToResponse(c));
 
     return Results.Ok(items);
 }).RequireAuthorization();
@@ -268,13 +262,52 @@ app.MapGet("/api/checks/{id:guid}", async (
     if (check is null)
         return Results.NotFound();
 
-    return Results.Ok(new CarCheckResponse(
-        check.Id, check.VehicleIdentifier, check.Status,
-        check.Report?.ReportData, check.FailureReason, check.CreatedAt,
-        check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? check.UpdatedAt : null));
+    return Results.Ok(ToResponse(check));
 }).RequireAuthorization();
 
 app.Run();
+
+static CarCheckResponse ToResponse(
+    CarCheck check,
+    AutoVerdict.Contracts.Report.VehicleReport? Report = null,
+    string? FailureReason = null,
+    DateTimeOffset? CompletedAt = null)
+{
+    var report = Report ?? check.Report?.ReportData;
+    return new CarCheckResponse(
+        check.Id,
+        check.ListingUrl,
+        check.Title,
+        check.Make,
+        check.Model,
+        check.Year,
+        check.MileageKm,
+        check.Price,
+        check.Currency,
+        check.Status,
+        report,
+        FailureReason ?? check.FailureReason,
+        check.CreatedAt,
+        CompletedAt ?? (check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? check.UpdatedAt : null));
+}
+
+static bool TryNormalizeOtomotoUrl(string? rawUrl, out string normalized)
+{
+    normalized = "";
+    if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out var uri))
+        return false;
+
+    if (uri.Scheme is not ("http" or "https"))
+        return false;
+
+    string host = uri.IdnHost.ToLowerInvariant();
+    if (host != "otomoto.pl" && !host.EndsWith(".otomoto.pl", StringComparison.Ordinal))
+        return false;
+
+    var builder = new UriBuilder(uri) { Fragment = "" };
+    normalized = builder.Uri.ToString();
+    return true;
+}
 
 static Guid? GetUserId(HttpContext ctx)
 {

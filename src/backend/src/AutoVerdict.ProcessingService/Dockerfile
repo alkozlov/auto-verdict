@@ -16,5 +16,7 @@ RUN dotnet publish src/AutoVerdict.ProcessingService/AutoVerdict.ProcessingServi
 
 FROM runtime AS final
 WORKDIR /app
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 COPY --from=build /app/publish .
+RUN ./.playwright/node/linux-x64/node ./.playwright/package/cli.js install --with-deps chromium
 ENTRYPOINT ["dotnet", "AutoVerdict.ProcessingService.dll"]

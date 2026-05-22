@@ -5,7 +5,14 @@ namespace AutoVerdict.Contracts.Dtos;
 
 public sealed record CarCheckResponse(
     Guid CheckId,
-    string VehicleIdentifier,
+    string ListingUrl,
+    string? Title,
+    string? Make,
+    string? Model,
+    int? Year,
+    int? MileageKm,
+    decimal? Price,
+    string? Currency,
     CarCheckStatus Status,
     VehicleReport? Report,
     string? FailureReason,

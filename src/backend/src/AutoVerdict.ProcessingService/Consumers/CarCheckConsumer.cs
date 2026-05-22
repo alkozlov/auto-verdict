@@ -68,8 +68,8 @@ public sealed class CarCheckConsumer(
             try
             {
                 logger.LogInformation(
-                    "Processing check {CheckId} for vehicle {VehicleIdentifier}.",
-                    data.CheckId, data.VehicleIdentifier);
+                    "Processing check {CheckId} for listing {ListingUrl}.",
+                    data.CheckId, data.ListingUrl);
 
                 var result = await pipeline.ExecuteAsync(data, stoppingToken);
 

@@ -3,6 +3,5 @@ namespace AutoVerdict.Contracts.Messages;
 public sealed record CarCheckRequestedMessage(
     Guid CheckId,
     Guid UserId,
-    string VehicleIdentifier,
-    string DocumentStorageKey,
+    string ListingUrl,
     DateTimeOffset RequestedAt);

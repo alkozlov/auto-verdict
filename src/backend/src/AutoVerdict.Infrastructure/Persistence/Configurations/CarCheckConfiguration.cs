@@ -15,10 +15,31 @@ public sealed class CarCheckConfiguration : IEntityTypeConfiguration<CarCheck>
 
         builder.Property(c => c.VehicleIdentifier)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(500);
+
+        builder.Property(c => c.ListingUrl)
+            .IsRequired()
+            .HasMaxLength(1000);
 
         builder.Property(c => c.DocumentStorageKey)
-            .IsRequired()
+            .HasMaxLength(500);
+
+        builder.Property(c => c.Title)
+            .HasMaxLength(500);
+
+        builder.Property(c => c.Make)
+            .HasMaxLength(100);
+
+        builder.Property(c => c.Model)
+            .HasMaxLength(100);
+
+        builder.Property(c => c.Price)
+            .HasPrecision(12, 2);
+
+        builder.Property(c => c.Currency)
+            .HasMaxLength(10);
+
+        builder.Property(c => c.ScreenshotStorageKey)
             .HasMaxLength(500);
 
         builder.Property(c => c.Status)
@@ -37,6 +58,7 @@ public sealed class CarCheckConfiguration : IEntityTypeConfiguration<CarCheck>
 
         builder.HasIndex(c => c.UserId);
         builder.HasIndex(c => c.Status);
+        builder.HasIndex(c => c.ListingUrl);
 
         builder.HasOne(c => c.User)
             .WithMany(u => u.CarChecks)
