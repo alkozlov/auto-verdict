@@ -23,6 +23,7 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHealthChecks();
 builder.Services.AddAntiforgery();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddOutboxPublisher();
 
 var authOptions = DependencyInjection.GetAuthOptions(builder.Configuration);
 
@@ -57,6 +58,13 @@ builder.Services.AddAuthentication(opts =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Apply EF Core migrations on every startup so the DB schema is always current.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

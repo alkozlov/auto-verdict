@@ -65,7 +65,6 @@ public static class DependencyInjection
             if (configuration["NATS_URL"] is { Length: > 0 } url)
                 opts.Url = url;
         });
-        services.AddHostedService<OutboxPublisherService>();
 
         services.Configure<AuthOptions>(opts =>
         {
@@ -78,6 +77,12 @@ public static class DependencyInjection
         services.AddSingleton<JwtService>();
         services.AddScoped<IUserAuthService, UserAuthService>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddOutboxPublisher(this IServiceCollection services)
+    {
+        services.AddHostedService<OutboxPublisherService>();
         return services;
     }
 
