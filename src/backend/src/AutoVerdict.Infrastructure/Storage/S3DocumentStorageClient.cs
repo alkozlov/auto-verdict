@@ -42,5 +42,22 @@ public sealed class S3DocumentStorageClient : IDocumentStorageClient, IDisposabl
         return (ms.ToArray(), contentType);
     }
 
+    public async Task UploadAsync(
+        string storageKey,
+        Stream content,
+        string contentType,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new PutObjectRequest
+        {
+            BucketName = _options.Bucket,
+            Key = storageKey,
+            InputStream = content,
+            ContentType = contentType,
+        };
+
+        await _s3.PutObjectAsync(request, cancellationToken);
+    }
+
     public void Dispose() => _s3.Dispose();
 }

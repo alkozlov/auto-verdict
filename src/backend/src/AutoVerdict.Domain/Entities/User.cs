@@ -11,5 +11,6 @@ public sealed class User
     public List<ExternalAuthAccount> ExternalAuthAccounts { get; set; } = [];
     public List<CreditLedgerEntry> CreditLedger { get; set; } = [];
     public List<CarCheck> CarChecks { get; set; } = [];
+    public List<UploadedFile> UploadedFiles { get; set; } = [];
     public UserCredits? Credits { get; set; }
 }
