@@ -5,7 +5,17 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "DATABASE_URL": "Host=localhost;Port=5432;Database=autoverdict;Username=autoverdict;Password=autoverdict",
+        "NATS_URL": "nats://localhost:4222",
+        "S3_ENDPOINT": "http://localhost:8333",
+        "S3_ACCESS_KEY": "dev-access-key",
+        "S3_SECRET_KEY": "dev-secret-key",
+        "S3_BUCKET": "auto-verdict-local",
+        "PLAYWRIGHT_HEADLESS": "false",
+        "PLAYWRIGHT_DEVTOOLS": "true",
+        "PLAYWRIGHT_SLOW_MO_MS": "250",
+        "PLAYWRIGHT_DEBUG_PAUSE_MS": "120000"
       }
     }
   }
