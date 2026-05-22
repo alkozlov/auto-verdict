@@ -64,6 +64,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+    await EnsureCarCheckListingColumnsAsync(db);
 }
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -314,4 +315,40 @@ static Guid? GetUserId(HttpContext ctx)
     var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
            ?? ctx.User.FindFirst("sub")?.Value;
     return Guid.TryParse(sub, out var id) ? id : null;
+}
+
+static async Task EnsureCarCheckListingColumnsAsync(AppDbContext db)
+{
+    await db.Database.ExecuteSqlRawAsync(
+        """
+        ALTER TABLE car_checks
+            ADD COLUMN IF NOT EXISTS "ListingUrl" character varying(1000),
+            ADD COLUMN IF NOT EXISTS "Title" character varying(500),
+            ADD COLUMN IF NOT EXISTS "Make" character varying(100),
+            ADD COLUMN IF NOT EXISTS "Model" character varying(100),
+            ADD COLUMN IF NOT EXISTS "Year" integer,
+            ADD COLUMN IF NOT EXISTS "MileageKm" integer,
+            ADD COLUMN IF NOT EXISTS "Price" numeric(12,2),
+            ADD COLUMN IF NOT EXISTS "Currency" character varying(10),
+            ADD COLUMN IF NOT EXISTS "ScreenshotStorageKey" character varying(500)
+        """);
+
+    await db.Database.ExecuteSqlRawAsync(
+        """
+        UPDATE car_checks
+        SET "ListingUrl" = COALESCE(NULLIF("ListingUrl", ''), "VehicleIdentifier")
+        WHERE "ListingUrl" IS NULL OR "ListingUrl" = ''
+        """);
+
+    await db.Database.ExecuteSqlRawAsync(
+        """
+        ALTER TABLE car_checks
+            ALTER COLUMN "ListingUrl" SET NOT NULL
+        """);
+
+    await db.Database.ExecuteSqlRawAsync(
+        """
+        CREATE INDEX IF NOT EXISTS "IX_car_checks_ListingUrl"
+        ON car_checks ("ListingUrl")
+        """);
 }
