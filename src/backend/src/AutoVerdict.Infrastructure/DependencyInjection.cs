@@ -25,7 +25,14 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString);
         });
 
-        services.Configure<ClaudeOptions>(configuration.GetSection(ClaudeOptions.SectionName));
+        services.Configure<ClaudeOptions>(opts =>
+        {
+            configuration.GetSection(ClaudeOptions.SectionName).Bind(opts);
+            if (configuration["CLAUDE_API_KEY"] is { Length: > 0 } key)
+                opts.ApiKey = key;
+            if (configuration["CLAUDE_MODEL"] is { Length: > 0 } model)
+                opts.Model = model;
+        });
         services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
 
         return services;
