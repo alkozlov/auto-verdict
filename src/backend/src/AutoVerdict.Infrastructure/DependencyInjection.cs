@@ -1,7 +1,9 @@
 using AutoVerdict.Application.AI;
+using AutoVerdict.Application.Auth;
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Infrastructure.AI;
+using AutoVerdict.Infrastructure.Auth;
 using AutoVerdict.Infrastructure.Checks;
 using AutoVerdict.Infrastructure.Messaging;
 using AutoVerdict.Infrastructure.Persistence;
@@ -65,7 +67,28 @@ public static class DependencyInjection
         });
         services.AddHostedService<OutboxPublisherService>();
 
+        services.Configure<AuthOptions>(opts =>
+        {
+            configuration.GetSection(AuthOptions.SectionName).Bind(opts);
+            if (configuration["JWT_SECRET"] is { Length: > 0 } s) opts.JwtSecret = s;
+            if (configuration["GOOGLE_CLIENT_ID"] is { Length: > 0 } id) opts.GoogleClientId = id;
+            if (configuration["GOOGLE_CLIENT_SECRET"] is { Length: > 0 } cs) opts.GoogleClientSecret = cs;
+        });
+
+        services.AddSingleton<JwtService>();
+        services.AddScoped<IUserAuthService, UserAuthService>();
+
         return services;
+    }
+
+    public static AuthOptions GetAuthOptions(IConfiguration configuration)
+    {
+        var opts = new AuthOptions();
+        configuration.GetSection(AuthOptions.SectionName).Bind(opts);
+        if (configuration["JWT_SECRET"] is { Length: > 0 } s) opts.JwtSecret = s;
+        if (configuration["GOOGLE_CLIENT_ID"] is { Length: > 0 } id) opts.GoogleClientId = id;
+        if (configuration["GOOGLE_CLIENT_SECRET"] is { Length: > 0 } cs) opts.GoogleClientSecret = cs;
+        return opts;
     }
 
     private static string GetPostgresConnectionString(IConfiguration configuration)

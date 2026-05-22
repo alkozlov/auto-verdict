@@ -1,12 +1,20 @@
+using System.Security.Claims;
+using System.Text;
+using AutoVerdict.Application.Auth;
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Dtos;
 using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure;
+using AutoVerdict.Infrastructure.Auth;
 using AutoVerdict.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,23 +23,89 @@ builder.Services.AddHealthChecks();
 builder.Services.AddAntiforgery();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var authOptions = DependencyInjection.GetAuthOptions(builder.Configuration);
+
+builder.Services.AddAuthentication(opts =>
+{
+    opts.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(opts =>
+{
+    opts.ClientId = authOptions.GoogleClientId ?? "";
+    opts.ClientSecret = authOptions.GoogleClientSecret ?? "";
+    opts.CallbackPath = "/api/auth/google/callback";
+})
+.AddJwtBearer(opts =>
+{
+    opts.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = authOptions.JwtIssuer,
+        ValidateAudience = true,
+        ValidAudience = authOptions.JwtAudience,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(authOptions.JwtSecret ?? "dev-secret-placeholder-replace-in-prod")),
+    };
+});
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/", () => Results.Ok(new { service = "AutoVerdict.Api", status = "ok" }));
 app.MapHealthChecks("/health");
 
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+app.MapGet("/api/auth/google", (HttpContext ctx) =>
+{
+    var props = new AuthenticationProperties { RedirectUri = "/api/auth/google/complete" };
+    return Results.Challenge(props, [GoogleDefaults.AuthenticationScheme]);
+});
+
+app.MapGet("/api/auth/google/complete", async (
+    HttpContext ctx,
+    IUserAuthService userAuthService,
+    JwtService jwtService,
+    CancellationToken ct) =>
+{
+    var result = await ctx.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    if (!result.Succeeded)
+        return Results.Unauthorized();
+
+    var googleId = result.Principal!.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+    var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+    if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
+        return Results.Problem("Google did not return required profile claims.", statusCode: 502);
+
+    var user = await userAuthService.FindOrCreateAsync("google", googleId, email, name, ct);
+
+    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+    var token = jwtService.GenerateToken(user.Id, user.Email);
+    return Results.Ok(new { token });
+});
+
 // ── File upload ───────────────────────────────────────────────────────────────
-// TODO av-011: replace X-User-Id header with real JWT auth
 
 app.MapPost("/api/uploads", async (
     HttpContext ctx,
-    [FromHeader(Name = "X-User-Id")] Guid? userId,
     IDocumentStorageClient storage,
     AppDbContext db,
     CancellationToken ct) =>
 {
-    if (userId is null)
-        return Results.Unauthorized();
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
 
     var form = await ctx.Request.ReadFormAsync(ct);
     var file = form.Files.GetFile("file");
@@ -44,7 +118,7 @@ app.MapPost("/api/uploads", async (
         return Results.BadRequest(
             $"Content type '{file.ContentType}' is not supported. Allowed: {string.Join(", ", allowed)}.");
 
-    const long maxBytes = 10L * 1024 * 1024; // 10 MB
+    const long maxBytes = 10L * 1024 * 1024;
     if (file.Length > maxBytes)
         return Results.BadRequest("File exceeds the 10 MB size limit.");
 
@@ -73,18 +147,18 @@ app.MapPost("/api/uploads", async (
     await db.SaveChangesAsync(ct);
 
     return Results.Ok(new FileUploadResponse(storageKey, file.ContentType, file.Length));
-}).DisableAntiforgery();
+}).DisableAntiforgery().RequireAuthorization();
 
 // ── Car checks ────────────────────────────────────────────────────────────────
 
 app.MapPost("/api/checks", async (
-    [FromHeader(Name = "X-User-Id")] Guid? userId,
+    HttpContext ctx,
     [FromBody] CarCheckCreateRequest request,
     ICarCheckService checkService,
     CancellationToken ct) =>
 {
-    if (userId is null)
-        return Results.Unauthorized();
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
 
     if (string.IsNullOrWhiteSpace(request.VehicleIdentifier) ||
         string.IsNullOrWhiteSpace(request.DocumentStorageKey))
@@ -107,17 +181,17 @@ app.MapPost("/api/checks", async (
             detail: "You do not have enough credits to run a check.",
             statusCode: 402);
     }
-});
+}).RequireAuthorization();
 
 app.MapGet("/api/checks", async (
-    [FromHeader(Name = "X-User-Id")] Guid? userId,
+    HttpContext ctx,
     AppDbContext db,
     CancellationToken ct,
     int page = 1,
     int pageSize = 20) =>
 {
-    if (userId is null)
-        return Results.Unauthorized();
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
 
     pageSize = Math.Clamp(pageSize, 1, 100);
 
@@ -135,16 +209,16 @@ app.MapGet("/api/checks", async (
         c.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? c.UpdatedAt : null));
 
     return Results.Ok(items);
-});
+}).RequireAuthorization();
 
 app.MapGet("/api/checks/{id:guid}", async (
     Guid id,
-    [FromHeader(Name = "X-User-Id")] Guid? userId,
+    HttpContext ctx,
     AppDbContext db,
     CancellationToken ct) =>
 {
-    if (userId is null)
-        return Results.Unauthorized();
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
 
     var check = await db.CarChecks
         .Include(c => c.Report)
@@ -158,6 +232,13 @@ app.MapGet("/api/checks/{id:guid}", async (
         check.Id, check.VehicleIdentifier, check.Status,
         check.Report?.ReportData, check.FailureReason, check.CreatedAt,
         check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? check.UpdatedAt : null));
-});
+}).RequireAuthorization();
 
 app.Run();
+
+static Guid? GetUserId(HttpContext ctx)
+{
+    var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+           ?? ctx.User.FindFirst("sub")?.Value;
+    return Guid.TryParse(sub, out var id) ? id : null;
+}
