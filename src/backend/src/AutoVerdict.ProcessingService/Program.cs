@@ -1,6 +1,7 @@
 using AutoVerdict.Infrastructure;
 using AutoVerdict.ProcessingService.Configuration;
 using AutoVerdict.ProcessingService.Consumers;
+using AutoVerdict.ProcessingService.Pipeline;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.Configure<NatsOptions>(opts =>
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSingleton<CarCheckAnalysisPipeline>();
 builder.Services.AddHostedService<CarCheckConsumer>();
 
 var host = builder.Build();

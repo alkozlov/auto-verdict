@@ -1,6 +1,8 @@
 using AutoVerdict.Application.AI;
+using AutoVerdict.Application.Storage;
 using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.Infrastructure.Persistence;
+using AutoVerdict.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,20 @@ public static class DependencyInjection
                 opts.Model = model;
         });
         services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
+
+        services.Configure<S3Options>(opts =>
+        {
+            configuration.GetSection(S3Options.SectionName).Bind(opts);
+            if (configuration["S3_ENDPOINT"] is { Length: > 0 } endpoint)
+                opts.Endpoint = endpoint;
+            if (configuration["S3_ACCESS_KEY"] is { Length: > 0 } accessKey)
+                opts.AccessKey = accessKey;
+            if (configuration["S3_SECRET_KEY"] is { Length: > 0 } secretKey)
+                opts.SecretKey = secretKey;
+            if (configuration["S3_BUCKET"] is { Length: > 0 } bucket)
+                opts.Bucket = bucket;
+        });
+        services.AddSingleton<IDocumentStorageClient, S3DocumentStorageClient>();
 
         return services;
     }

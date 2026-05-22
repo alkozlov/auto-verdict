@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Anthropic;
 using Anthropic.Models.Messages;
@@ -44,7 +45,7 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
                 new()
                 {
                     Role = Role.User,
-                    Content = BuildUserPrompt(request),
+                    Content = BuildUserContent(request),
                 },
             ],
         };
@@ -75,17 +76,46 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
         Respond with valid JSON matching the provided schema exactly.
         """;
 
-    private static string BuildUserPrompt(AiAnalysisRequest request) =>
-        $"""
-        Analyze the following vehicle document for vehicle identifier "{request.VehicleIdentifier}".
+    private static List<ContentBlockParam> BuildUserContent(AiAnalysisRequest request)
+    {
+        var prompt = $"Analyze the vehicle document for identifier \"{request.VehicleIdentifier}\" and produce a comprehensive history report.";
 
-        Document:
-        {request.DocumentContent}
-        """;
+        if (IsPdf(request.DocumentBytes) || request.ContentType == "application/pdf")
+        {
+            return
+            [
+                new DocumentBlockParam
+                {
+                    Source = new Base64PdfSource
+                    {
+                        Data = Convert.ToBase64String(request.DocumentBytes),
+                    },
+                },
+                new TextBlockParam { Text = prompt },
+            ];
+        }
+
+        // Treat as UTF-8 text
+        string text = Encoding.UTF8.GetString(request.DocumentBytes);
+        return
+        [
+            new TextBlockParam
+            {
+                Text = $"{prompt}\n\nDocument:\n{text}",
+            },
+        ];
+    }
+
+    private static bool IsPdf(byte[] bytes) =>
+        bytes.Length >= 4
+        && bytes[0] == 0x25  // %
+        && bytes[1] == 0x50  // P
+        && bytes[2] == 0x44  // D
+        && bytes[3] == 0x46; // F
 
     private static Dictionary<string, JsonElement> BuildReportSchema()
     {
-        string schemaJson = """
+        const string schemaJson = """
             {
               "type": "object",
               "required": ["VehicleIdentifier","Verdict","Ownership","Mileage","Accidents","Service","Legal"],
@@ -143,7 +173,6 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
             """;
 
         using JsonDocument doc = JsonDocument.Parse(schemaJson);
-        // Materialize all nodes so we don't hold a reference to a disposed JsonDocument
         return doc.RootElement.EnumerateObject()
             .ToDictionary(p => p.Name, p => p.Value.Clone());
     }

@@ -1,6 +1,7 @@
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Messages;
 using AutoVerdict.ProcessingService.Configuration;
+using AutoVerdict.ProcessingService.Pipeline;
 using Microsoft.Extensions.Options;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
@@ -11,6 +12,7 @@ namespace AutoVerdict.ProcessingService.Consumers;
 
 public sealed class CarCheckConsumer(
     IOptions<NatsOptions> natsOptions,
+    CarCheckAnalysisPipeline pipeline,
     ILogger<CarCheckConsumer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -37,8 +39,8 @@ public sealed class CarCheckConsumer(
 
         logger.LogInformation("NATS JetStream consumer ready on {Subject}", NatsSubjects.CarCheckRequested);
 
-        // In-memory idempotency guard — replaced by DB check in av-019
-        // when the CarCheck entity and its repository are available.
+        // In-memory idempotency guard — per-process lifetime only.
+        // Replace with DB-based check once CarCheck entity is persisted (av-020).
         var processedIds = new HashSet<Guid>();
 
         await foreach (NatsJSMsg<CarCheckRequestedMessage?> msg
@@ -48,14 +50,14 @@ public sealed class CarCheckConsumer(
         {
             if (msg.Data is not { } data)
             {
-                logger.LogWarning("Received empty or malformed message on {Subject}, acking.", msg.Subject);
+                logger.LogWarning("Received empty message on {Subject}, acking.", msg.Subject);
                 await msg.AckAsync(cancellationToken: stoppingToken);
                 continue;
             }
 
             if (processedIds.Contains(data.CheckId))
             {
-                logger.LogWarning("Duplicate check {CheckId} received (redelivery), skipping.", data.CheckId);
+                logger.LogWarning("Duplicate check {CheckId} (redelivery), acking without reprocessing.", data.CheckId);
                 await msg.AckAsync(cancellationToken: stoppingToken);
                 continue;
             }
@@ -63,20 +65,55 @@ public sealed class CarCheckConsumer(
             try
             {
                 logger.LogInformation(
-                    "Received check request {CheckId} for vehicle {VehicleIdentifier} (user {UserId}).",
-                    data.CheckId, data.VehicleIdentifier, data.UserId);
+                    "Processing check {CheckId} for vehicle {VehicleIdentifier}.",
+                    data.CheckId, data.VehicleIdentifier);
 
-                // TODO av-019: download document from S3, invoke IAiAnalysisProvider,
-                //              persist report, publish CarCheckCompletedMessage or CarCheckFailedMessage.
+                var result = await pipeline.ExecuteAsync(data, stoppingToken);
+
+                var completed = new CarCheckCompletedMessage(
+                    data.CheckId,
+                    data.UserId,
+                    result.Report,
+                    DateTimeOffset.UtcNow);
+
+                await js.PublishAsync(
+                    NatsSubjects.CarCheckCompleted,
+                    completed,
+                    serializer: NatsJsonSerializer<CarCheckCompletedMessage>.Default,
+                    cancellationToken: stoppingToken);
 
                 processedIds.Add(data.CheckId);
                 await msg.AckAsync(cancellationToken: stoppingToken);
 
-                logger.LogInformation("Check {CheckId} acknowledged.", data.CheckId);
+                logger.LogInformation("Check {CheckId} completed successfully.", data.CheckId);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to process check {CheckId}, nacking for redelivery.", data.CheckId);
+                logger.LogError(ex, "Failed to process check {CheckId}.", data.CheckId);
+
+                try
+                {
+                    var failed = new CarCheckFailedMessage(
+                        data.CheckId,
+                        data.UserId,
+                        ex.Message,
+                        DateTimeOffset.UtcNow);
+
+                    await js.PublishAsync(
+                        NatsSubjects.CarCheckFailed,
+                        failed,
+                        serializer: NatsJsonSerializer<CarCheckFailedMessage>.Default,
+                        cancellationToken: stoppingToken);
+                }
+                catch (Exception pubEx)
+                {
+                    logger.LogError(pubEx, "Failed to publish failure message for check {CheckId}.", data.CheckId);
+                }
+
                 await msg.NakAsync(cancellationToken: stoppingToken);
             }
         }
