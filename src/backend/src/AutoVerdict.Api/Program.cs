@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using AutoVerdict.Application.Auth;
+using Microsoft.AspNetCore.HttpOverrides;
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Dtos;
@@ -56,6 +57,11 @@ builder.Services.AddAuthentication(opts =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

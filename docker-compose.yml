@@ -126,6 +126,8 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
+    ports:
+      - "${NGINX_PORT:-80}:80"
     volumes:
       - ./infra/nginx:/etc/nginx/conf.d:ro
     depends_on:

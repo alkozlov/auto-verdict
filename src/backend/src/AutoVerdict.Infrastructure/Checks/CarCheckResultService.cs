@@ -49,12 +49,32 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         string reason,
         CancellationToken cancellationToken = default)
     {
-        await db.CarChecks
-            .Where(c => c.Id == checkId)
+        var check = await db.CarChecks.FindAsync([checkId], cancellationToken)
+            ?? throw new InvalidOperationException($"CarCheck {checkId} not found.");
+
+        var now = DateTimeOffset.UtcNow;
+        check.Status = CarCheckStatus.Failed;
+        check.FailureReason = reason;
+        check.UpdatedAt = now;
+
+        // Refund the credit that was deducted when the check was created.
+        await db.UserCredits
+            .Where(c => c.UserId == check.UserId)
             .ExecuteUpdateAsync(
-                s => s.SetProperty(c => c.Status, CarCheckStatus.Failed)
-                       .SetProperty(c => c.FailureReason, reason)
-                       .SetProperty(c => c.UpdatedAt, DateTimeOffset.UtcNow),
+                s => s.SetProperty(c => c.Balance, c => c.Balance + 1)
+                       .SetProperty(c => c.UpdatedAt, now),
                 cancellationToken);
+
+        db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        {
+            Id = Guid.NewGuid(),
+            UserId = check.UserId,
+            Amount = 1,
+            Reason = "check_failure_refund",
+            ReferenceId = checkId,
+            CreatedAt = now,
+        });
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 }
