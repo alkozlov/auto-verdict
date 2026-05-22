@@ -19,7 +19,7 @@ Use Beads for:
 - dependency tracking;
 - implementation status.
 
-Do not use GitHub Issues, markdown TODO files, or a fallback `.tasks/` directory for task management.
+Do not use external web issue trackers, markdown TODO files, or a fallback `.tasks/` directory for task management.
 
 GitHub is used only for remote Git hosting and pull requests if needed.
 

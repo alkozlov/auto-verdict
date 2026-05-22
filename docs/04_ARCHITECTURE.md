@@ -133,7 +133,7 @@ Responsibilities:
 - load check data from PostgreSQL;
 - load uploaded files from SeaweedFS;
 - build AI request;
-- call Claude API through provider abstraction;
+- call Claude API via provider abstraction;
 - validate AI response;
 - save report;
 - update check status;
