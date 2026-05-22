@@ -27,10 +27,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      nats:
-        condition: service_started
-      seaweedfs:
-        condition: service_started
+      nats-setup:
+        condition: service_completed_successfully
+      seaweedfs-setup:
+        condition: service_completed_successfully
 
   processing-service:
     build:
@@ -49,10 +49,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      nats:
-        condition: service_started
-      seaweedfs:
-        condition: service_started
+      nats-setup:
+        condition: service_completed_successfully
+      seaweedfs-setup:
+        condition: service_completed_successfully
 
   postgres:
     image: postgres:17-alpine
@@ -70,15 +70,57 @@ services:
 
   nats:
     image: nats:2.10-alpine
-    command: ["-js", "-sd", "/data"]
+    command: ["-c", "/etc/nats/nats.conf"]
     volumes:
       - nats_data:/data
+      - ./infra/nats/nats.conf:/etc/nats/nats.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  nats-setup:
+    image: natsio/nats-box:0.14.5
+    command:
+      - sh
+      - -c
+      - |
+        nats --server nats://nats:4222 stream add \
+          --config /etc/nats/streams/car-checks.json \
+          2>/dev/null || echo "Stream already exists"
+    volumes:
+      - ./infra/nats/streams:/etc/nats/streams:ro
+    depends_on:
+      nats:
+        condition: service_healthy
 
   seaweedfs:
     image: chrislusf/seaweedfs:3.85
-    command: ["server", "-s3", "-s3.port=8333", "-dir=/data"]
+    command: ["server", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data"]
     volumes:
       - seaweedfs_data:/data
+      - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9333/cluster/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  seaweedfs-setup:
+    image: minio/mc:RELEASE.2024-11-17T19-35-25Z
+    entrypoint: sh
+    command:
+      - -c
+      - |
+        mc alias set local http://seaweedfs:8333 dev-access-key dev-secret-key --api S3v4
+        mc mb --ignore-existing local/auto-verdict-local
+        mc anonymous set none local/auto-verdict-local
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
 
   nginx:
     image: nginx:1.27-alpine
