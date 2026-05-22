@@ -98,10 +98,12 @@ public static class DependencyInjection
 
     private static string GetPostgresConnectionString(IConfiguration configuration)
     {
+        // DATABASE_URL env var takes priority so Docker deployments always win
+        // over any appsettings.Development.json local-dev defaults.
         var connectionString =
-            configuration.GetConnectionString("Postgres")
-            ?? configuration["Database:ConnectionString"]
-            ?? configuration["DATABASE_URL"];
+            configuration["DATABASE_URL"]
+            ?? configuration.GetConnectionString("Postgres")
+            ?? configuration["Database:ConnectionString"];
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {

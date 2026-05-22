@@ -16,7 +16,7 @@ services:
       context: ./src/backend
       dockerfile: src/AutoVerdict.Api/Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       DATABASE_URL: ${DATABASE_URL:-Host=postgres;Port=5432;Database=autoverdict;Username=autoverdict;Password=autoverdict}
       NATS_URL: ${NATS_URL:-nats://nats:4222}
@@ -40,7 +40,7 @@ services:
       context: ./src/backend
       dockerfile: src/AutoVerdict.ProcessingService/Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       DATABASE_URL: ${DATABASE_URL:-Host=postgres;Port=5432;Database=autoverdict;Username=autoverdict;Password=autoverdict}
       NATS_URL: ${NATS_URL:-nats://nats:4222}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://seaweedfs:8333}
