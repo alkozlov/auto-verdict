@@ -322,6 +322,8 @@ static async Task EnsureCarCheckListingColumnsAsync(AppDbContext db)
     await db.Database.ExecuteSqlRawAsync(
         """
         ALTER TABLE car_checks
+            ALTER COLUMN "VehicleIdentifier" TYPE character varying(500),
+            ALTER COLUMN "DocumentStorageKey" DROP NOT NULL,
             ADD COLUMN IF NOT EXISTS "ListingUrl" character varying(1000),
             ADD COLUMN IF NOT EXISTS "Title" character varying(500),
             ADD COLUMN IF NOT EXISTS "Make" character varying(100),
