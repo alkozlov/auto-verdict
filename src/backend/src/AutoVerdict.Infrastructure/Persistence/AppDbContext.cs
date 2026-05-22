@@ -11,6 +11,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<UserCredits> UserCredits => Set<UserCredits>();
     public DbSet<CarCheck> CarChecks => Set<CarCheck>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<CarReport> CarReports => Set<CarReport>();
+    public DbSet<AiRequest> AiRequests => Set<AiRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

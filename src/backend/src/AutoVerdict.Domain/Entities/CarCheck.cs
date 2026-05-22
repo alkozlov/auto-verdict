@@ -14,4 +14,6 @@ public sealed class CarCheck
     public DateTimeOffset UpdatedAt { get; set; }
 
     public User User { get; set; } = null!;
+    public CarReport? Report { get; set; }
+    public List<AiRequest> AiRequests { get; set; } = [];
 }

@@ -69,6 +69,7 @@ app.MapGet("/api/checks/{id:guid}", async (
         return Results.Unauthorized();
 
     var check = await db.CarChecks
+        .Include(c => c.Report)
         .Where(c => c.Id == id && c.UserId == userId.Value)
         .FirstOrDefaultAsync(ct);
 
@@ -79,7 +80,7 @@ app.MapGet("/api/checks/{id:guid}", async (
         check.Id,
         check.VehicleIdentifier,
         check.Status,
-        Report: null,
+        Report: check.Report?.ReportData,
         FailureReason: check.FailureReason,
         check.CreatedAt,
         CompletedAt: check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed

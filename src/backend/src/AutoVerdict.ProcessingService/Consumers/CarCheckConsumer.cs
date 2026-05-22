@@ -1,7 +1,9 @@
+using AutoVerdict.Application.Checks;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Messages;
 using AutoVerdict.ProcessingService.Configuration;
 using AutoVerdict.ProcessingService.Pipeline;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
@@ -13,6 +15,7 @@ namespace AutoVerdict.ProcessingService.Consumers;
 public sealed class CarCheckConsumer(
     IOptions<NatsOptions> natsOptions,
     CarCheckAnalysisPipeline pipeline,
+    IServiceScopeFactory scopeFactory,
     ILogger<CarCheckConsumer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,7 +43,7 @@ public sealed class CarCheckConsumer(
         logger.LogInformation("NATS JetStream consumer ready on {Subject}", NatsSubjects.CarCheckRequested);
 
         // In-memory idempotency guard — per-process lifetime only.
-        // Replace with DB-based check once CarCheck entity is persisted (av-020).
+        // Replace with DB-based check once report persistence is stable.
         var processedIds = new HashSet<Guid>();
 
         await foreach (NatsJSMsg<CarCheckRequestedMessage?> msg
@@ -70,11 +73,14 @@ public sealed class CarCheckConsumer(
 
                 var result = await pipeline.ExecuteAsync(data, stoppingToken);
 
+                await using (var scope = scopeFactory.CreateAsyncScope())
+                {
+                    var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
+                    await resultService.RecordSuccessAsync(data.CheckId, result, stoppingToken);
+                }
+
                 var completed = new CarCheckCompletedMessage(
-                    data.CheckId,
-                    data.UserId,
-                    result.Report,
-                    DateTimeOffset.UtcNow);
+                    data.CheckId, data.UserId, result.Report, DateTimeOffset.UtcNow);
 
                 await js.PublishAsync(
                     NatsSubjects.CarCheckCompleted,
@@ -85,7 +91,7 @@ public sealed class CarCheckConsumer(
                 processedIds.Add(data.CheckId);
                 await msg.AckAsync(cancellationToken: stoppingToken);
 
-                logger.LogInformation("Check {CheckId} completed successfully.", data.CheckId);
+                logger.LogInformation("Check {CheckId} completed and persisted.", data.CheckId);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -97,11 +103,12 @@ public sealed class CarCheckConsumer(
 
                 try
                 {
+                    await using var scope = scopeFactory.CreateAsyncScope();
+                    var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
+                    await resultService.RecordFailureAsync(data.CheckId, ex.Message, stoppingToken);
+
                     var failed = new CarCheckFailedMessage(
-                        data.CheckId,
-                        data.UserId,
-                        ex.Message,
-                        DateTimeOffset.UtcNow);
+                        data.CheckId, data.UserId, ex.Message, DateTimeOffset.UtcNow);
 
                     await js.PublishAsync(
                         NatsSubjects.CarCheckFailed,
@@ -109,9 +116,9 @@ public sealed class CarCheckConsumer(
                         serializer: NatsJsonSerializer<CarCheckFailedMessage>.Default,
                         cancellationToken: stoppingToken);
                 }
-                catch (Exception pubEx)
+                catch (Exception innerEx)
                 {
-                    logger.LogError(pubEx, "Failed to publish failure message for check {CheckId}.", data.CheckId);
+                    logger.LogError(innerEx, "Failed to record failure for check {CheckId}.", data.CheckId);
                 }
 
                 await msg.NakAsync(cancellationToken: stoppingToken);

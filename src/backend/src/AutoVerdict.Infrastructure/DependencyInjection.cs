@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddSingleton<IDocumentStorageClient, S3DocumentStorageClient>();
 
         services.AddScoped<ICarCheckService, CarCheckService>();
+        services.AddScoped<ICarCheckResultService, CarCheckResultService>();
 
         return services;
     }
