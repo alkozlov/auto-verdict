@@ -25,12 +25,12 @@ public sealed partial class OtomotoListingParser(
         bool headless = parserOptions.Headless ?? !environment.IsDevelopment();
 
         logger.LogInformation(
-            "Starting Playwright for check {CheckId}: headless={Headless}, devtools={Devtools}, slowMoMs={SlowMoMs}, storageState={StorageStatePath}.",
+            "Starting Playwright for check {CheckId}: headless={Headless}, devtools={Devtools}, slowMoMs={SlowMoMs}, debugPauseMs={DebugPauseMs}.",
             checkId,
             headless,
             parserOptions.Devtools,
             parserOptions.SlowMoMs,
-            string.IsNullOrWhiteSpace(parserOptions.StorageStatePath) ? "(none)" : parserOptions.StorageStatePath);
+            parserOptions.DebugPauseMs);
 
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
@@ -42,19 +42,11 @@ public sealed partial class OtomotoListingParser(
                 : null,
         });
 
-        var contextOptions = new BrowserNewContextOptions
+        await using var context = await browser.NewContextAsync(new BrowserNewContextOptions
         {
             ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
             DeviceScaleFactor = 1,
-        };
-
-        if (!string.IsNullOrWhiteSpace(parserOptions.StorageStatePath)
-            && File.Exists(parserOptions.StorageStatePath))
-        {
-            contextOptions.StorageStatePath = parserOptions.StorageStatePath;
-        }
-
-        await using var context = await browser.NewContextAsync(contextOptions);
+        });
         var page = await context.NewPageAsync();
 
         logger.LogInformation("Opening Otomoto listing {ListingUrl} for check {CheckId}.", listingUrl, checkId);
@@ -66,7 +58,7 @@ public sealed partial class OtomotoListingParser(
         });
 
         await TryAcceptCookiesAsync(page);
-        if (await PauseForDebuggingAsync(context, parserOptions, cancellationToken))
+        if (await PauseForDebuggingAsync(parserOptions, cancellationToken))
         {
             logger.LogInformation("Debug pause finished. Reloading listing {ListingUrl} before extraction.", listingUrl);
             await page.GotoAsync(listingUrl, new PageGotoOptions
@@ -125,7 +117,6 @@ public sealed partial class OtomotoListingParser(
     }
 
     private static async Task<bool> PauseForDebuggingAsync(
-        IBrowserContext context,
         PlaywrightParserOptions options,
         CancellationToken cancellationToken)
     {
@@ -134,22 +125,7 @@ public sealed partial class OtomotoListingParser(
 
         await Task.Delay(options.DebugPauseMs, cancellationToken);
 
-        if (options.SaveStorageState && !string.IsNullOrWhiteSpace(options.StorageStatePath))
-            await SaveStorageStateAsync(context, options.StorageStatePath);
-
         return true;
-    }
-
-    private static async Task SaveStorageStateAsync(IBrowserContext context, string storageStatePath)
-    {
-        var directory = Path.GetDirectoryName(storageStatePath);
-        if (!string.IsNullOrWhiteSpace(directory))
-            Directory.CreateDirectory(directory);
-
-        await context.StorageStateAsync(new BrowserContextStorageStateOptions
-        {
-            Path = storageStatePath,
-        });
     }
 
     private static bool IsOtomotoUrl(string rawUrl)

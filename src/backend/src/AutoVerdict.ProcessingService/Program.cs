@@ -17,17 +17,10 @@ builder.Services.Configure<PlaywrightParserOptions>(opts =>
         opts.Headless = headless;
     if (TryGetBool(builder.Configuration["PLAYWRIGHT_DEVTOOLS"], out var devtools))
         opts.Devtools = devtools;
-    if (TryGetBool(builder.Configuration["PLAYWRIGHT_SAVE_STORAGE_STATE"], out var saveStorageState))
-        opts.SaveStorageState = saveStorageState;
     if (int.TryParse(builder.Configuration["PLAYWRIGHT_SLOW_MO_MS"], out var slowMoMs))
         opts.SlowMoMs = slowMoMs;
     if (int.TryParse(builder.Configuration["PLAYWRIGHT_DEBUG_PAUSE_MS"], out var debugPauseMs))
         opts.DebugPauseMs = debugPauseMs;
-
-    opts.StorageStatePath =
-        builder.Configuration["PLAYWRIGHT_STORAGE_STATE_PATH"]
-        ?? builder.Configuration["OTOMOTO_STORAGE_STATE_PATH"]
-        ?? opts.StorageStatePath;
 });
 builder.Services.AddSingleton<ICarListingParser, OtomotoListingParser>();
 builder.Services.AddSingleton<CarCheckAnalysisPipeline>();
