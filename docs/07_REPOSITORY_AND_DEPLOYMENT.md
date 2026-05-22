@@ -35,7 +35,7 @@ auto-verdict/
     06_DATA_MODEL.md
     07_REPOSITORY_AND_DEPLOYMENT.md
     08_BACKLOG.md
-    09_AI_AGENT_WORKFLOW.md
+    09_BEADS_WORKFLOW.md
 
   src/
     frontend/
@@ -253,7 +253,7 @@ PR description should include:
 
 Documentation files provide product context, requirements, and architectural constraints.
 
-The operational task management workflow is defined separately from this document.
+Beads is the operational task management system. See `09_BEADS_WORKFLOW.md`.
 
 ## 13. Deployment Notes
 
