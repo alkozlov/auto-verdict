@@ -93,8 +93,34 @@ app.MapGet("/api/auth/google/complete", async (
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
     var token = jwtService.GenerateToken(user.Id, user.Email);
-    return Results.Ok(new { token });
+    return Results.Redirect($"/auth/callback?token={Uri.EscapeDataString(token)}");
 });
+
+// ── Me ────────────────────────────────────────────────────────────────────────
+
+app.MapGet("/api/me", async (
+    HttpContext ctx,
+    AppDbContext db,
+    CancellationToken ct) =>
+{
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
+
+    var user = await db.Users
+        .Include(u => u.Credits)
+        .Where(u => u.Id == userId.Value)
+        .FirstOrDefaultAsync(ct);
+
+    if (user is null) return Results.NotFound();
+
+    return Results.Ok(new
+    {
+        id = user.Id,
+        email = user.Email,
+        displayName = user.DisplayName,
+        credits = user.Credits?.Balance ?? 0,
+    });
+}).RequireAuthorization();
 
 // ── File upload ───────────────────────────────────────────────────────────────
 
