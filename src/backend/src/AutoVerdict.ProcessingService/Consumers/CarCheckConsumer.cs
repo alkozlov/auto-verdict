@@ -1,7 +1,7 @@
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Messages;
-using AutoVerdict.ProcessingService.Configuration;
+using AutoVerdict.Infrastructure.Messaging;
 using AutoVerdict.ProcessingService.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

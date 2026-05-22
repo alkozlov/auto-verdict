@@ -3,6 +3,7 @@ using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.Infrastructure.Checks;
+using AutoVerdict.Infrastructure.Messaging;
 using AutoVerdict.Infrastructure.Persistence;
 using AutoVerdict.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,14 @@ public static class DependencyInjection
 
         services.AddScoped<ICarCheckService, CarCheckService>();
         services.AddScoped<ICarCheckResultService, CarCheckResultService>();
+
+        services.Configure<NatsOptions>(opts =>
+        {
+            configuration.GetSection(NatsOptions.SectionName).Bind(opts);
+            if (configuration["NATS_URL"] is { Length: > 0 } url)
+                opts.Url = url;
+        });
+        services.AddHostedService<OutboxPublisherService>();
 
         return services;
     }

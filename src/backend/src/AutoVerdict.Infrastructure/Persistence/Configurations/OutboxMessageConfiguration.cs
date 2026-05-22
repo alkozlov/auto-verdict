@@ -24,6 +24,13 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
 
         builder.Property(m => m.ProcessedAt);
 
+        builder.Property(m => m.RetryCount)
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder.Property(m => m.Error)
+            .HasMaxLength(1000);
+
         // Outbox publisher polls for unprocessed messages; partial index keeps it fast.
         builder.HasIndex(m => m.ProcessedAt)
             .HasFilter("\"ProcessedAt\" IS NULL");

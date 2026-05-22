@@ -1,4 +1,4 @@
-namespace AutoVerdict.ProcessingService.Configuration;
+namespace AutoVerdict.Infrastructure.Messaging;
 
 public sealed class NatsOptions
 {
