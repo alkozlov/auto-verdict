@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AutoVerdict.Infrastructure\AutoVerdict.Infrastructure.csproj" />
+    <ProjectReference Include="..\AutoVerdict.Contracts\AutoVerdict.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
