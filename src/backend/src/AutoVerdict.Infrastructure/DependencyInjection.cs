@@ -1,6 +1,8 @@
 using AutoVerdict.Application.AI;
+using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Infrastructure.AI;
+using AutoVerdict.Infrastructure.Checks;
 using AutoVerdict.Infrastructure.Persistence;
 using AutoVerdict.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +52,8 @@ public static class DependencyInjection
                 opts.Bucket = bucket;
         });
         services.AddSingleton<IDocumentStorageClient, S3DocumentStorageClient>();
+
+        services.AddScoped<ICarCheckService, CarCheckService>();
 
         return services;
     }

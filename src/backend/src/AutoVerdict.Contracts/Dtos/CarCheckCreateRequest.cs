@@ -1,3 +1,3 @@
 namespace AutoVerdict.Contracts.Dtos;
 
-public sealed record CarCheckCreateRequest(string VehicleIdentifier);
+public sealed record CarCheckCreateRequest(string VehicleIdentifier, string DocumentStorageKey);
