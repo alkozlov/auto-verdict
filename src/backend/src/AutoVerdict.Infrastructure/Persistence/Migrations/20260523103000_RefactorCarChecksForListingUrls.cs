@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AutoVerdict.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
+    [Migration("20260523103000_RefactorCarChecksForListingUrls")]
     public partial class RefactorCarChecksForListingUrls : Migration
     {
         /// <inheritdoc />
