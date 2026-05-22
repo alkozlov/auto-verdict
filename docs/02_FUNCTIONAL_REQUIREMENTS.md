@@ -6,7 +6,7 @@
 
 The system must allow users to register and sign in using Google.
 
-Google OAuth must be owned by the API Service. The frontend must not use NextAuth/Auth.js or another frontend-owned auth system as the source of truth.
+Google OAuth must be owned by the API Service. The frontend must not use NextAuth/Auth.js or another frontend-owned auth system as the authoritative authentication system.
 
 The API Service must:
 
@@ -92,7 +92,7 @@ The system must use Stripe Checkout for payment initiation.
 
 ### FR-PAY-003: Stripe Webhooks
 
-The system must use Stripe webhooks as the source of truth for successful payments.
+The system must use Stripe webhooks as authoritative confirmation for successful payments.
 
 ### FR-PAY-004: Credit Granting
 

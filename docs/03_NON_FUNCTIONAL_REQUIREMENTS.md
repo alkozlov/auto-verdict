@@ -65,7 +65,7 @@ No premature horizontal scaling is required.
 
 All private endpoints must require authentication.
 
-Authentication must be backend-owned. The API Service owns Google OAuth, local user creation, backend-issued auth cookies or JWTs, and authorization. Frontend-owned auth systems must not be the source of truth.
+Authentication must be backend-owned. The API Service owns Google OAuth, local user creation, backend-issued auth cookies or JWTs, and authorization. Frontend-owned auth systems must not be authoritative.
 
 ### NFR-SEC-002: Authorization
 

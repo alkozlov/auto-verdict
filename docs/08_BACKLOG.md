@@ -2,7 +2,7 @@
 
 This backlog is optimized for AI-assisted development with Claude Code, Codex, or similar coding agents.
 
-Executable tasks should be created as GitHub Issues. This document is a planning seed, not the operational task source of truth.
+This document is a planning seed. It is not the operational task management system.
 
 ## Epic 1: Repository Setup
 
@@ -232,7 +232,7 @@ Verify webhook signature and process events.
 
 ### TASK-092: Grant credits after successful payment
 
-Use webhook as source of truth.
+Use webhook events as authoritative payment confirmation.
 
 ### TASK-093: Ensure webhook idempotency
 

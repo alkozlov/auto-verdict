@@ -83,7 +83,7 @@ Responsibilities:
 - file upload orchestration;
 - outbox publishing loop.
 
-The API is the source of truth for authentication, users, credits, payments, and authorization. The frontend must not use NextAuth/Auth.js as the source of truth.
+The API is authoritative for authentication, users, credits, payments, and authorization. The frontend must not use NextAuth/Auth.js as the authoritative authentication system.
 
 ### AutoVerdict.ProcessingService
 
@@ -222,28 +222,20 @@ Backups must include at least:
 
 The source code is stored in GitHub.
 
-GitHub is also used for:
-
-- Issues as task source of truth;
-- pull requests;
-- code review;
-- milestones;
-- project history.
-
-See `09_AI_AGENT_WORKFLOW.md`.
+GitHub is used for remote Git hosting, pull requests if needed, code review, and project history.
 
 ## 10. Branching Strategy
 
 Suggested simple strategy:
 
 - `main` — stable branch;
-- feature branches named after GitHub Issues.
+- short-lived feature branches.
 
 Example:
 
 ```txt
-feature/12-google-auth
-fix/24-stripe-webhook-idempotency
+feature/google-auth
+fix/stripe-webhook-idempotency
 ```
 
 ## 11. Pull Request Rules
@@ -253,27 +245,15 @@ Every non-trivial change should go through a pull request.
 PR description should include:
 
 - what changed;
-- linked issue;
 - how it was tested;
 - migration notes, if any;
 - configuration changes, if any.
 
-## 12. AI Agent Workflow
+## 12. Task Management
 
-AI agents must not use markdown task lists as the source of executable work.
+Documentation files provide product context, requirements, and architectural constraints.
 
-They must use GitHub Issues.
-
-Documentation files provide context, requirements, and architectural constraints.
-
-Before implementation starts, create GitHub labels, milestones, and issues from `08_BACKLOG.md`. Implementation should proceed issue-by-issue:
-
-- pick a ready issue;
-- create a branch;
-- implement;
-- test;
-- open a PR;
-- link the PR to the issue.
+The operational task management workflow is defined separately from this document.
 
 ## 13. Deployment Notes
 

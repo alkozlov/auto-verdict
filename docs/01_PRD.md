@@ -117,7 +117,7 @@ The system gives users a practical, structured AI report that answers:
 - PDF generation.
 - Complex admin panel.
 - Presigned direct browser uploads to object storage.
-- NextAuth/Auth.js as the source of truth for authentication.
+- NextAuth/Auth.js as the authoritative authentication system.
 
 ## 8. User Journey
 
@@ -152,7 +152,7 @@ MVP supports credits.
   - single check;
   - package of five checks.
 
-The backend must treat Stripe webhooks as the source of truth for successful payments.
+The backend must treat Stripe webhooks as authoritative for successful payments.
 
 Payments should be implemented after the free-check lifecycle works end to end:
 
