@@ -15,7 +15,8 @@
         "PLAYWRIGHT_HEADLESS": "false",
         "PLAYWRIGHT_DEVTOOLS": "true",
         "PLAYWRIGHT_SLOW_MO_MS": "250",
-        "PLAYWRIGHT_DEBUG_PAUSE_MS": "120000"
+        "PLAYWRIGHT_DEBUG_PAUSE_MS": "120000",
+        "PLAYWRIGHT_BROWSER_CHANNEL": "chrome"
       }
     }
   }

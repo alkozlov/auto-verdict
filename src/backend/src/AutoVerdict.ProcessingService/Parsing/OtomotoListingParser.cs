@@ -37,6 +37,12 @@ public sealed partial class OtomotoListingParser(
         {
             Headless = headless,
             SlowMo = parserOptions.SlowMoMs > 0 ? parserOptions.SlowMoMs : null,
+            Channel = string.IsNullOrWhiteSpace(parserOptions.BrowserChannel)
+                ? null
+                : parserOptions.BrowserChannel,
+            ExecutablePath = string.IsNullOrWhiteSpace(parserOptions.BrowserExecutablePath)
+                ? null
+                : parserOptions.BrowserExecutablePath,
             Args = parserOptions.Devtools && !headless
                 ? ["--auto-open-devtools-for-tabs"]
                 : null,

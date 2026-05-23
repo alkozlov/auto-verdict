@@ -38,6 +38,7 @@ The project launch profile is configured for local debugging with:
 - `PLAYWRIGHT_DEVTOOLS=true`
 - `PLAYWRIGHT_SLOW_MO_MS=250`
 - `PLAYWRIGHT_DEBUG_PAUSE_MS=120000`
+- `PLAYWRIGHT_BROWSER_CHANNEL=chrome`
 
 When a check is queued, Chromium opens locally. Log into Otomoto during the pause. After the pause, the worker reloads the listing and extracts data from that logged-in browser session.
 

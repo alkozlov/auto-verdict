@@ -21,6 +21,8 @@ builder.Services.Configure<PlaywrightParserOptions>(opts =>
         opts.SlowMoMs = slowMoMs;
     if (int.TryParse(builder.Configuration["PLAYWRIGHT_DEBUG_PAUSE_MS"], out var debugPauseMs))
         opts.DebugPauseMs = debugPauseMs;
+    opts.BrowserChannel = builder.Configuration["PLAYWRIGHT_BROWSER_CHANNEL"] ?? opts.BrowserChannel;
+    opts.BrowserExecutablePath = builder.Configuration["PLAYWRIGHT_BROWSER_EXECUTABLE_PATH"] ?? opts.BrowserExecutablePath;
 });
 builder.Services.AddSingleton<ICarListingParser, OtomotoListingParser>();
 builder.Services.AddSingleton<CarCheckAnalysisPipeline>();
