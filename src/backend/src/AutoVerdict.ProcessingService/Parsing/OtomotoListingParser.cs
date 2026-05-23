@@ -162,6 +162,9 @@ public sealed partial class OtomotoListingParser(
                     return;
                 }
             }
+            catch (TimeoutException)
+            {
+            }
             catch (PlaywrightException)
             {
             }

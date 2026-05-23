@@ -44,6 +44,8 @@ When a check is queued, Chromium opens locally. Log into Otomoto during the paus
 
 ## Breakpoints
 
+Running `dotnet run -c Debug` creates a debug build, but it does not attach an interactive debugger. To hit breakpoints, start the project from your IDE with debugging enabled, or attach your IDE debugger to the running `AutoVerdict.ProcessingService` process after `dotnet run` starts.
+
 Set breakpoints in:
 
 - `src/backend/src/AutoVerdict.ProcessingService/Consumers/CarCheckConsumer.cs`
