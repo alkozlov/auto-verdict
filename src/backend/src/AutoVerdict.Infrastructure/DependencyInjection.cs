@@ -2,6 +2,7 @@ using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Auth;
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
+using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.Infrastructure.Auth;
 using AutoVerdict.Infrastructure.Checks;
@@ -55,6 +56,13 @@ public static class DependencyInjection
                 opts.Bucket = bucket;
         });
         services.AddSingleton<IDocumentStorageClient, S3DocumentStorageClient>();
+
+        services.Configure<WhitelistOptions>(opts =>
+        {
+            configuration.GetSection(WhitelistOptions.SectionName).Bind(opts);
+            if (configuration["WHITELIST_EMAILS"] is { Length: > 0 } emails)
+                opts.Emails = emails;
+        });
 
         services.AddScoped<ICarCheckService, CarCheckService>();
         services.AddScoped<ICarCheckResultService, CarCheckResultService>();

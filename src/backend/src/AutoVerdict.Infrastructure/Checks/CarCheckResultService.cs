@@ -1,13 +1,15 @@
 using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Checks;
+using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.Infrastructure.Checks;
 
-public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultService
+public sealed class CarCheckResultService(AppDbContext db, IOptions<WhitelistOptions> whitelist) : ICarCheckResultService
 {
     public async Task RecordSuccessAsync(
         Guid checkId,
@@ -26,26 +28,34 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
 
         await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        int rows = await db.Database.ExecuteSqlAsync(
-            $"""
-            UPDATE user_credits
-            SET "Balance" = "Balance" - 1, "UpdatedAt" = NOW()
-            WHERE "UserId" = {check.UserId} AND "Balance" >= 1
-            """,
-            cancellationToken);
+        var userEmail = await db.Users
+            .Where(u => u.Id == check.UserId)
+            .Select(u => u.Email)
+            .SingleOrDefaultAsync(cancellationToken);
 
-        if (rows == 0)
-            throw new InsufficientCreditsException();
-
-        db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        if (!whitelist.Value.Contains(userEmail ?? ""))
         {
-            Id = Guid.NewGuid(),
-            UserId = check.UserId,
-            Amount = -1,
-            Reason = "car_check_completed",
-            ReferenceId = checkId,
-            CreatedAt = now,
-        });
+            int rows = await db.Database.ExecuteSqlAsync(
+                $"""
+                UPDATE user_credits
+                SET "Balance" = "Balance" - 1, "UpdatedAt" = NOW()
+                WHERE "UserId" = {check.UserId} AND "Balance" >= 1
+                """,
+                cancellationToken);
+
+            if (rows == 0)
+                throw new InsufficientCreditsException();
+
+            db.CreditLedgerEntries.Add(new CreditLedgerEntry
+            {
+                Id = Guid.NewGuid(),
+                UserId = check.UserId,
+                Amount = -1,
+                Reason = "car_check_completed",
+                ReferenceId = checkId,
+                CreatedAt = now,
+            });
+        }
 
         var vehicleIdentifier = result.Listing.Title
             ?? $"{result.Listing.Make} {result.Listing.Model}".Trim();

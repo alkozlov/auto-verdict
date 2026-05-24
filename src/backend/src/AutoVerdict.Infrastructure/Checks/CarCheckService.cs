@@ -6,10 +6,11 @@ using AutoVerdict.Contracts.Messages;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.Infrastructure.Checks;
 
-public sealed class CarCheckService(AppDbContext db) : ICarCheckService
+public sealed class CarCheckService(AppDbContext db, IOptions<WhitelistOptions> whitelist) : ICarCheckService
 {
     public async Task<CarCheck> CreateAsync(
         Guid userId,
@@ -18,10 +19,18 @@ public sealed class CarCheckService(AppDbContext db) : ICarCheckService
     {
         await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
 
-        bool hasAvailableCredit = await db.UserCredits
-            .AnyAsync(c => c.UserId == userId && c.Balance >= 1, cancellationToken);
-        if (!hasAvailableCredit)
-            throw new InsufficientCreditsException();
+        var userEmail = await db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Email)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (!whitelist.Value.Contains(userEmail ?? ""))
+        {
+            bool hasAvailableCredit = await db.UserCredits
+                .AnyAsync(c => c.UserId == userId && c.Balance >= 1, cancellationToken);
+            if (!hasAvailableCredit)
+                throw new InsufficientCreditsException();
+        }
 
         var checkId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
