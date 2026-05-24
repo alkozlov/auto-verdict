@@ -114,6 +114,7 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
         const string schemaJson = """
             {
               "type": "object",
+              "additionalProperties": false,
               "required": [
                 "CarSummary",
                 "ListingFacts",
@@ -130,7 +131,8 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
                 "CarSummary": { "type": "string" },
                 "ListingFacts": {
                   "type": "object",
-                  "required": ["ListingUrl", "Attributes"],
+                  "additionalProperties": false,
+                  "required": ["ListingUrl"],
                   "properties": {
                     "ListingUrl": { "type": "string" },
                     "Title": { "type": ["string", "null"] },
@@ -141,11 +143,7 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
                     "Price": { "type": ["number", "null"] },
                     "Currency": { "type": ["string", "null"] },
                     "SellerType": { "type": ["string", "null"] },
-                    "Location": { "type": ["string", "null"] },
-                    "Attributes": {
-                      "type": "object",
-                      "additionalProperties": { "type": "string" }
-                    }
+                    "Location": { "type": ["string", "null"] }
                   }
                 },
                 "ModelRisks": { "type": "array", "items": { "type": "string" } },
@@ -153,6 +151,7 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
                 "DealRisks": { "type": "array", "items": { "type": "string" } },
                 "EstimatedCosts": {
                   "type": "object",
+                  "additionalProperties": false,
                   "required": ["Currency", "Notes"],
                   "properties": {
                     "PurchasePrice": { "type": ["number", "null"] },

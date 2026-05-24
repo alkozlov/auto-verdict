@@ -22,8 +22,7 @@ public sealed record ListingFacts(
     decimal? Price,
     string? Currency,
     string? SellerType,
-    string? Location,
-    IReadOnlyDictionary<string, string> Attributes);
+    string? Location);
 
 public sealed record EstimatedCosts(
     decimal? PurchasePrice,
