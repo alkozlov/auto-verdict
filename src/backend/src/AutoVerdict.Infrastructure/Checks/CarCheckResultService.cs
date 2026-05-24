@@ -14,8 +14,13 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         AiAnalysisResult result,
         CancellationToken cancellationToken = default)
     {
-        var check = await db.CarChecks.FindAsync([checkId], cancellationToken)
-            ?? throw new InvalidOperationException($"CarCheck {checkId} not found.");
+        var check = await db.CarChecks.FindAsync([checkId], cancellationToken);
+        if (check is null)
+        {
+            // Orphaned message — no car_check row was ever created (e.g. direct NATS publish in tests).
+            // Ack the message rather than retrying forever.
+            return;
+        }
 
         var now = DateTimeOffset.UtcNow;
 
@@ -56,7 +61,6 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         check.Year = result.Listing.Year;
         check.MileageKm = result.Listing.MileageKm;
         check.Price = result.Listing.Price;
-        check.Currency = result.Listing.Currency;
         check.ScreenshotStorageKey = result.Listing.ScreenshotStorageKey;
 
         db.CarReports.Add(new CarReport
@@ -90,8 +94,8 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
         string reason,
         CancellationToken cancellationToken = default)
     {
-        var check = await db.CarChecks.FindAsync([checkId], cancellationToken)
-            ?? throw new InvalidOperationException($"CarCheck {checkId} not found.");
+        var check = await db.CarChecks.FindAsync([checkId], cancellationToken);
+        if (check is null) return; // Orphaned message — no car_check row exists.
 
         var now = DateTimeOffset.UtcNow;
         check.Status = CarCheckStatus.Failed;
