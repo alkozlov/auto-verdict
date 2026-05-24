@@ -8,7 +8,6 @@ public sealed record CarListingSnapshot(
     int? Year,
     int? MileageKm,
     decimal? Price,
-    string? Currency,
     string? SellerName,
     string? SellerType,
     string? Location,

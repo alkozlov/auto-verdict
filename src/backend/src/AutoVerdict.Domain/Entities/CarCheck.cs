@@ -15,7 +15,6 @@ public sealed class CarCheck
     public int? Year { get; set; }
     public int? MileageKm { get; set; }
     public decimal? Price { get; set; }
-    public string? Currency { get; set; }
     public string? ScreenshotStorageKey { get; set; }
     public CarCheckStatus Status { get; set; }
     public string? FailureReason { get; set; }

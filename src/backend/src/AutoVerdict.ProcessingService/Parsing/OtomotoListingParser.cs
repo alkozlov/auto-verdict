@@ -34,7 +34,9 @@ public sealed partial class OtomotoListingParser(
             Headless = headless,
             SlowMo = parserOptions.SlowMoMs > 0 ? parserOptions.SlowMoMs : null,
             Channel = string.IsNullOrWhiteSpace(parserOptions.BrowserChannel) ? null : parserOptions.BrowserChannel,
-            ExecutablePath = string.IsNullOrWhiteSpace(parserOptions.BrowserExecutablePath) ? null : parserOptions.BrowserExecutablePath,
+            ExecutablePath = string.IsNullOrWhiteSpace(parserOptions.BrowserExecutablePath)
+                ? null
+                : parserOptions.BrowserExecutablePath,
             Args = parserOptions.Devtools && !headless ? ["--auto-open-devtools-for-tabs"] : null,
         });
 
@@ -55,30 +57,30 @@ public sealed partial class OtomotoListingParser(
 
         await TryAcceptCookiesAsync(page);
 
-        if (await PauseForDebuggingAsync(parserOptions, cancellationToken))
-        {
-            logger.LogInformation("Debug pause finished. Reloading listing {ListingUrl} before extraction.", listingUrl);
-            await page.GotoAsync(listingUrl, new PageGotoOptions
-            {
-                WaitUntil = WaitUntilState.NetworkIdle,
-                Timeout = 60_000,
-            });
-        }
+        // if (await PauseForDebuggingAsync(parserOptions, cancellationToken))
+        // {
+        //     logger.LogInformation("Debug pause finished. Reloading listing {ListingUrl} before extraction.", listingUrl);
+        //     await page.GotoAsync(listingUrl, new PageGotoOptions
+        //     {
+        //         WaitUntil = WaitUntilState.NetworkIdle,
+        //         Timeout = 60_000,
+        //     });
+        // }
 
         // Extract structured data using specific selectors per parsing rules
-        var titleFromPage    = await ExtractTitleAsync(page);
-        var (price, currency) = await ExtractPriceAsync(page);
-        var mainDetails      = await ExtractMainDetailsSectionAsync(page);
-        var description      = await ExtractDescriptionAsync(page);
-        var basicInfo        = await ExtractBasicInformationAsync(page);
-        var specyfikacja     = await ExtractAccordionSectionAsync(page, "Specyfikacja");
-        var stanIHistoria    = await ExtractAccordionSectionAsync(page, "Stan i historia");
+        var titleFromPage = await ExtractTitleAsync(page);
+        var price = await ExtractPriceAsync(page);
+        var mainDetails = await ExtractMainDetailsSectionAsync(page);
+        var description = await ExtractDescriptionAsync(page);
+        var basicInfo = await ExtractBasicInformationAsync(page);
+        var specyfikacja = await ExtractAccordionSectionAsync(page, "Specyfikacja");
+        var stanIHistoria = await ExtractAccordionSectionAsync(page, "Stan i historia");
 
         // Merge all attribute sections; first writer wins on key collision
         var attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (k, v) in mainDetails)   attributes.TryAdd(k, v);
-        foreach (var (k, v) in basicInfo)     attributes.TryAdd(k, v);
-        foreach (var (k, v) in specyfikacja)  attributes.TryAdd(k, v);
+        foreach (var (k, v) in mainDetails) attributes.TryAdd(k, v);
+        foreach (var (k, v) in basicInfo) attributes.TryAdd(k, v);
+        foreach (var (k, v) in specyfikacja) attributes.TryAdd(k, v);
         foreach (var (k, v) in stanIHistoria) attributes.TryAdd(k, v);
         if (description is not null)
             attributes["Description"] = description;
@@ -87,10 +89,10 @@ public sealed partial class OtomotoListingParser(
         var jsonLd = await ExtractJsonLdAsync(page);
 
         var text = await page.Locator("body").InnerTextAsync(new LocatorInnerTextOptions { Timeout = 10_000 });
-        var canonicalUrl   = await GetCanonicalUrlAsync(page);
-        var htmlLanguage   = await GetHtmlLanguageAsync(page);
-        var currentUrl     = page.Url;
-        var detectedBlock  = DetectBlockOrCaptcha(await page.TitleAsync(), text);
+        var canonicalUrl = await GetCanonicalUrlAsync(page);
+        var htmlLanguage = await GetHtmlLanguageAsync(page);
+        var currentUrl = page.Url;
+        var detectedBlock = DetectBlockOrCaptcha(await page.TitleAsync(), text);
 
         await page.EvaluateAsync("window.scrollTo(0, 0)");
         var screenshotBytes = await page.ScreenshotAsync(new PageScreenshotOptions
@@ -105,12 +107,11 @@ public sealed partial class OtomotoListingParser(
             await GetMetaContentAsync(page, "og:title"),
             await page.TitleAsync());
 
-        price    ??= GetDecimal(jsonLd, "price");
-        currency ??= FirstNonEmpty(GetString(jsonLd, "priceCurrency"), "PLN");
+        price ??= GetDecimal(jsonLd, "price");
 
-        var make      = FirstNonEmpty(GetAttribute(attributes, "Marka pojazdu"), GetNestedString(jsonLd, "brand", "name"));
-        var model     = FirstNonEmpty(GetAttribute(attributes, "Model pojazdu"), GetNestedString(jsonLd, "model", "name"));
-        var year      = TryParseInt(GetAttribute(attributes, "Rok produkcji")) ?? TryParseYear(text);
+        var make = FirstNonEmpty(GetAttribute(attributes, "Marka pojazdu"), GetNestedString(jsonLd, "brand", "name"));
+        var model = FirstNonEmpty(GetAttribute(attributes, "Model pojazdu"), GetNestedString(jsonLd, "model", "name"));
+        var year = TryParseInt(GetAttribute(attributes, "Rok produkcji")) ?? TryParseYear(text);
         var mileageKm = TryParseMileage(GetAttribute(attributes, "Przebieg")) ?? TryParseMileage(text);
 
         var snapshot = new CarListingSnapshot(
@@ -121,7 +122,6 @@ public sealed partial class OtomotoListingParser(
             year,
             mileageKm,
             price,
-            currency,
             GetAttribute(attributes, "Sprzedający"),
             ExtractSellerType(text),
             GetAttribute(attributes, "Lokalizacja"),
@@ -131,7 +131,9 @@ public sealed partial class OtomotoListingParser(
             DateTimeOffset.UtcNow);
 
         return new ListingParseResult(
-            snapshot, screenshotBytes, "image/png",
+            snapshot,
+            screenshotBytes,
+            "image/png",
             DetectedBlockOrCaptcha: detectedBlock,
             CanonicalUrl: canonicalUrl,
             HtmlLanguage: htmlLanguage,
@@ -151,50 +153,45 @@ public sealed partial class OtomotoListingParser(
                 State = WaitForSelectorState.Visible,
                 Timeout = 5_000,
             });
+
             await settingsButton.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
 
             // Step 2: refuse all in the opened dialog
-            var refuseButton = page.Locator("#ot-pc-refuse-all-handler").First;
+            var refuseButton = page.Locator(".ot-pc-refuse-all-handler").First;
             await refuseButton.WaitForAsync(new LocatorWaitForOptions
             {
                 State = WaitForSelectorState.Visible,
                 Timeout = 5_000,
             });
+
             await refuseButton.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
         }
-        catch (TimeoutException) { }
-        catch (PlaywrightException) { }
+        catch (TimeoutException)
+        {
+        }
+        catch (PlaywrightException)
+        {
+        }
     }
 
     // ── Targeted data extractors ───────────────────────────────────────────────
 
     private static async Task<string?> ExtractTitleAsync(IPage page)
     {
-        var h1 = page.Locator("h1.offer-title.big.text").First;
+        var h1 = page.Locator("h1.offer-title.big-text").First;
         if (await h1.CountAsync() == 0) return null;
         return (await h1.InnerTextAsync()).Trim().NullIfEmpty();
     }
 
-    private static async Task<(decimal? Price, string? Currency)> ExtractPriceAsync(IPage page)
+    private static async Task<decimal?> ExtractPriceAsync(IPage page)
     {
         var h3 = page.Locator("h3.offer-price__number").First;
-        if (await h3.CountAsync() == 0) return (null, null);
+        if (await h3.CountAsync() == 0) return null;
 
         var priceText = (await h3.InnerTextAsync()).Trim();
-        if (string.IsNullOrWhiteSpace(priceText)) return (null, null);
+        if (string.IsNullOrWhiteSpace(priceText)) return null;
 
-        if (TryParsePrice(priceText, out var price))
-        {
-            var currency = priceText.Contains("EUR", StringComparison.OrdinalIgnoreCase) ? "EUR" : "PLN";
-            return (price, currency);
-        }
-
-        // Fallback: strip non-digits and try plain number
-        var digits = Regex.Replace(priceText, @"\D", "");
-        if (decimal.TryParse(digits, CultureInfo.InvariantCulture, out var plain))
-            return (plain, null);
-
-        return (null, null);
+        return TryParsePrice(priceText, out var price) ? price : null;
     }
 
     // data-testid="main-details-section" → pairs of <p> elements inside each child div
@@ -213,7 +210,7 @@ public sealed partial class OtomotoListingParser(
             var ps = items.Nth(i).Locator("p");
             if (await ps.CountAsync() < 2) continue;
 
-            var key   = (await ps.First.InnerTextAsync()).Trim();
+            var key = (await ps.First.InnerTextAsync()).Trim();
             var value = (await ps.Last.InnerTextAsync()).Trim();
             if (!string.IsNullOrEmpty(key))
                 result.TryAdd(key, value);
@@ -242,7 +239,9 @@ public sealed partial class OtomotoListingParser(
                 await expandButton.ClickAsync(new LocatorClickOptions { Timeout = 3_000 });
                 await page.WaitForTimeoutAsync(300);
             }
-            catch (PlaywrightException) { }
+            catch (PlaywrightException)
+            {
+            }
         }
 
         var textWrapper = target.Locator("[data-testid='textWrapper']").First;
@@ -268,13 +267,13 @@ public sealed partial class OtomotoListingParser(
 
         for (var i = 0; i < count; i++)
         {
-            var item  = items.Nth(i);
+            var item = items.Nth(i);
             var keyEl = item.Locator("p.text-foreground-secondary").First;
             var valEl = item.Locator("p.font-normal").First;
 
             if (await keyEl.CountAsync() == 0 || await valEl.CountAsync() == 0) continue;
 
-            var key   = (await keyEl.InnerTextAsync()).Trim();
+            var key = (await keyEl.InnerTextAsync()).Trim();
             var value = (await valEl.InnerTextAsync()).Trim();
 
             if (!string.IsNullOrEmpty(key) && !excluded.Contains(key))
@@ -297,7 +296,10 @@ public sealed partial class OtomotoListingParser(
             await button.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
             await page.WaitForTimeoutAsync(500);
         }
-        catch (PlaywrightException) { return result; }
+        catch (PlaywrightException)
+        {
+            return result;
+        }
 
         // The content panel is the div immediately following the button in the DOM
         var panel = page.Locator($"xpath=//button[normalize-space(.)='{buttonText}']/following-sibling::div[1]").First;
@@ -308,13 +310,13 @@ public sealed partial class OtomotoListingParser(
 
         for (var i = 0; i < count; i++)
         {
-            var item  = items.Nth(i);
+            var item = items.Nth(i);
             var keyEl = item.Locator("p.text-foreground-secondary").First;
             var valEl = item.Locator("p.font-normal").First;
 
             if (await keyEl.CountAsync() == 0 || await valEl.CountAsync() == 0) continue;
 
-            var key   = (await keyEl.InnerTextAsync()).Trim();
+            var key = (await keyEl.InnerTextAsync()).Trim();
             var value = (await valEl.InnerTextAsync()).Trim();
 
             if (!string.IsNullOrEmpty(key))
@@ -340,7 +342,7 @@ public sealed partial class OtomotoListingParser(
 
         var host = uri.IdnHost.ToLowerInvariant();
         return uri.Scheme is "http" or "https"
-            && (host == "otomoto.pl" || host.EndsWith(".otomoto.pl", StringComparison.Ordinal));
+               && (host == "otomoto.pl" || host.EndsWith(".otomoto.pl", StringComparison.Ordinal));
     }
 
     private static async Task<Dictionary<string, JsonElement>> ExtractJsonLdAsync(IPage page)
@@ -368,7 +370,9 @@ public sealed partial class OtomotoListingParser(
                     if (dict.Count > 0) return dict;
                 }
             }
-            catch (JsonException) { }
+            catch (JsonException)
+            {
+            }
         }
 
         return [];
@@ -444,7 +448,8 @@ public sealed partial class OtomotoListingParser(
         return value.ValueKind switch
         {
             JsonValueKind.Number when value.TryGetDecimal(out var n) => n,
-            JsonValueKind.String when decimal.TryParse(value.GetString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var n) => n,
+            JsonValueKind.String when decimal.TryParse(value.GetString(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var n) => n,
             _ => null,
         };
     }
@@ -503,7 +508,7 @@ public sealed partial class OtomotoListingParser(
         return int.TryParse(digits, CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
     }
 
-    [GeneratedRegex(@"(\d[\d\s]{2,})\s*(zł|PLN|EUR)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"(\d[\d\s]{2,})\s*(zł|PLN|EUR)*", RegexOptions.IgnoreCase)]
     private static partial Regex PriceRegex();
 
     [GeneratedRegex(@"\b(20[0-3]\d|19[8-9]\d)\b")]

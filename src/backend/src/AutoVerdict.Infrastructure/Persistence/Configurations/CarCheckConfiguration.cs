@@ -36,9 +36,6 @@ public sealed class CarCheckConfiguration : IEntityTypeConfiguration<CarCheck>
         builder.Property(c => c.Price)
             .HasPrecision(12, 2);
 
-        builder.Property(c => c.Currency)
-            .HasMaxLength(10);
-
         builder.Property(c => c.ScreenshotStorageKey)
             .HasMaxLength(500);
 

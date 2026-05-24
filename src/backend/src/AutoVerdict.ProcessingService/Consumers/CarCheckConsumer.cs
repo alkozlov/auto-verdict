@@ -5,7 +5,6 @@ using AutoVerdict.Contracts.Messages;
 using AutoVerdict.Infrastructure.Messaging;
 using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Pipeline;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
@@ -33,7 +32,7 @@ public sealed class CarCheckConsumer(
         logger.LogInformation("NATS JetStream consumer ready on {Subject}", NatsSubjects.CarCheckRequested);
 
         // In-memory fast-path idempotency; DB-level check is authoritative.
-        var processedIds = new HashSet<Guid>();
+        // var processedIds = new HashSet<Guid>();
 
         await foreach (var msg in consumer.ConsumeAsync<CarCheckRequestedMessage?>(
             serializer: NatsJsonSerializer<CarCheckRequestedMessage?>.Default,
@@ -46,16 +45,17 @@ public sealed class CarCheckConsumer(
                 continue;
             }
 
-            if (processedIds.Contains(data.CheckId))
-            {
-                logger.LogWarning("Duplicate check {CheckId} (redelivery), acking without reprocessing.", data.CheckId);
-                await msg.AckAsync(cancellationToken: stoppingToken);
-                continue;
-            }
+            // TODO: Review and refactor later
+            // if (processedIds.Contains(data.CheckId))
+            // {
+            //     logger.LogWarning("Duplicate check {CheckId} (redelivery), acking without reprocessing.", data.CheckId);
+            //     await msg.AckAsync(cancellationToken: stoppingToken);
+            //     continue;
+            // }
 
             var (shouldAck, markProcessed) = await ProcessMessageAsync(data, js, stoppingToken);
 
-            if (markProcessed) processedIds.Add(data.CheckId);
+            // if (markProcessed) processedIds.Add(data.CheckId);
             if (shouldAck) await msg.AckAsync(cancellationToken: stoppingToken);
             else await msg.NakAsync(cancellationToken: stoppingToken);
         }

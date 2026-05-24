@@ -99,6 +99,7 @@ public sealed class CrawlerOrchestrator(
                     "Page appears to be blocked or showing a CAPTCHA.",
                     retryable: captchaRetryable);
                 await jobService.CompleteAsync(job.Id, blockedResult, cancellationToken);
+
                 return blockedResult;
             }
 
@@ -133,6 +134,7 @@ public sealed class CrawlerOrchestrator(
                 ["html_language"] = parsed.HtmlLanguage,
                 ["meta_description"] = parsed.Listing.Description,
                 ["detected_block_or_captcha"] = parsed.DetectedBlockOrCaptcha,
+                ["attributes"] = parsed.Listing.Attributes,
             };
 
             var normalizedData = new Dictionary<string, object?>
@@ -148,9 +150,14 @@ public sealed class CrawlerOrchestrator(
 
             // 10. Persist and return
             var successResult = CrawlResult.Success(
-                parsed, source!, bucket, screenshotKey,
-                parsed.ScreenshotContentType, screenshotBytes,
-                rawData, normalizedData);
+                parsed,
+                source!,
+                bucket,
+                screenshotKey,
+                parsed.ScreenshotContentType,
+                screenshotBytes,
+                rawData,
+                normalizedData);
 
             await jobService.CompleteAsync(job.Id, successResult, cancellationToken);
 

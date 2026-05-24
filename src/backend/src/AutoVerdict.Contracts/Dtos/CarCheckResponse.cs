@@ -12,7 +12,6 @@ public sealed record CarCheckResponse(
     int? Year,
     int? MileageKm,
     decimal? Price,
-    string? Currency,
     CarCheckStatus Status,
     VehicleReport? Report,
     string? FailureReason,
