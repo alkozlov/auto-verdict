@@ -54,9 +54,9 @@ public sealed class S3DocumentStorageClient : IDocumentStorageClient, IDisposabl
             Key = storageKey,
             InputStream = content,
             ContentType = contentType,
-            // S3-compatible stores (SeaweedFS, MinIO) don't handle AWS chunked payload
-            // signing — send as UNSIGNED-PAYLOAD with plain content-length instead.
-            DisablePayloadSigning = true,
+            // S3-compatible stores (SeaweedFS, MinIO) don't handle AWS chunked
+            // transfer encoding — send with explicit Content-Length instead.
+            UseChunkEncoding = false,
             DisableDefaultChecksumValidation = true,
         };
 
