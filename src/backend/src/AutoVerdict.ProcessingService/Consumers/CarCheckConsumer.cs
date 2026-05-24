@@ -2,6 +2,7 @@ using AutoVerdict.Application.Checks;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Messages;
 using AutoVerdict.Infrastructure.Messaging;
+using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -42,8 +43,7 @@ public sealed class CarCheckConsumer(
 
         logger.LogInformation("NATS JetStream consumer ready on {Subject}", NatsSubjects.CarCheckRequested);
 
-        // In-memory idempotency guard — per-process lifetime only.
-        // Replace with DB-based check once report persistence is stable.
+        // In-memory fast-path idempotency; DB-level check is authoritative.
         var processedIds = new HashSet<Guid>();
 
         await foreach (NatsJSMsg<CarCheckRequestedMessage?> msg
@@ -71,16 +71,81 @@ public sealed class CarCheckConsumer(
                     "Processing check {CheckId} for listing {ListingUrl}.",
                     data.CheckId, data.ListingUrl);
 
-                var result = await pipeline.ExecuteAsync(data, stoppingToken);
-
-                await using (var scope = scopeFactory.CreateAsyncScope())
+                // ── Crawl phase ───────────────────────────────────────────────
+                CrawlResult crawlResult;
+                await using (var crawlScope = scopeFactory.CreateAsyncScope())
                 {
-                    var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
-                    await resultService.RecordSuccessAsync(data.CheckId, result, stoppingToken);
+                    var orchestrator = crawlScope.ServiceProvider.GetRequiredService<CrawlerOrchestrator>();
+                    crawlResult = await orchestrator.CrawlAsync(data, stoppingToken);
+                }
+
+                // Publish crawled event (best effort — do not fail the job if this fails)
+                try
+                {
+                    var crawledMsg = BuildCrawledMessage(data, crawlResult);
+                    await js.PublishAsync(
+                        NatsSubjects.CarCheckCrawled,
+                        crawledMsg,
+                        serializer: NatsJsonSerializer<CarCheckCrawledMessage>.Default,
+                        cancellationToken: stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Check {CheckId}: failed to publish crawled event.", data.CheckId);
+                }
+
+                // Already processed in a prior run — just ack
+                if (crawlResult.Status == "SkippedDuplicate")
+                {
+                    processedIds.Add(data.CheckId);
+                    await msg.AckAsync(cancellationToken: stoppingToken);
+                    continue;
+                }
+
+                // Non-retryable crawl failure — record and ack
+                if (!crawlResult.IsSuccess && !crawlResult.IsRetryableError)
+                {
+                    await using var failScope = scopeFactory.CreateAsyncScope();
+                    var resultService = failScope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
+                    await resultService.RecordFailureAsync(
+                        data.CheckId, crawlResult.ErrorMessage ?? crawlResult.Status, stoppingToken);
+
+                    var failedMsg = new CarCheckFailedMessage(
+                        data.CheckId, data.UserId,
+                        crawlResult.ErrorMessage ?? crawlResult.Status,
+                        DateTimeOffset.UtcNow);
+                    await js.PublishAsync(
+                        NatsSubjects.CarCheckFailed,
+                        failedMsg,
+                        serializer: NatsJsonSerializer<CarCheckFailedMessage>.Default,
+                        cancellationToken: stoppingToken);
+
+                    processedIds.Add(data.CheckId);
+                    await msg.AckAsync(cancellationToken: stoppingToken);
+                    continue;
+                }
+
+                // Retryable crawl failure — nak so JetStream can redeliver
+                if (!crawlResult.IsSuccess)
+                {
+                    logger.LogWarning(
+                        "Check {CheckId}: retryable crawl error {Code}, naking.",
+                        data.CheckId, crawlResult.ErrorCode);
+                    await msg.NakAsync(cancellationToken: stoppingToken);
+                    continue;
+                }
+
+                // ── AI analysis phase ─────────────────────────────────────────
+                var aiResult = await pipeline.ExecuteAsync(data, crawlResult.ParseResult!, stoppingToken);
+
+                await using (var successScope = scopeFactory.CreateAsyncScope())
+                {
+                    var resultService = successScope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
+                    await resultService.RecordSuccessAsync(data.CheckId, aiResult, stoppingToken);
                 }
 
                 var completed = new CarCheckCompletedMessage(
-                    data.CheckId, data.UserId, result.Report, DateTimeOffset.UtcNow);
+                    data.CheckId, data.UserId, aiResult.Report, DateTimeOffset.UtcNow);
 
                 await js.PublishAsync(
                     NatsSubjects.CarCheckCompleted,
@@ -103,8 +168,8 @@ public sealed class CarCheckConsumer(
 
                 try
                 {
-                    await using var scope = scopeFactory.CreateAsyncScope();
-                    var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
+                    await using var errScope = scopeFactory.CreateAsyncScope();
+                    var resultService = errScope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
                     await resultService.RecordFailureAsync(data.CheckId, ex.Message, stoppingToken);
 
                     var failed = new CarCheckFailedMessage(
@@ -124,5 +189,36 @@ public sealed class CarCheckConsumer(
                 await msg.NakAsync(cancellationToken: stoppingToken);
             }
         }
+    }
+
+    private static CarCheckCrawledMessage BuildCrawledMessage(
+        CarCheckRequestedMessage request,
+        CrawlResult result)
+    {
+        ScreenshotInfo? screenshot = result.ScreenshotObjectKey is not null
+            ? new ScreenshotInfo(
+                result.ScreenshotBucket ?? "",
+                result.ScreenshotObjectKey,
+                result.ScreenshotContentType ?? "image/png",
+                result.ScreenshotSizeBytes ?? 0,
+                PublicUrl: null)
+            : null;
+
+        CrawlerError? error = result.ErrorCode is not null
+            ? new CrawlerError(result.ErrorCode, result.ErrorMessage ?? "", result.IsRetryable ?? false)
+            : null;
+
+        return new CarCheckCrawledMessage(
+            request.CheckId,
+            request.UserId,
+            request.ListingUrl,
+            request.RequestedAt,
+            DateTimeOffset.UtcNow,
+            result.Source ?? "",
+            result.Status,
+            result.RawData,
+            result.NormalizedData,
+            screenshot,
+            error);
     }
 }

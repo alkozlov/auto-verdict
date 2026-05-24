@@ -1,5 +1,6 @@
 using AutoVerdict.Infrastructure;
 using AutoVerdict.ProcessingService.Consumers;
+using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Parsing;
 using AutoVerdict.ProcessingService.Pipeline;
 
@@ -10,6 +11,7 @@ builder.Configuration.AddEnvironmentVariables();
 // NatsOptions, OutboxPublisherService and all infrastructure services
 // are registered inside AddInfrastructure.
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.Configure<PlaywrightParserOptions>(opts =>
 {
     builder.Configuration.GetSection(PlaywrightParserOptions.SectionName).Bind(opts);
@@ -24,7 +26,16 @@ builder.Services.Configure<PlaywrightParserOptions>(opts =>
     opts.BrowserChannel = builder.Configuration["PLAYWRIGHT_BROWSER_CHANNEL"] ?? opts.BrowserChannel;
     opts.BrowserExecutablePath = builder.Configuration["PLAYWRIGHT_BROWSER_EXECUTABLE_PATH"] ?? opts.BrowserExecutablePath;
 });
+
+builder.Services.Configure<CrawlerOptions>(opts =>
+{
+    builder.Configuration.GetSection(CrawlerOptions.SectionName).Bind(opts);
+});
+
 builder.Services.AddSingleton<ICarListingParser, OtomotoListingParser>();
+builder.Services.AddSingleton<DomainRateLimiter>();
+builder.Services.AddScoped<CrawlerJobService>();
+builder.Services.AddScoped<CrawlerOrchestrator>();
 builder.Services.AddSingleton<CarCheckAnalysisPipeline>();
 builder.Services.AddHostedService<CarCheckConsumer>();
 

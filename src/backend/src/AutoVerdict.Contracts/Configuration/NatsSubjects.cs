@@ -3,6 +3,7 @@ namespace AutoVerdict.Contracts.Configuration;
 public static class NatsSubjects
 {
     public const string CarCheckRequested = "autoverdict.checks.requested";
+    public const string CarCheckCrawled = "autoverdict.checks.crawled";
     public const string CarCheckCompleted = "autoverdict.checks.completed";
     public const string CarCheckFailed = "autoverdict.checks.failed";
 

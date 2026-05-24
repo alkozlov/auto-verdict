@@ -63,7 +63,9 @@ public sealed partial class OtomotoListingParser(
             Timeout = 60_000,
         });
 
-        await TryAcceptCookiesAsync(page);
+        await TryAcceptCookies(page);
+        await TryLoginWithGoogle(page);
+
         if (await PauseForDebuggingAsync(parserOptions, cancellationToken))
         {
             logger.LogInformation("Debug pause finished. Reloading listing {ListingUrl} before extraction.", listingUrl);
@@ -77,6 +79,11 @@ public sealed partial class OtomotoListingParser(
         var text = await page.Locator("body").InnerTextAsync(new LocatorInnerTextOptions { Timeout = 10_000 });
         var attributes = await ExtractAttributesAsync(page);
         var jsonLd = await ExtractJsonLdAsync(page);
+
+        var canonicalUrl = await GetCanonicalUrlAsync(page);
+        var htmlLanguage = await GetHtmlLanguageAsync(page);
+        var currentUrl = page.Url;
+        var detectedBlock = DetectBlockOrCaptcha(await page.TitleAsync(), text);
 
         await page.EvaluateAsync("window.scrollTo(0, 0)");
         var screenshotBytes = await page.ScreenshotAsync(new PageScreenshotOptions
@@ -119,7 +126,33 @@ public sealed partial class OtomotoListingParser(
             screenshotStorageKey,
             DateTimeOffset.UtcNow);
 
-        return new ListingParseResult(snapshot, screenshotBytes, "image/png");
+        return new ListingParseResult(
+            snapshot, screenshotBytes, "image/png",
+            DetectedBlockOrCaptcha: detectedBlock,
+            CanonicalUrl: canonicalUrl,
+            HtmlLanguage: htmlLanguage,
+            CurrentUrl: currentUrl);
+    }
+
+    private async Task TryLoginWithGoogle(IPage page)
+    {
+        // Click on a button with attribute data-touch-point="login_page"
+        var loginButton = page.Locator("[data-touch-point='login_page']").First;
+        if (await loginButton.CountAsync() == 0)
+        {
+            return;
+        }
+
+        await loginButton.ClickAsync();
+
+        // Wait for a button with aria-label containing "Google" to appear and click it. The button ID is "Google"
+        var googleButton = page.Locator("button#Google").First;
+        if (await googleButton.CountAsync() == 0)
+        {
+            return;
+        }
+
+        await googleButton.ClickAsync();
     }
 
     private static async Task<bool> PauseForDebuggingAsync(
@@ -144,31 +177,55 @@ public sealed partial class OtomotoListingParser(
             && (host == "otomoto.pl" || host.EndsWith(".otomoto.pl", StringComparison.Ordinal));
     }
 
-    private static async Task TryAcceptCookiesAsync(IPage page)
+    private static async Task TryAcceptCookies(IPage page)
     {
-        foreach (var text in new[] { "Akceptuję", "Akceptuje", "Accept", "Zgadzam" })
+        // Look up button by ID "onetrust-reject-all-handler" and click it. Ignore visibility
+        try
         {
-            try
+            var button = page.Locator("#onetrust-reject-all-handler").First;
+            await button.WaitForAsync(new LocatorWaitForOptions
             {
-                var button = page.GetByText(text, new PageGetByTextOptions { Exact = false }).First;
-                await button.WaitForAsync(new LocatorWaitForOptions
-                {
-                    State = WaitForSelectorState.Visible,
-                    Timeout = 1_000,
-                });
-                if (await button.IsVisibleAsync())
-                {
-                    await button.ClickAsync(new LocatorClickOptions { Timeout = 2_000 });
-                    return;
-                }
-            }
-            catch (TimeoutException)
+                State = WaitForSelectorState.Visible,
+                Timeout = 5_000
+            });
+
+            if (await button.IsVisibleAsync())
             {
-            }
-            catch (PlaywrightException)
-            {
+                await button.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
+
+                return;
             }
         }
+        catch (TimeoutException)
+        {
+        }
+        catch (PlaywrightException)
+        {
+        }
+
+        // foreach (var text in new[] { "Akceptuję", "Akceptuje", "Accept", "Zgadzam" })
+        // {
+        //     try
+        //     {
+        //         var button = page.GetByText(text, new PageGetByTextOptions { Exact = false }).First;
+        //         await button.WaitForAsync(new LocatorWaitForOptions
+        //         {
+        //             State = WaitForSelectorState.Visible,
+        //             Timeout = 1_000,
+        //         });
+        //         if (await button.IsVisibleAsync())
+        //         {
+        //             await button.ClickAsync(new LocatorClickOptions { Timeout = 2_000 });
+        //             return;
+        //         }
+        //     }
+        //     catch (TimeoutException)
+        //     {
+        //     }
+        //     catch (PlaywrightException)
+        //     {
+        //     }
+        // }
     }
 
     private static async Task<Dictionary<string, string>> ExtractAttributesAsync(IPage page)
@@ -347,6 +404,42 @@ public sealed partial class OtomotoListingParser(
 
         var digits = Regex.Replace(match.Groups[1].Value, @"\D", "");
         return int.TryParse(digits, CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
+    }
+
+    private static async Task<string?> GetCanonicalUrlAsync(IPage page)
+    {
+        var locator = page.Locator("link[rel='canonical']").First;
+        return await locator.CountAsync() > 0
+            ? await locator.GetAttributeAsync("href")
+            : null;
+    }
+
+    private static async Task<string?> GetHtmlLanguageAsync(IPage page)
+    {
+        var lang = await page.EvaluateAsync<string?>("() => document.documentElement.lang || null");
+        return string.IsNullOrWhiteSpace(lang) ? null : lang;
+    }
+
+    private static bool DetectBlockOrCaptcha(string title, string bodyText)
+    {
+        ReadOnlySpan<string> signals =
+        [
+            "nie jesteś robotem", "nie jestes robotem",
+            "captcha", "human verification",
+            "cloudflare", "access denied", "403 forbidden"
+        ];
+
+        var titleLower = title.AsSpan();
+        var textLower = bodyText.AsSpan();
+
+        foreach (var signal in signals)
+        {
+            if (titleLower.Contains(signal, StringComparison.OrdinalIgnoreCase) ||
+                textLower.Contains(signal, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 
     [GeneratedRegex(@"(\d[\d\s]{2,})\s*(zł|PLN|EUR)", RegexOptions.IgnoreCase)]

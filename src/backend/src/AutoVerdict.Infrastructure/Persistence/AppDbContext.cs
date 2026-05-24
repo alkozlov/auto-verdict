@@ -14,6 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<CarReport> CarReports => Set<CarReport>();
     public DbSet<AiRequest> AiRequests => Set<AiRequest>();
     public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
+    public DbSet<CrawlerJob> CrawlerJobs => Set<CrawlerJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
