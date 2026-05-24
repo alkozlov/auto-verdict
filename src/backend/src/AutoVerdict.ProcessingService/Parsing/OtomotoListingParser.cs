@@ -71,11 +71,15 @@ public sealed partial class OtomotoListingParser(
         var mainDetails      = await ExtractMainDetailsSectionAsync(page);
         var description      = await ExtractDescriptionAsync(page);
         var basicInfo        = await ExtractBasicInformationAsync(page);
+        var specyfikacja     = await ExtractAccordionSectionAsync(page, "Specyfikacja");
+        var stanIHistoria    = await ExtractAccordionSectionAsync(page, "Stan i historia");
 
-        // Merge all attribute sections into one dictionary; main-details wins on key collision
+        // Merge all attribute sections; first writer wins on key collision
         var attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (k, v) in mainDetails) attributes.TryAdd(k, v);
-        foreach (var (k, v) in basicInfo)   attributes.TryAdd(k, v);
+        foreach (var (k, v) in mainDetails)   attributes.TryAdd(k, v);
+        foreach (var (k, v) in basicInfo)     attributes.TryAdd(k, v);
+        foreach (var (k, v) in specyfikacja)  attributes.TryAdd(k, v);
+        foreach (var (k, v) in stanIHistoria) attributes.TryAdd(k, v);
         if (description is not null)
             attributes["Description"] = description;
 
@@ -274,6 +278,46 @@ public sealed partial class OtomotoListingParser(
             var value = (await valEl.InnerTextAsync()).Trim();
 
             if (!string.IsNullOrEmpty(key) && !excluded.Contains(key))
+                result.TryAdd(key, value);
+        }
+
+        return result;
+    }
+
+    // Accordion button (by exact text) → next sibling div → div.flex.place-items-center[data-testid] pairs
+    private static async Task<Dictionary<string, string>> ExtractAccordionSectionAsync(IPage page, string buttonText)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var button = page.Locator("button").Filter(new LocatorFilterOptions { HasText = buttonText }).First;
+        if (await button.CountAsync() == 0) return result;
+
+        try
+        {
+            await button.ClickAsync(new LocatorClickOptions { Timeout = 5_000 });
+            await page.WaitForTimeoutAsync(500);
+        }
+        catch (PlaywrightException) { return result; }
+
+        // The content panel is the div immediately following the button in the DOM
+        var panel = page.Locator($"xpath=//button[normalize-space(.)='{buttonText}']/following-sibling::div[1]").First;
+        if (await panel.CountAsync() == 0) return result;
+
+        var items = panel.Locator("div.flex.place-items-center[data-testid]");
+        var count = await items.CountAsync();
+
+        for (var i = 0; i < count; i++)
+        {
+            var item  = items.Nth(i);
+            var keyEl = item.Locator("p.text-foreground-secondary").First;
+            var valEl = item.Locator("p.font-normal").First;
+
+            if (await keyEl.CountAsync() == 0 || await valEl.CountAsync() == 0) continue;
+
+            var key   = (await keyEl.InnerTextAsync()).Trim();
+            var value = (await valEl.InnerTextAsync()).Trim();
+
+            if (!string.IsNullOrEmpty(key))
                 result.TryAdd(key, value);
         }
 

@@ -28,3 +28,16 @@ All extracted key-value pairs should be stored in the same dictionary variable. 
   ...
 }
 
+The next block of information should be extracted from accordion element which includes 2 sections. Both of them should be clicked one by one to expand. The first one is button with text "Specyfikacja". Click on the button. Then go to div block after this button. it should be visible now. It contains several levels of div blocks. We should find out all div blocks with class "flex place-items-center" and attribute data-testid (vale of the attribute is no matter). Each of them contains 2 p tags. The first one has class "text-foreground-secondary" and contains key. The second one has class "font-normal" and contains value. Extract all key-value pairs and store in the same dictionary variable. For example:
+{
+  "Rok produkcji": "2015",
+  "Przebieg": "100 000 km",
+  "Pojemność skokowa": "2000 cm3",
+  ...
+  "Liczba miejsc": "5",
+  "Liczba drzwi": "4",
+  ...
+}
+
+
+After that we should click on the second button with text "Stan i historia". We should click on it and then repeat the same procedure as for the first button.
