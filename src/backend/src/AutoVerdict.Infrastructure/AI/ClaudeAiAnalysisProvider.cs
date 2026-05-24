@@ -33,7 +33,6 @@ public sealed class ClaudeAiAnalysisProvider : IAiAnalysisProvider
         {
             Model = _options.Model,
             MaxTokens = _options.MaxTokens,
-            Thinking = new ThinkingConfigAdaptive(),
             OutputConfig = new OutputConfig
             {
                 Format = new JsonOutputFormat { Schema = ReportSchema },
