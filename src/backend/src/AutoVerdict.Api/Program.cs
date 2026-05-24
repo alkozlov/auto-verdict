@@ -284,7 +284,6 @@ static CarCheckResponse ToResponse(
         check.Year,
         check.MileageKm,
         check.Price,
-        check.Currency,
         check.Status,
         report,
         FailureReason ?? check.FailureReason,
@@ -331,7 +330,6 @@ static async Task EnsureCarCheckListingColumnsAsync(AppDbContext db)
             ADD COLUMN IF NOT EXISTS "Year" integer,
             ADD COLUMN IF NOT EXISTS "MileageKm" integer,
             ADD COLUMN IF NOT EXISTS "Price" numeric(12,2),
-            ADD COLUMN IF NOT EXISTS "Currency" character varying(10),
             ADD COLUMN IF NOT EXISTS "ScreenshotStorageKey" character varying(500)
         """);
 
