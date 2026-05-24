@@ -27,6 +27,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-replace-in-production}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      WHITELIST_EMAILS: ${WHITELIST_EMAILS:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,6 +56,7 @@ services:
       PLAYWRIGHT_DEBUG_PAUSE_MS: ${PLAYWRIGHT_DEBUG_PAUSE_MS:-0}
       PLAYWRIGHT_BROWSER_CHANNEL: ${PLAYWRIGHT_BROWSER_CHANNEL:-}
       PLAYWRIGHT_BROWSER_EXECUTABLE_PATH: ${PLAYWRIGHT_BROWSER_EXECUTABLE_PATH:-}
+      WHITELIST_EMAILS: ${WHITELIST_EMAILS:-}
     depends_on:
       postgres:
         condition: service_healthy
