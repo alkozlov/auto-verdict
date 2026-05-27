@@ -8,6 +8,8 @@ Domain candidate: `auto-verdict.app`.
 
 The name is not final. During MVP, validating the product hypothesis is more important than final branding.
 
+---
+
 ## 2. Product Vision
 
 Build a SaaS product that helps inexperienced used car buyers make safer preliminary decisions about car listings by detecting potential risks, inconsistencies, missing information, suspicious wording, and practical follow-up questions.
@@ -19,6 +21,8 @@ The product acts as an AI-assisted screening tool. It does not replace:
 - official vehicle history reports;
 - legal verification;
 - independent expert evaluation.
+
+---
 
 ## 3. Problem Statement
 
@@ -32,6 +36,8 @@ Buying a used car involves significant financial risk. Inexperienced buyers ofte
 - prepare for a seller call or vehicle inspection.
 
 Many listings look attractive but may hide problematic history: company ownership, import, accidents, incomplete service records, mileage inconsistencies, short ownership periods, vague claims, or mismatches between listing text and public records.
+
+---
 
 ## 4. Target Users
 
@@ -57,12 +63,16 @@ A user who reviews many listings for clients and needs quick, structured pre-scr
 
 This persona is outside MVP scope.
 
+---
+
 ## 5. Initial Market
 
 - Country: Poland.
 - Primary marketplace: Otomoto.pl.
 - Vehicle segment: relatively recent used cars, approximately model year 2022 or newer.
-- Language: initially English for internal documentation and system prompts; product UI may later support Polish, English, and Russian.
+- Language: English (UI, reports, internal documentation).
+
+---
 
 ## 6. Value Proposition
 
@@ -76,132 +86,345 @@ The system gives users a practical, structured AI report that answers:
 - What model-specific issues should I know about?
 - Should I proceed, request more information, or avoid the listing?
 
-## 7. MVP Scope
+---
 
-### Included in MVP
+## 7. Current MVP State
 
-- Backend-owned Google authentication.
-- Backend-issued auth cookie or JWT used by the frontend.
-- New user receives 1–2 free checks.
-- User can buy:
-  - one check;
-  - a package of five checks.
-- User can create a car check.
-- User can provide:
-  - listing URL;
-  - listing text;
-  - screenshots;
-  - optional VIN;
-  - optional registration number;
-  - optional first registration date;
-  - optional pasted official/public vehicle history information.
-- System stores uploaded screenshots in object storage.
-- System stores check data in PostgreSQL.
-- API submits analysis task to NATS JetStream.
-- ProcessingService consumes task and calls Claude API.
-- System generates structured AI report.
-- User can view previous checks and reports.
-- System handles failed processing states.
-- Minimal protected internal/admin operations for failed checks, retries, manual refunds, credit balance inspection, and processing status inspection.
+The following features are **implemented and functional**.
 
-### Excluded from MVP
+### Authentication
 
-- Full automatic Otomoto scraping.
+- Users sign in with Google (OAuth 2.0).
+- The backend issues a JWT after completing the OAuth handshake.
+- The frontend stores the token and sends it as a Bearer header on all API requests.
+- New users are created automatically on first sign-in.
+- New users receive a configurable number of free analysis credits.
+
+### Check Submission
+
+Users can submit a car check by providing:
+
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| Description | Yes | Free-form text; any combination of copied listing text, seller messages, specs, VIN, inspection notes |
+| Listing URL | No | Otomoto.pl URLs only; page is auto-crawled by the system |
+| Images | No | Up to 5 files; JPEG, PNG, or WEBP; max 2 560 KB each |
+
+- Submitting a check costs one credit.
+- If the user has no credits, the API returns HTTP 402 and the check is not created.
+- The system auto-generates a title from the first 120 characters of the description.
+
+### Analysis Pipeline
+
+When a check is submitted:
+
+1. The API saves the check record (status: Pending) and queues a message via NATS JetStream.
+2. The Processing Service picks up the message.
+3. If a listing URL was provided and belongs to Otomoto.pl, the service crawls the page with a headless Chromium browser (Playwright), extracting structured listing data and a full-page screenshot.
+4. Crawled data, the screenshot, and any user-uploaded images are sent to the Claude AI API.
+5. Claude generates a structured markdown report.
+6. The report is saved to blob storage; the check record is updated (status: Completed).
+7. On failure, the check is marked Failed with an error reason.
+
+The Processing Service applies per-domain rate limiting when crawling: configurable min/max delay between requests and per-domain concurrency cap.
+
+Crawl failures degrade gracefully — if the page cannot be crawled, the AI analysis proceeds using the user-provided description and images only.
+
+### AI Report
+
+The AI generates a structured markdown document with the following nine sections in fixed order:
+
+1. **Car Summary** — one-paragraph overview of the vehicle.
+2. **Listing Facts** — key facts: make, model, year, mileage, price, seller type, location, URL.
+3. **Model Risks** — known model-specific technical issues and common faults.
+4. **Listing Risks** — red flags found in the listing text or images.
+5. **Deal Risks** — financial, legal, and transactional risks.
+6. **Estimated Costs** — table of one-time and first-year purchase costs in PLN.
+7. **Questions for the Seller** — numbered list of questions to ask before buying.
+8. **Inspection Checklist** — checkboxes for physical inspection items.
+9. **Recommendation** — a direct verdict: **buy**, **buy with caution**, or **avoid**.
+
+The report ends with a standard disclaimer. All monetary estimates are in PLN.
+
+### Check History
+
+- Users can view their past checks in reverse-chronological order.
+- The list is paginated (5 per page).
+- Clicking a check opens a modal displaying the full report.
+- The frontend polls for updates every 5 seconds so the status changes (Pending → Processing → Completed) appear automatically without a page refresh.
+
+### Credit System
+
+- Each check costs one credit.
+- Credits are shown in the header.
+- Users with zero credits see an error on submission.
+- An admin whitelist bypasses the credit check (for internal accounts).
+
+### Infrastructure
+
+- **Database:** PostgreSQL — user accounts, credits, check records.
+- **Messaging:** NATS JetStream — reliable, at-least-once delivery between API and Processing Service.
+- **Blob storage:** SeaweedFS (S3-compatible) — uploaded images, crawled screenshots, AI reports.
+- **Reverse proxy:** Nginx routes `/api/*` to the backend and all other paths to the frontend.
+
+---
+
+## 8. Planned for MVP Completion
+
+The following features are **not yet built** but are required before public launch.
+
+### Payment (Stripe)
+
+- Single check purchase.
+- Package of five checks.
+- Stripe webhooks are authoritative for granting credits.
+- No subscription billing.
+
+### Admin Operations (Minimal)
+
+- View check processing status.
+- Retry failed checks.
+- Manual credit adjustment.
+- Basic credit balance inspection.
+
+### Free Credit Lifecycle
+
+New users must receive free credits automatically (already implemented). The full payment flow will be added after the free-credit lifecycle is verified end to end.
+
+---
+
+## 9. Explicitly Excluded from MVP
+
+- Full automatic Otomoto scraping (the current crawler handles single on-demand listings).
 - Guaranteed official vehicle history integration.
 - Browser extension.
 - Mobile app.
 - Subscription billing.
 - B2B workflows.
-- Multi-marketplace Europe-wide support.
+- Multi-marketplace Europe-wide support (Mobile.de, etc.).
 - Automatic VIN lookup on paid third-party services.
-- PDF generation.
+- PDF report export.
 - Complex admin panel.
 - Presigned direct browser uploads to object storage.
-- NextAuth/Auth.js as the authoritative authentication system.
+- Report language selection (English only for now).
 
-## 8. User Journey
+---
 
-### First-time User
+## 10. Screens and User Flows
 
-1. User lands on the website.
-2. User signs in with Google.
-3. System creates a user account.
-4. System grants initial free check credits.
-5. User creates the first car check.
-6. User enters listing data and uploads screenshots.
-7. System validates input.
-8. System queues analysis.
-9. User sees processing status.
-10. User opens the completed report.
+This section describes the required screens for the UI/UX design.
 
-### Returning User
+### 10.1 Screen: Landing / Login
 
-1. User signs in.
-2. User sees remaining credits and previous checks.
-3. User creates another check.
-4. If credits are available, the check starts.
-5. If credits are not available, the user buys one check or a package of five.
+**Route:** `/`  
+**Shown to:** unauthenticated users
 
-## 9. Pricing Model
+**Purpose:** Entry point for new and returning users who are not signed in.
 
-MVP supports credits.
+**Elements:**
+- Product name: **AutoVerdict**
+- Tagline: "AI-powered car listing analysis. Spot risks, verify facts, and get a purchase recommendation."
+- Primary CTA: **Sign in with Google** (redirects to `/api/auth/google`)
 
-- New users receive a configurable number of free credits.
-- One credit equals one car check.
-- Payment options:
-  - single check;
-  - package of five checks.
+**States:**
+- Default (single state — no loading, no errors)
 
-The backend must treat Stripe webhooks as authoritative for successful payments.
+---
 
-Payments should be implemented after the free-check lifecycle works end to end:
+### 10.2 Screen: Main App
 
-- user registration;
-- free credits;
-- check creation;
-- file upload;
-- outbox publishing;
-- ProcessingService analysis;
-- Claude report generation;
-- report display.
+**Route:** `/`  
+**Shown to:** authenticated users
 
-## 10. Core Report Structure
+**Purpose:** The core product screen. Users submit car checks here and view their history.
 
-The AI report must contain:
+#### 10.2.1 Header (persistent)
 
-- overall risk level: low, medium, high, or unknown;
-- confidence level;
-- summary;
-- extracted vehicle facts;
-- positive signals;
-- risk signals;
-- missing information;
-- seller questions;
-- inspection checklist;
-- model-specific risks;
-- final recommendation;
-- disclaimer.
+| Element | Notes |
+|---------|-------|
+| Logo / product name | Left-aligned |
+| User email | Right area, hidden on small screens |
+| Credit balance | Right area; label "Credits:" + number |
+| Sign out | Right area; clears token, returns to login screen |
 
-MVP reports must be generated in English. Later versions may add selectable report languages.
+#### 10.2.2 Submission Form
 
-## 11. Positioning and Safety
+The form is the primary action area. It lets users provide all the information needed for an AI analysis.
 
-The product must avoid presenting its output as a final guarantee.
+**Description editor (required)**
+
+- A rich markdown editor with toolbar (bold, italic, lists, etc.).
+- Placeholder / hint text: "Paste the listing text here — ad copy, seller messages, specs, VIN, inspection notes, anything relevant."
+- Pasting HTML content (e.g., from a browser) automatically converts it to markdown.
+- Validation: if empty on submit, shows an inline error.
+
+**Image attachment (optional)**
+
+- Up to 5 images can be attached.
+- Accepted formats: JPEG, PNG, WEBP. Max size: 2 560 KB per file.
+- Attached images shown as square thumbnails with a hover-to-remove × button.
+- Clicking a thumbnail opens a lightbox (full-size preview).
+- A dashed "Attach Images" button toggles a hidden file input.
+- Counter shows current / max (e.g., "Attach Images (2/5)").
+- Button disappears when 5 images are attached.
+
+**Listing link attachment (optional)**
+
+- A dashed "Attach Link" button reveals a URL input inline.
+- Accepted URLs: any valid URL (backend enforces Otomoto.pl domain restriction).
+- After confirming, the link is shown as a pill with a × to remove.
+- "Change Link" replaces the existing link.
+- Inline validation shows if the entered text is not a valid URL.
+
+**Error messages**
+
+- Displayed below the attachment buttons area.
+- Cover: missing description, image validation failures, API errors.
+
+**Submit button**
+
+- Label: "Analyze Listing"
+- Full-width.
+- Disabled during submission with label "Submitting…".
+- Deducts one credit and queues the analysis.
+- Shows HTTP 402 error if the user has insufficient credits.
+
+#### 10.2.3 Analysis History
+
+Below the form, a list of the user's previous checks.
+
+**Empty state:** "No analyses yet."
+
+**List item (per check):**
+
+| Element | Notes |
+|---------|-------|
+| Title | First 120 chars of description, or listing URL if no description title generated, or "Listing analysis" as fallback |
+| Status badge | Colour-coded pill: Pending (yellow), Processing (blue), Completed (green), Failed (red) |
+| Created date | Localised timestamp below the title |
+
+Clicking a list item opens the Check Modal.
+
+**Pagination:**
+
+- 5 items per page.
+- Previous / Next buttons appear when there is more than one page.
+- Current page number shown between buttons.
+
+---
+
+### 10.3 Screen: Check Modal
+
+**Trigger:** clicking any check in the history list  
+**Type:** overlay modal, scrollable
+
+**Purpose:** Display the full AI analysis report or the current status if processing is still in progress.
+
+#### States
+
+**Loading state**
+- Shown while fetching check details from the API.
+- Simple "Loading…" text.
+
+**In-progress state** (Pending or Processing)
+- Shows: check title + status badge + "— analysis in progress" text.
+- No report content yet.
+
+**Completed state**
+- Renders the full markdown report.
+- Nine sections as defined in Section 7 of this document.
+- Uses a markdown renderer (preserves headings, bullets, tables, checkboxes).
+- The Inspection Checklist section renders interactive-looking checkboxes.
+
+**Failed state**
+- Shows: "Analysis failed" label + error reason text.
+
+**Common elements:**
+- Close button (×) in the top-right corner.
+- Clicking the backdrop closes the modal.
+
+---
+
+### 10.4 Screen: Auth Callback
+
+**Route:** `/auth/callback`  
+**Type:** Technical redirect handler — no user-visible design needed.
+
+After Google OAuth completes, the backend redirects to this page with the JWT token in the URL query string. The page extracts and stores the token, then redirects to `/`.
+
+---
+
+### 10.5 Image Lightbox
+
+**Trigger:** clicking an image thumbnail in the submission form
+
+**Type:** full-screen overlay
+
+- Shows the full-size image centred on a dark backdrop.
+- Close button (×) top-right.
+- Clicking the backdrop closes it.
+
+---
+
+## 11. Check Status Flow
+
+```
+[Form submitted]
+       │
+       ▼
+   Pending          ← check saved, NATS message queued
+       │
+       ▼
+  Processing        ← ProcessingService picked up the message
+       │
+       ├─ success ──► Completed    ← report saved to blob storage
+       │
+       └─ failure ──► Failed       ← reason stored in DB
+```
+
+The frontend polls every 5 seconds and automatically reflects status changes in the history list without requiring a page refresh. The modal also shows live status when a processing check is open.
+
+---
+
+## 12. Pricing Model
+
+MVP uses a credit system.
+
+- New users receive a configurable number of free credits on first sign-in (default: 1–2).
+- One credit = one car check.
+- Credits are shown in the header at all times.
+- When the balance reaches zero, submitting a new check shows a payment prompt (design TBD, Stripe integration pending).
+
+Payment options (planned, not yet implemented):
+- Single check — e.g., €2–3.
+- Package of five checks — e.g., €8–10.
+
+Stripe webhooks will be the authoritative signal for granting credits. Exact pricing is subject to market validation.
+
+---
+
+## 13. Positioning and Safety
+
+The product must not present its output as a final guarantee.
 
 Avoid absolute statements such as:
 
-- “This car is safe.”
-- “This seller is dishonest.”
-- “This car was definitely damaged.”
+- "This car is safe."
+- "This seller is dishonest."
+- "This car was definitely damaged."
 
 Prefer cautious wording:
 
-- “This may indicate a risk.”
-- “This should be clarified with the seller.”
-- “The available data is insufficient.”
-- “A professional inspection is recommended.”
+- "This may indicate a risk."
+- "This should be clarified with the seller."
+- "The available data is insufficient."
+- "A professional inspection is recommended."
 
-## 12. Success Metrics
+Every AI report ends with a standard disclaimer confirming the analysis does not substitute for professional inspection.
+
+---
+
+## 14. Success Metrics
 
 MVP success can be measured by:
 
@@ -210,21 +433,25 @@ MVP success can be measured by:
 - percentage of users who use free checks;
 - percentage of users who buy paid credits;
 - average checks per user;
-- report completion rate;
+- report completion rate (Completed vs. total);
 - AI processing failure rate;
 - user feedback on report usefulness.
 
-## 13. Key Risks
+---
+
+## 15. Key Risks
 
 - AI hallucination or unsupported claims.
-- Low-quality user input.
-- Marketplace scraping limitations.
+- Low-quality user input leading to shallow reports.
+- Otomoto.pl scraping limitations (CAPTCHAs, layout changes).
 - Legal risk from overly definitive recommendations.
-- Payment/webhook errors.
-- Storage and data cleanup issues.
-- Message processing failures.
+- Payment / webhook processing errors.
+- Storage and data cleanup at scale.
+- NATS message processing failures and retries.
 - Claude API cost and availability.
 
-## 14. MVP Hypothesis
+---
+
+## 16. MVP Hypothesis
 
 A private buyer considering a used car worth thousands of euros is willing to pay a small fee for a clear AI-assisted preliminary analysis that helps avoid risky listings and prepares them for seller communication.
