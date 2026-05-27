@@ -1,67 +1,177 @@
 @import "tailwindcss";
 @import "@uiw/react-md-editor/markdown-editor.css";
 
-/* Hide the image-insertion button from the markdown editor toolbar */
+@theme {
+  /* App backgrounds */
+  --color-page: #0B0D10;
+  --color-surface: #111419;
+  --color-surface-raised: #171B22;
+  --color-surface-soft: #1D222B;
+  --color-field: #0F1217;
+
+  /* Border levels */
+  --color-subtle: #252B35;
+  --color-base: #343B49;
+  --color-active: #6E8FEA;
+
+  /* Text hierarchy */
+  --color-hi: #F4F6F8;
+  --color-mid: #B6C0CC;
+  --color-dim: #7F8A99;
+  --color-off: #596270;
+
+  /* Brand — slightly cooler blue per CR-1-4 */
+  --color-brand: #6E8FEA;
+  --color-brand-hi: #7C9AF0;
+  --color-brand-tint: #162A45;
+
+  /* Status */
+  --color-ok: #4ADE80;
+  --color-ok-tint: #12301F;
+  --color-warn: #FBBF24;
+  --color-warn-tint: #33260A;
+  --color-bad: #F87171;
+  --color-bad-tint: #3A1518;
+  --color-info: #60A5FA;
+  --color-info-tint: #10243D;
+  --color-unk: #A78BFA;
+  --color-unk-tint: #251B3D;
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-hi);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Panel entrance animation ───────────────────────────────────── */
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-panel-in {
+  animation: panel-in 200ms ease-out both;
+}
+
+/* ── Markdown editor — always dark ─────────────────────────────── */
+
 .w-md-editor-toolbar li:has(button[data-name="image"]) {
   display: none !important;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --card: #ffffff;
-  --card-foreground: #171717;
-  --popover: #ffffff;
-  --popover-foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #fafafa;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #171717;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f5f5f5;
-  --accent-foreground: #171717;
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #171717;
-  --radius: 0.5rem;
+[data-color-mode="dark"] .w-md-editor {
+  background-color: var(--color-field);
+  border-color: transparent;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-color-mode="dark"] .w-md-editor-toolbar {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --card: #0a0a0a;
-    --card-foreground: #ededed;
-    --popover: #0a0a0a;
-    --popover-foreground: #ededed;
-    --primary: #fafafa;
-    --primary-foreground: #171717;
-    --secondary: #262626;
-    --secondary-foreground: #fafafa;
-    --muted: #262626;
-    --muted-foreground: #a3a3a3;
-    --accent: #262626;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-    --border: #262626;
-    --input: #262626;
-    --ring: #d4d4d4;
-  }
+[data-color-mode="dark"] .w-md-editor-toolbar button {
+  opacity: 0.72;
+  color: var(--color-dim) !important;
+  transition: opacity 150ms;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+[data-color-mode="dark"] .w-md-editor-toolbar button:hover {
+  opacity: 1;
+  color: var(--color-mid) !important;
+}
+
+[data-color-mode="dark"] .w-md-editor-text-pre > code,
+[data-color-mode="dark"] .w-md-editor-text-input,
+[data-color-mode="dark"] .w-md-editor-text {
+  background-color: var(--color-field) !important;
+  caret-color: var(--color-hi);
+}
+
+/* ── Report markdown ────────────────────────────────────────────── */
+
+.av-report .wmde-markdown {
+  background: transparent !important;
+  color: var(--color-mid) !important;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.av-report .wmde-markdown h1,
+.av-report .wmde-markdown h2,
+.av-report .wmde-markdown h3,
+.av-report .wmde-markdown h4 {
+  color: var(--color-hi) !important;
+  border-bottom: 1px solid var(--color-subtle) !important;
+  padding-bottom: 0.4em;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+
+.av-report .wmde-markdown h2:first-child,
+.av-report .wmde-markdown h1:first-child {
+  margin-top: 0;
+}
+
+.av-report .wmde-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.av-report .wmde-markdown table th {
+  color: var(--color-hi) !important;
+  background: var(--color-surface-raised) !important;
+}
+
+.av-report .wmde-markdown table th,
+.av-report .wmde-markdown table td {
+  border: 1px solid var(--color-subtle) !important;
+  padding: 8px 12px;
+}
+
+.av-report .wmde-markdown table td:last-child {
+  text-align: right;
+}
+
+.av-report .wmde-markdown a {
+  color: var(--color-brand) !important;
+}
+
+.av-report .wmde-markdown code,
+.av-report .wmde-markdown pre {
+  background: var(--color-surface-raised) !important;
+  color: var(--color-hi) !important;
+}
+
+.av-report .wmde-markdown blockquote {
+  border-left: 3px solid var(--color-subtle) !important;
+  color: var(--color-dim) !important;
+}
+
+.av-report .wmde-markdown input[type="checkbox"] {
+  accent-color: var(--color-brand);
+  cursor: pointer;
+}
+
+.av-report .wmde-markdown hr {
+  border-color: var(--color-subtle) !important;
 }

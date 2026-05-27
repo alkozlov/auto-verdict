@@ -12,15 +12,15 @@ function CallbackInner() {
     const token = params.get("token");
     if (token) {
       setToken(token);
-      router.replace("/");
+      router.replace("/garage/check");
     } else {
       router.replace("/?error=auth_failed");
     }
   }, [params, router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <p className="text-muted-foreground">Signing you in…</p>
+    <div className="flex min-h-screen items-center justify-center bg-page">
+      <p className="text-sm text-dim">Signing you in…</p>
     </div>
   );
 }
@@ -29,8 +29,8 @@ export default function AuthCallback() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <p className="text-muted-foreground">Signing you in…</p>
+        <div className="flex min-h-screen items-center justify-center bg-page">
+          <p className="text-sm text-dim">Signing you in…</p>
         </div>
       }
     >
