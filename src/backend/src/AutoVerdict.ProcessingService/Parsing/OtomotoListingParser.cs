@@ -10,7 +10,7 @@ namespace AutoVerdict.ProcessingService.Parsing;
 public sealed partial class OtomotoListingParser(
     IHostEnvironment environment,
     IOptions<PlaywrightParserOptions> options,
-    ILogger<OtomotoListingParser> logger) : ICarListingParser
+    ILogger<OtomotoListingParser> logger)
 {
     public async Task<ListingParseResult> ParseAsync(
         Guid checkId,
