@@ -1,0 +1,36 @@
+services:
+  api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5000:8080"
+
+  processing-service:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+
+  frontend:
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  nats:
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  seaweedfs:
+    ports:
+      - "8333:8333"
+      - "8888:8888"
+      - "9333:9333"
+
+  nginx:
+    ports:
+      - "8080:80"

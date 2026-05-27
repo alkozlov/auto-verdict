@@ -1,0 +1,29 @@
+services:
+  api:
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  processing-service:
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+  frontend:
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+
+  postgres:
+    restart: unless-stopped
+
+  nats:
+    restart: unless-stopped
+
+  seaweedfs:
+    restart: unless-stopped
+
+  nginx:
+    restart: unless-stopped
+    ports:
+      - "80:80"

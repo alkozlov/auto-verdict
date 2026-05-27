@@ -1,0 +1,12 @@
+{
+  "name": "AUTOVERDICT_CHECKS",
+  "subjects": ["autoverdict.checks.>"],
+  "retention": "limits",
+  "storage": "file",
+  "num_replicas": 1,
+  "discard": "old",
+  "max_age": 86400000000000,
+  "max_consumers": -1,
+  "max_msgs": -1,
+  "max_bytes": -1
+}
