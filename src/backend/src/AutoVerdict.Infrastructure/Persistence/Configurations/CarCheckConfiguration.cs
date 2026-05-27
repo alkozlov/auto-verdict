@@ -12,31 +12,26 @@ public sealed class CarCheckConfiguration : IEntityTypeConfiguration<CarCheck>
         builder.ToTable("car_checks");
 
         builder.HasKey(c => c.Id);
+        builder.Property(c => c.Id).UseIdentityColumn();
 
-        builder.Property(c => c.VehicleIdentifier)
-            .IsRequired()
-            .HasMaxLength(500);
+        builder.Property(c => c.CheckId)
+            .IsRequired();
 
-        builder.Property(c => c.ListingUrl)
-            .IsRequired()
-            .HasMaxLength(1000);
-
-        builder.Property(c => c.DocumentStorageKey)
-            .HasMaxLength(500);
+        builder.HasIndex(c => c.CheckId)
+            .IsUnique();
 
         builder.Property(c => c.Title)
-            .HasMaxLength(500);
+            .HasMaxLength(200);
 
-        builder.Property(c => c.Make)
-            .HasMaxLength(100);
+        builder.Property(c => c.Description)
+            .IsRequired();
 
-        builder.Property(c => c.Model)
-            .HasMaxLength(100);
+        builder.Property(c => c.ListingUrl)
+            .HasMaxLength(1000);
 
-        builder.Property(c => c.Price)
-            .HasPrecision(12, 2);
+        builder.Property(c => c.UserImageKeysJson);
 
-        builder.Property(c => c.ScreenshotStorageKey)
+        builder.Property(c => c.AnalysisStorageKey)
             .HasMaxLength(500);
 
         builder.Property(c => c.Status)
@@ -55,7 +50,6 @@ public sealed class CarCheckConfiguration : IEntityTypeConfiguration<CarCheck>
 
         builder.HasIndex(c => c.UserId);
         builder.HasIndex(c => c.Status);
-        builder.HasIndex(c => c.ListingUrl);
 
         builder.HasOne(c => c.User)
             .WithMany(u => u.CarChecks)

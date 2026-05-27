@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "@uiw/react-md-editor/markdown-editor.css";
+
+/* Hide the image-insertion button from the markdown editor toolbar */
+.w-md-editor-toolbar li:has(button[data-name="image"]) {
+  display: none !important;
+}
 
 :root {
   --background: #ffffff;

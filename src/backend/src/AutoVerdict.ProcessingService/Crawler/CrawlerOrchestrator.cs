@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace AutoVerdict.ProcessingService.Crawler;
 
 public sealed class CrawlerOrchestrator(
-    ICarListingParser parser,
+    ICarListingParserFactory parserFactory,
     IDocumentStorageClient storage,
     CrawlerJobService jobService,
     DomainRateLimiter rateLimiter,
@@ -20,7 +20,7 @@ public sealed class CrawlerOrchestrator(
         CancellationToken cancellationToken)
     {
         // 1. Validate URL + detect source
-        if (!TryDetectSource(message.ListingUrl, out var source, out var uri))
+        if (!TryDetectSource(message.ListingUrl ?? string.Empty, out var source, out var uri))
         {
             logger.LogWarning(
                 "Check {CheckId}: invalid or unsupported URL {Url}.",
@@ -67,11 +67,13 @@ public sealed class CrawlerOrchestrator(
                 "Check {CheckId}: crawling {Url} (source={Source}, attempt={Attempt}).",
                 message.CheckId, message.ListingUrl, source, job.Attempts);
 
+            var parser = parserFactory.GetParser(message.ListingUrl ?? string.Empty);
+
             ListingParseResult parsed;
             try
             {
                 parsed = await parser.ParseAsync(
-                    message.CheckId, message.ListingUrl, screenshotKey, cancellationToken);
+                    message.CheckId, message.ListingUrl ?? string.Empty, screenshotKey, cancellationToken);
             }
             catch (TimeoutException ex)
             {

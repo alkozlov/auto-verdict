@@ -1,19 +1,13 @@
 using AutoVerdict.Contracts.Enums;
-using AutoVerdict.Contracts.Report;
 
 namespace AutoVerdict.Contracts.Dtos;
 
 public sealed record CarCheckResponse(
     Guid CheckId,
-    string ListingUrl,
     string? Title,
-    string? Make,
-    string? Model,
-    int? Year,
-    int? MileageKm,
-    decimal? Price,
+    string? ListingUrl,
     CarCheckStatus Status,
-    VehicleReport? Report,
+    string? Report,
     string? FailureReason,
     DateTimeOffset CreatedAt,
     DateTimeOffset? CompletedAt);

@@ -36,7 +36,7 @@ public sealed class CrawlerJobService(AppDbContext db)
         {
             Id = msg.CheckId,
             UserId = msg.UserId,
-            ListingUrl = msg.ListingUrl,
+            ListingUrl = msg.ListingUrl ?? string.Empty,
             Source = source,
             RequestedAt = msg.RequestedAt,
             StartedAt = now,

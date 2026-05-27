@@ -18,7 +18,7 @@ public sealed partial class OtomotoListingParser(
         string screenshotStorageKey,
         CancellationToken cancellationToken = default)
     {
-        if (!IsOtomotoUrl(listingUrl))
+        if (!IsSupported(listingUrl))
             throw new InvalidOperationException("Only Otomoto.pl listing URLs are supported.");
 
         var parserOptions = options.Value;
@@ -335,7 +335,7 @@ public sealed partial class OtomotoListingParser(
         return true;
     }
 
-    private static bool IsOtomotoUrl(string rawUrl)
+    internal static bool IsSupported(string rawUrl)
     {
         if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out var uri))
             return false;

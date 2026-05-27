@@ -12,7 +12,7 @@ function CallbackInner() {
     const token = params.get("token");
     if (token) {
       setToken(token);
-      router.replace("/dashboard");
+      router.replace("/");
     } else {
       router.replace("/?error=auth_failed");
     }

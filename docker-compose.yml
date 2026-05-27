@@ -40,6 +40,9 @@ services:
     build:
       context: ./src/backend
       dockerfile: src/AutoVerdict.ProcessingService/Dockerfile
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       DATABASE_URL: ${DATABASE_URL:-Host=postgres;Port=5432;Database=autoverdict;Username=autoverdict;Password=autoverdict}

@@ -13,7 +13,6 @@ using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -59,12 +58,10 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Apply EF Core migrations on every startup so the DB schema is always current.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
-    await EnsureCarCheckListingColumnsAsync(db);
 }
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -194,23 +191,73 @@ app.MapPost("/api/uploads", async (
 
 app.MapPost("/api/checks", async (
     HttpContext ctx,
-    [FromBody] CarCheckCreateRequest request,
     ICarCheckService checkService,
+    IDocumentStorageClient storage,
     CancellationToken ct) =>
 {
     var userId = GetUserId(ctx);
     if (userId is null) return Results.Unauthorized();
 
-    if (!TryNormalizeOtomotoUrl(request.ListingUrl, out var listingUrl))
-        return Results.BadRequest("Only Otomoto.pl listing URLs are supported.");
+    var form = await ctx.Request.ReadFormAsync(ct);
+
+    // Required description
+    var description = form["description"].FirstOrDefault()?.Trim();
+    if (string.IsNullOrEmpty(description))
+        return Results.BadRequest("A 'description' is required.");
+
+    // Optional otomoto URL
+    var rawLink = form["link"].FirstOrDefault();
+    string? listingUrl = null;
+    if (!string.IsNullOrWhiteSpace(rawLink))
+    {
+        if (!TryNormalizeListingUrl(rawLink, out var normalized))
+            return Results.BadRequest("Only otomoto.pl listing URLs are accepted.");
+        listingUrl = normalized;
+    }
+
+    // Optional images — up to 5, each ≤ 2560 KB
+    var imageFiles = form.Files
+        .Where(f => f.Name.StartsWith("image", StringComparison.OrdinalIgnoreCase))
+        .Take(5)
+        .ToList();
+
+    if (imageFiles.Count > 5)
+        return Results.BadRequest("A maximum of 5 images may be attached.");
+
+    const long maxImageBytes = 2560L * 1024;
+    string[] allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+    foreach (var f in imageFiles)
+    {
+        if (f.Length > maxImageBytes)
+            return Results.BadRequest($"Image '{f.FileName}' exceeds the 2560 KB limit.");
+        if (!allowedImageTypes.Contains(f.ContentType))
+            return Results.BadRequest($"Image '{f.FileName}' has unsupported type '{f.ContentType}'. Allowed: JPEG, PNG, WEBP.");
+    }
+
+    var checkId = Guid.CreateVersion7();
+
+    // Upload images into the check's dedicated folder
+    var imageKeys = new List<string>(imageFiles.Count);
+    foreach (var (file, index) in imageFiles.Select((f, i) => (f, i)))
+    {
+        string ext = file.ContentType switch
+        {
+            "image/jpeg" => "jpg",
+            "image/png"  => "png",
+            "image/webp" => "webp",
+            _            => "bin",
+        };
+        var key = $"{checkId}/user-images/image-{index + 1}.{ext}";
+        await storage.UploadAsync(key, file.OpenReadStream(), file.ContentType, ct);
+        imageKeys.Add(key);
+    }
 
     try
     {
-        var check = await checkService.CreateAsync(userId.Value, listingUrl, ct);
+        var check = await checkService.CreateAsync(
+            userId.Value, checkId, description, listingUrl, [.. imageKeys], ct);
 
-        return Results.Created(
-            $"/api/checks/{check.Id}",
-            ToResponse(check));
+        return Results.Created($"/api/checks/{check.CheckId}", ToResponse(check));
     }
     catch (InsufficientCreditsException)
     {
@@ -219,7 +266,7 @@ app.MapPost("/api/checks", async (
             detail: "You do not have enough credits to run a check.",
             statusCode: 402);
     }
-}).RequireAuthorization();
+}).DisableAntiforgery().RequireAuthorization();
 
 app.MapGet("/api/checks", async (
     HttpContext ctx,
@@ -234,64 +281,64 @@ app.MapGet("/api/checks", async (
     pageSize = Math.Clamp(pageSize, 1, 100);
 
     var checks = await db.CarChecks
-        .Include(c => c.Report)
         .Where(c => c.UserId == userId.Value)
         .OrderByDescending(c => c.CreatedAt)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync(ct);
 
-    var items = checks.Select(c => ToResponse(c));
-
-    return Results.Ok(items);
+    return Results.Ok(checks.Select(c => ToResponse(c)));
 }).RequireAuthorization();
 
 app.MapGet("/api/checks/{id:guid}", async (
     Guid id,
     HttpContext ctx,
     AppDbContext db,
+    IDocumentStorageClient storage,
     CancellationToken ct) =>
 {
     var userId = GetUserId(ctx);
     if (userId is null) return Results.Unauthorized();
 
     var check = await db.CarChecks
-        .Include(c => c.Report)
-        .Where(c => c.Id == id && c.UserId == userId.Value)
+        .Where(c => c.CheckId == id && c.UserId == userId.Value)
         .FirstOrDefaultAsync(ct);
 
     if (check is null)
         return Results.NotFound();
 
-    return Results.Ok(ToResponse(check));
+    string? report = null;
+    if (check.AnalysisStorageKey is not null)
+    {
+        try
+        {
+            var (bytes, _) = await storage.DownloadAsync(check.AnalysisStorageKey, ct);
+            report = Encoding.UTF8.GetString(bytes);
+        }
+        catch (Exception ex)
+        {
+            // Log but don't fail the request; the check may still be processing
+            app.Logger.LogWarning(ex, "Could not download analysis for check {CheckId}.", id);
+        }
+    }
+
+    return Results.Ok(ToResponse(check, report));
 }).RequireAuthorization();
 
 app.Run();
 
-static CarCheckResponse ToResponse(
-    CarCheck check,
-    AutoVerdict.Contracts.Report.VehicleReport? Report = null,
-    string? FailureReason = null,
-    DateTimeOffset? CompletedAt = null)
-{
-    var report = Report ?? check.Report?.ReportData;
-    return new CarCheckResponse(
-        check.Id,
-        check.ListingUrl,
+static CarCheckResponse ToResponse(CarCheck check, string? report = null) =>
+    new(
+        check.CheckId,
         check.Title,
-        check.Make,
-        check.Model,
-        check.Year,
-        check.MileageKm,
-        check.Price,
+        check.ListingUrl,
         check.Status,
         report,
-        FailureReason ?? check.FailureReason,
+        check.FailureReason,
         check.CreatedAt,
-        CompletedAt ?? (check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? check.UpdatedAt : null));
-}
+        check.Status is CarCheckStatus.Completed or CarCheckStatus.Failed ? check.UpdatedAt : null);
 
-static bool TryNormalizeOtomotoUrl(string? rawUrl, out string normalized)
+static bool TryNormalizeListingUrl(string? rawUrl, out string normalized)
 {
     normalized = "";
     if (!Uri.TryCreate(rawUrl, UriKind.Absolute, out var uri))
@@ -314,41 +361,4 @@ static Guid? GetUserId(HttpContext ctx)
     var sub = ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
            ?? ctx.User.FindFirst("sub")?.Value;
     return Guid.TryParse(sub, out var id) ? id : null;
-}
-
-static async Task EnsureCarCheckListingColumnsAsync(AppDbContext db)
-{
-    await db.Database.ExecuteSqlRawAsync(
-        """
-        ALTER TABLE car_checks
-            ALTER COLUMN "VehicleIdentifier" TYPE character varying(500),
-            ALTER COLUMN "DocumentStorageKey" DROP NOT NULL,
-            ADD COLUMN IF NOT EXISTS "ListingUrl" character varying(1000),
-            ADD COLUMN IF NOT EXISTS "Title" character varying(500),
-            ADD COLUMN IF NOT EXISTS "Make" character varying(100),
-            ADD COLUMN IF NOT EXISTS "Model" character varying(100),
-            ADD COLUMN IF NOT EXISTS "Year" integer,
-            ADD COLUMN IF NOT EXISTS "MileageKm" integer,
-            ADD COLUMN IF NOT EXISTS "Price" numeric(12,2),
-            ADD COLUMN IF NOT EXISTS "ScreenshotStorageKey" character varying(500)
-        """);
-
-    await db.Database.ExecuteSqlRawAsync(
-        """
-        UPDATE car_checks
-        SET "ListingUrl" = COALESCE(NULLIF("ListingUrl", ''), "VehicleIdentifier")
-        WHERE "ListingUrl" IS NULL OR "ListingUrl" = ''
-        """);
-
-    await db.Database.ExecuteSqlRawAsync(
-        """
-        ALTER TABLE car_checks
-            ALTER COLUMN "ListingUrl" SET NOT NULL
-        """);
-
-    await db.Database.ExecuteSqlRawAsync(
-        """
-        CREATE INDEX IF NOT EXISTS "IX_car_checks_ListingUrl"
-        ON car_checks ("ListingUrl")
-        """);
 }
