@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, CreditCard } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { useGarage } from "@/lib/garage-context";
 import { AnalysisComposer } from "@/components/AnalysisComposer";
@@ -21,6 +21,18 @@ export default function CheckCarPage() {
   const [submission, setSubmission] = useState<SubmissionState | null>(null);
   const [currentCheck, setCurrentCheck] = useState<CarCheckResponse | null>(null);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      refreshMe();
+      setPaymentSuccess(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [refreshMe]);
 
   useEffect(() => {
     if (!submission) return;
@@ -69,6 +81,19 @@ export default function CheckCarPage() {
           Paste everything you know about the car. AutoVerdict will turn it into a structured risk analysis.
         </p>
       </div>
+
+      {paymentSuccess && (
+        <div className="flex items-center gap-3 rounded-xl border border-ok/20 bg-ok-tint px-4 py-3">
+          <CreditCard className="h-4 w-4 shrink-0 text-ok" />
+          <p className="text-sm text-ok">Credits added to your account.</p>
+          <button
+            onClick={() => setPaymentSuccess(false)}
+            className="ml-auto text-xs text-ok/70 hover:text-ok transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {!submission ? (
         <AnalysisComposer

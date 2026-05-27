@@ -28,6 +28,12 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       WHITELIST_EMAILS: ${WHITELIST_EMAILS:-}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+      LS_API_KEY: ${LS_API_KEY:-}
+      LS_WEBHOOK_SECRET: ${LS_WEBHOOK_SECRET:-}
+      LS_STORE_ID: ${LS_STORE_ID:-}
+      LS_VARIANT_CREDITS_1: ${LS_VARIANT_CREDITS_1:-}
+      LS_VARIANT_CREDITS_3: ${LS_VARIANT_CREDITS_3:-}
     depends_on:
       postgres:
         condition: service_healthy

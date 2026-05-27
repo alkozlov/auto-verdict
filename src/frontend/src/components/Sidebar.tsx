@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
+import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 
 const NAV = [
   { label: "Check car", href: "/garage/check" },
@@ -18,6 +20,7 @@ interface Props {
 export function Sidebar({ me }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
   function signOut() {
     removeToken();
@@ -25,6 +28,7 @@ export function Sidebar({ me }: Props) {
   }
 
   return (
+    <>
     <aside className="hidden lg:flex lg:flex-col w-[260px] shrink-0 min-h-screen border-r border-white/6 bg-[#0E1116]">
       <div className="flex flex-col h-full px-6 py-6">
         <div className="mb-8">
@@ -54,7 +58,7 @@ export function Sidebar({ me }: Props) {
 
         <div className="mt-auto space-y-3 border-t border-white/6 pt-4">
           {me !== null && (
-            <div>
+            <div className="flex items-center gap-2">
               <span
                 className={cn(
                   "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
@@ -65,6 +69,12 @@ export function Sidebar({ me }: Props) {
               >
                 {me.credits} credit{me.credits !== 1 ? "s" : ""}
               </span>
+              <button
+                onClick={() => setShowModal(true)}
+                className="text-xs text-dim underline underline-offset-2 transition-colors hover:text-hi"
+              >
+                Top up
+              </button>
             </div>
           )}
           {me && <p className="truncate text-xs text-dim">{me.email}</p>}
@@ -77,5 +87,8 @@ export function Sidebar({ me }: Props) {
         </div>
       </div>
     </aside>
+
+    {showModal && <PurchaseCreditsModal onClose={() => setShowModal(false)} />}
+    </>
   );
 }

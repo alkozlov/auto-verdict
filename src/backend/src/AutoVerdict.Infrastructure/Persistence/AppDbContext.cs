@@ -13,6 +13,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
     public DbSet<CrawlerJob> CrawlerJobs => Set<CrawlerJob>();
+    public DbSet<PaymentOrder> PaymentOrders => Set<PaymentOrder>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

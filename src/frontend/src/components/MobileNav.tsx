@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
+import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 
 const NAV = [
   { label: "Check car", href: "/garage/check" },
@@ -19,6 +20,7 @@ interface Props {
 
 export function MobileNav({ me }: Props) {
   const [open, setOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -116,6 +118,24 @@ export function MobileNav({ me }: Props) {
         </nav>
 
         <div className="mt-auto space-y-3 border-t border-white/6 pt-4">
+          {me !== null && (
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
+                  me.credits === 0 ? "bg-surface-raised text-off" : "bg-warn-tint text-warn"
+                )}
+              >
+                {me.credits} credit{me.credits !== 1 ? "s" : ""}
+              </span>
+              <button
+                onClick={() => { setOpen(false); setShowModal(true); }}
+                className="text-xs text-dim underline underline-offset-2 transition-colors hover:text-hi"
+              >
+                Top up
+              </button>
+            </div>
+          )}
           {me && <p className="truncate text-xs text-dim">{me.email}</p>}
           <button
             onClick={signOut}
@@ -125,6 +145,8 @@ export function MobileNav({ me }: Props) {
           </button>
         </div>
       </div>
+
+      {showModal && <PurchaseCreditsModal onClose={() => setShowModal(false)} />}
     </>
   );
 }

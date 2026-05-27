@@ -1,9 +1,13 @@
+using System.IO;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using AutoVerdict.Application.Auth;
+using AutoVerdict.Application.Payments;
 using Microsoft.AspNetCore.HttpOverrides;
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Application.Storage;
+using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Dtos;
 using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Domain.Entities;
@@ -14,6 +18,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -325,6 +330,197 @@ app.MapGet("/api/checks/{id:guid}", async (
     return Results.Ok(ToResponse(check, report));
 }).RequireAuthorization();
 
+// ── Payments ──────────────────────────────────────────────────────────────────
+
+app.MapGet("/api/payments/packages", () =>
+    Results.Ok(CreditPackage.All.Select(p => new
+    {
+        key = p.Key,
+        credits = p.Credits,
+        pricePln = p.PricePln,
+        label = p.Label,
+    })));
+
+app.MapPost("/api/payments/checkout", async (
+    HttpContext ctx,
+    IPaymentService paymentService,
+    AppDbContext db,
+    CancellationToken ct) =>
+{
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
+
+    CheckoutRequest? body;
+    try { body = await ctx.Request.ReadFromJsonAsync<CheckoutRequest>(ct); }
+    catch { return Results.BadRequest("Invalid JSON body."); }
+
+    if (body is null || string.IsNullOrWhiteSpace(body.Package))
+        return Results.BadRequest("'package' is required.");
+
+    var package = CreditPackage.FindByKey(body.Package);
+    if (package is null)
+        return Results.BadRequest($"Unknown package '{body.Package}'. Valid: credits_1, credits_3.");
+
+    var user = await db.Users.Where(u => u.Id == userId.Value).FirstOrDefaultAsync(ct);
+    if (user is null) return Results.NotFound();
+
+    var baseUrl = GetBaseUrl(ctx);
+    var successUrl = string.IsNullOrEmpty(body.SuccessUrl)
+        ? $"{baseUrl}/garage/check?payment=success"
+        : body.SuccessUrl;
+    var cancelUrl = string.IsNullOrEmpty(body.CancelUrl)
+        ? $"{baseUrl}/garage/check"
+        : body.CancelUrl;
+
+    var checkoutUrl = await paymentService.CreateCheckoutAsync(
+        userId.Value, user.Email, package.Key, successUrl, cancelUrl, ct);
+
+    return Results.Ok(new { checkoutUrl });
+}).RequireAuthorization();
+
+app.MapPost("/api/payments/webhooks/lemonsqueezy", async (
+    HttpContext ctx,
+    IPaymentService paymentService,
+    AppDbContext db,
+    CancellationToken ct) =>
+{
+    using var reader = new StreamReader(ctx.Request.Body);
+    var body = await reader.ReadToEndAsync(ct);
+
+    var signature = ctx.Request.Headers["X-Signature"].FirstOrDefault()
+                 ?? ctx.Request.Headers["X-Lemon-Squeezy-Signature"].FirstOrDefault()
+                 ?? string.Empty;
+
+    if (!paymentService.ValidateWebhookSignature(body, signature))
+        return Results.Unauthorized();
+
+    JsonDocument doc;
+    try { doc = JsonDocument.Parse(body); }
+    catch { return Results.Ok(); }
+
+    using (doc)
+    {
+        var root = doc.RootElement;
+
+        if (!root.TryGetProperty("meta", out var meta)) return Results.Ok();
+        if (!meta.TryGetProperty("event_name", out var eventNameProp)) return Results.Ok();
+        if (eventNameProp.GetString() != "order_created") return Results.Ok();
+
+        if (!root.TryGetProperty("data", out var data)) return Results.Ok();
+
+        var externalOrderId = data.TryGetProperty("id", out var idProp) ? idProp.GetString() : null;
+        if (string.IsNullOrEmpty(externalOrderId)) return Results.Ok();
+
+        // Only handle paid orders
+        var status = data.TryGetProperty("attributes", out var attrs)
+                  && attrs.TryGetProperty("status", out var statusProp)
+            ? statusProp.GetString() : null;
+        if (status != "paid") return Results.Ok();
+
+        if (!meta.TryGetProperty("custom_data", out var customData)) return Results.Ok();
+        if (!customData.TryGetProperty("user_id", out var userIdProp)) return Results.Ok();
+        if (!customData.TryGetProperty("package", out var packageProp)) return Results.Ok();
+
+        if (!Guid.TryParse(userIdProp.GetString(), out var userId)) return Results.Ok();
+        var packageKey = packageProp.GetString();
+        if (string.IsNullOrEmpty(packageKey)) return Results.Ok();
+
+        var package = CreditPackage.FindByKey(packageKey);
+        if (package is null) return Results.Ok();
+
+        // Idempotency check
+        var alreadyProcessed = await db.PaymentOrders
+            .AnyAsync(o => o.ExternalOrderId == externalOrderId, ct);
+        if (alreadyProcessed) return Results.Ok();
+
+        var now = DateTimeOffset.UtcNow;
+        await using var tx = await db.Database.BeginTransactionAsync(ct);
+
+        await db.Database.ExecuteSqlAsync(
+            $"""
+            UPDATE user_credits
+            SET "Balance" = "Balance" + {package.Credits}, "UpdatedAt" = NOW()
+            WHERE "UserId" = {userId}
+            """,
+            ct);
+
+        db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Amount = package.Credits,
+            Reason = "credit_purchase",
+            CreatedAt = now,
+        });
+
+        db.PaymentOrders.Add(new PaymentOrder
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            PackageKey = packageKey,
+            CreditsGranted = package.Credits,
+            ExternalOrderId = externalOrderId,
+            CreatedAt = now,
+        });
+
+        await db.SaveChangesAsync(ct);
+        await tx.CommitAsync(ct);
+    }
+
+    return Results.Ok();
+}).DisableAntiforgery();
+
+// Dev-only: simulate a completed payment without Lemon Squeezy
+app.MapGet("/api/payments/mock-checkout", async (
+    Guid userId,
+    string package,
+    string? successUrl,
+    IOptions<PaymentOptions> paymentOpts,
+    AppDbContext db,
+    CancellationToken ct) =>
+{
+    if (!paymentOpts.Value.Provider.Equals("mock", StringComparison.OrdinalIgnoreCase))
+        return Results.NotFound();
+
+    var pkg = CreditPackage.FindByKey(package);
+    if (pkg is null) return Results.BadRequest("Unknown package.");
+
+    var now = DateTimeOffset.UtcNow;
+    var externalOrderId = $"mock-{Guid.NewGuid():N}";
+
+    await db.Database.ExecuteSqlAsync(
+        $"""
+        UPDATE user_credits
+        SET "Balance" = "Balance" + {pkg.Credits}, "UpdatedAt" = NOW()
+        WHERE "UserId" = {userId}
+        """,
+        ct);
+
+    db.CreditLedgerEntries.Add(new CreditLedgerEntry
+    {
+        Id = Guid.NewGuid(),
+        UserId = userId,
+        Amount = pkg.Credits,
+        Reason = "credit_purchase",
+        CreatedAt = now,
+    });
+
+    db.PaymentOrders.Add(new PaymentOrder
+    {
+        Id = Guid.NewGuid(),
+        UserId = userId,
+        PackageKey = package,
+        CreditsGranted = pkg.Credits,
+        ExternalOrderId = externalOrderId,
+        CreatedAt = now,
+    });
+
+    await db.SaveChangesAsync(ct);
+
+    var redirect = string.IsNullOrEmpty(successUrl) ? "/garage/check?payment=success" : successUrl;
+    return Results.Redirect(redirect);
+}).DisableAntiforgery();
+
 app.Run();
 
 static CarCheckResponse ToResponse(CarCheck check, string? report = null) =>
@@ -362,3 +558,12 @@ static Guid? GetUserId(HttpContext ctx)
            ?? ctx.User.FindFirst("sub")?.Value;
     return Guid.TryParse(sub, out var id) ? id : null;
 }
+
+static string GetBaseUrl(HttpContext ctx)
+{
+    var proto = ctx.Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? ctx.Request.Scheme;
+    var host = ctx.Request.Headers["X-Forwarded-Host"].FirstOrDefault() ?? ctx.Request.Host.ToString();
+    return $"{proto}://{host}";
+}
+
+record CheckoutRequest(string Package, string? SuccessUrl, string? CancelUrl);
