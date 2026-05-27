@@ -273,6 +273,41 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_messages", (string)null);
                 });
 
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreditsGranted")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ExternalOrderId")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PackageKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalOrderId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("payment_orders", (string)null);
+                });
+
             modelBuilder.Entity("AutoVerdict.Domain.Entities.UploadedFile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -395,6 +430,17 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("AutoVerdict.Domain.Entities.User", "User")
                         .WithMany("UploadedFiles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
+                {
+                    b.HasOne("AutoVerdict.Domain.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
