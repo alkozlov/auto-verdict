@@ -72,7 +72,6 @@ export default function CheckCarPage() {
 
       {!submission ? (
         <AnalysisComposer
-          credits={me?.credits ?? 0}
           onSubmitSuccess={handleSubmitSuccess}
           onImagePreview={setLightboxUrl}
         />

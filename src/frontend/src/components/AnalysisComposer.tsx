@@ -16,7 +16,6 @@ const PLACEHOLDER =
   "Paste listing text, seller messages, VIN, concerns, inspection notes, or ask AutoVerdict specific questions.\n\nExample:\n\n\"I'm considering this Toyota Corolla from Otomoto. What should I verify before contacting the seller?\"";
 
 interface Props {
-  credits: number;
   onSubmitSuccess: (checkId: string, hasLink: boolean, hasPhotos: boolean) => void;
   onImagePreview: (url: string) => void;
 }
@@ -48,7 +47,7 @@ function formatLinkPreview(url: string): string {
   }
 }
 
-export function AnalysisComposer({ credits, onSubmitSuccess, onImagePreview }: Props) {
+export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -159,10 +158,6 @@ export function AnalysisComposer({ credits, onSubmitSuccess, onImagePreview }: P
       setFormError(
         "Add at least a short description, question, or copied listing text before analyzing."
       );
-      return;
-    }
-    if (credits === 0) {
-      setFormError("You're out of credits. Buy a check to analyze this listing.");
       return;
     }
     setSubmitting(true);
