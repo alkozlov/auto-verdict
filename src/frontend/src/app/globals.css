@@ -73,39 +73,6 @@ body {
   animation: panel-in 200ms ease-out both;
 }
 
-/* ── Markdown editor — always dark ─────────────────────────────── */
-
-.w-md-editor-toolbar li:has(button[data-name="image"]) {
-  display: none !important;
-}
-
-[data-color-mode="dark"] .w-md-editor {
-  background-color: var(--color-field);
-  border-color: transparent;
-}
-
-[data-color-mode="dark"] .w-md-editor-toolbar {
-  background-color: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-}
-
-[data-color-mode="dark"] .w-md-editor-toolbar button {
-  opacity: 0.72;
-  color: var(--color-dim) !important;
-  transition: opacity 150ms;
-}
-
-[data-color-mode="dark"] .w-md-editor-toolbar button:hover {
-  opacity: 1;
-  color: var(--color-mid) !important;
-}
-
-[data-color-mode="dark"] .w-md-editor-text-pre > code,
-[data-color-mode="dark"] .w-md-editor-text-input,
-[data-color-mode="dark"] .w-md-editor-text {
-  background-color: var(--color-field) !important;
-  caret-color: var(--color-hi);
-}
 
 /* ── Report markdown ────────────────────────────────────────────── */
 
