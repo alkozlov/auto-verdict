@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { getToken } from "@/lib/auth";
 
 const HOW_IT_WORKS = [
@@ -44,7 +44,7 @@ export default function HomePage() {
 
   const primaryCta = loggedIn ? (
     <Link
-      href="/garage/check"
+      to="/garage/check"
       className="inline-flex h-12 items-center justify-center rounded-lg bg-brand px-7 text-sm font-semibold text-page transition-all hover:brightness-105"
     >
       Go to Garage

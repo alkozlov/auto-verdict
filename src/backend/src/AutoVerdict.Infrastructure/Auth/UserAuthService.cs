@@ -2,12 +2,13 @@ using AutoVerdict.Application.Auth;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.Infrastructure.Auth;
 
-public sealed class UserAuthService(AppDbContext db) : IUserAuthService
+public sealed class UserAuthService(AppDbContext db, IOptions<AuthOptions> options) : IUserAuthService
 {
-    private const int InitialCredits = 3;
+    private readonly int _initialCredits = options.Value.InitialCredits;
 
     public async Task<User> FindOrCreateAsync(
         string provider,
@@ -48,7 +49,7 @@ public sealed class UserAuthService(AppDbContext db) : IUserAuthService
         db.UserCredits.Add(new UserCredits
         {
             UserId = user.Id,
-            Balance = InitialCredits,
+            Balance = _initialCredits,
             UpdatedAt = now,
         });
 
@@ -56,7 +57,7 @@ public sealed class UserAuthService(AppDbContext db) : IUserAuthService
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            Amount = InitialCredits,
+            Amount = _initialCredits,
             Reason = "initial_credits",
             CreatedAt = now,
         });

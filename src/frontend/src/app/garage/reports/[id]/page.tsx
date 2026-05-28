@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import dynamic from "next/dynamic";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { cn } from "@/lib/utils";
 
-const MDPreview = dynamic(
-  () => import("@uiw/react-md-editor").then((m) => m.default.Markdown),
-  { ssr: false }
+const MDPreview = lazy(() =>
+  import("@uiw/react-md-editor").then((m) => ({ default: m.default.Markdown }))
 );
 
 type Verdict = "buy" | "caution" | "avoid";
@@ -70,12 +67,12 @@ function VerdictCard({ verdict, summary }: { verdict: Verdict; summary: string }
 }
 
 export default function ReportPage() {
-  const params = useParams();
-  const id = params.id as string;
+  const { id } = useParams<{ id: string }>();
   const [check, setCheck] = useState<CarCheckResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
     api.checks
       .get(id)
       .then(setCheck)
@@ -87,7 +84,7 @@ export default function ReportPage() {
     if (!check) return;
     if (check.status !== "Pending" && check.status !== "Processing") return;
     const pollId = setInterval(() => {
-      api.checks.get(id).then(setCheck).catch(() => {});
+      api.checks.get(id!).then(setCheck).catch(() => {});
     }, 3000);
     return () => clearInterval(pollId);
   }, [id, check?.status]);
@@ -98,7 +95,7 @@ export default function ReportPage() {
   return (
     <div className="mx-auto max-w-[760px] space-y-6">
       <Link
-        href="/garage/reports"
+        to="/garage/reports"
         className="inline-flex items-center gap-1.5 text-sm text-dim transition-colors hover:text-mid"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
@@ -115,7 +112,6 @@ export default function ReportPage() {
         </div>
       ) : (
         <>
-          {/* Header card */}
           <div className="rounded-xl border border-white/6 bg-surface px-6 py-5 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-base font-semibold text-hi">
@@ -141,7 +137,6 @@ export default function ReportPage() {
             </p>
           </div>
 
-          {/* Content card */}
           <div className="rounded-xl border border-white/6 bg-surface p-6 space-y-5">
             {check.status === "Pending" || check.status === "Processing" ? (
               <div className="space-y-2">
@@ -163,7 +158,9 @@ export default function ReportPage() {
                   <VerdictCard verdict={verdict} summary={verdictSummary} />
                 )}
                 <div className="av-report wmde-markdown-var" data-color-mode="dark">
-                  <MDPreview source={check.report} />
+                  <Suspense fallback={<p className="text-sm text-dim">Loading report…</p>}>
+                    <MDPreview source={check.report} />
+                  </Suspense>
                 </div>
                 <p className="border-t border-white/6 pt-4 text-xs text-dim leading-relaxed">
                   AutoVerdict provides AI-assisted preliminary screening only. It does not replace

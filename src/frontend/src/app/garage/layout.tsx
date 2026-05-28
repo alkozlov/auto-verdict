@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate, Outlet } from "react-router-dom";
 import { getToken } from "@/lib/auth";
 import { api, type MeResponse } from "@/lib/api";
 import { GarageContext } from "@/lib/garage-context";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 
-export default function GarageLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+export default function GarageLayout() {
+  const navigate = useNavigate();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -24,7 +24,7 @@ export default function GarageLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!getToken()) {
-      router.replace("/");
+      navigate("/", { replace: true });
       return;
     }
     api
@@ -34,9 +34,9 @@ export default function GarageLayout({ children }: { children: React.ReactNode }
         setReady(true);
       })
       .catch(() => {
-        router.replace("/");
+        navigate("/", { replace: true });
       });
-  }, [router]);
+  }, [navigate]);
 
   if (!ready) {
     return (
@@ -53,7 +53,7 @@ export default function GarageLayout({ children }: { children: React.ReactNode }
         <div className="flex flex-col flex-1 min-w-0">
           <MobileNav me={me} />
           <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-            {children}
+            <Outlet />
           </main>
         </div>
       </div>

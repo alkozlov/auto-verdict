@@ -1,17 +1,21 @@
+using System.Net.Http.Headers;
 using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Auth;
 using AutoVerdict.Application.Checks;
+using AutoVerdict.Application.Payments;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.Infrastructure.Auth;
 using AutoVerdict.Infrastructure.Checks;
 using AutoVerdict.Infrastructure.Messaging;
+using AutoVerdict.Infrastructure.Payments;
 using AutoVerdict.Infrastructure.Persistence;
 using AutoVerdict.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.Infrastructure;
 
@@ -66,6 +70,37 @@ public static class DependencyInjection
 
         services.AddScoped<ICarCheckService, CarCheckService>();
         services.AddScoped<ICarCheckResultService, CarCheckResultService>();
+
+        services.Configure<PaymentOptions>(opts =>
+        {
+            configuration.GetSection(PaymentOptions.SectionName).Bind(opts);
+            if (configuration["BILLING_PROVIDER"] is { Length: > 0 } p) opts.Provider = p;
+            if (configuration["BILLING_API_KEY"] is { Length: > 0 } k) opts.ApiKey = k;
+            if (configuration["BILLING_WEBHOOK_SECRET"] is { Length: > 0 } s) opts.WebhookSecret = s;
+            if (configuration["BILLING_STORE_ID"] is { Length: > 0 } id) opts.StoreId = id;
+            if (configuration["BILLING_SINGLE_PRODUCT"] is { Length: > 0 } v1)
+                opts.PackageVariantIds["credits_1"] = v1;
+            if (configuration["BILLING_PACK_3"] is { Length: > 0 } v3)
+                opts.PackageVariantIds["credits_3"] = v3;
+        });
+
+        services.AddHttpClient("lemonsqueezy", (sp, client) =>
+        {
+            var paymentOpts = sp.GetRequiredService<IOptions<PaymentOptions>>().Value;
+            client.BaseAddress = new Uri("https://api.lemonsqueezy.com/v1/");
+            client.DefaultRequestHeaders.Add("Accept", "application/vnd.api+json");
+            if (!string.IsNullOrEmpty(paymentOpts.ApiKey))
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", paymentOpts.ApiKey);
+        });
+
+        var paymentProvider = configuration["BILLING_PROVIDER"]
+            ?? configuration["Payment:Provider"]
+            ?? "mock";
+        if (paymentProvider.Equals("lemonsqueezy", StringComparison.OrdinalIgnoreCase))
+            services.AddScoped<IPaymentService, LemonSqueezyPaymentService>();
+        else
+            services.AddScoped<IPaymentService, MockPaymentService>();
 
         services.Configure<NatsOptions>(opts =>
         {

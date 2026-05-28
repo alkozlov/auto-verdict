@@ -1,40 +1,24 @@
-"use client";
-
-import { Suspense, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { setToken } from "@/lib/auth";
 
-function CallbackInner() {
-  const router = useRouter();
-  const params = useSearchParams();
+export default function AuthCallback() {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
 
   useEffect(() => {
     const token = params.get("token");
     if (token) {
       setToken(token);
-      router.replace("/garage/check");
+      navigate("/garage/check", { replace: true });
     } else {
-      router.replace("/?error=auth_failed");
+      navigate("/?error=auth_failed", { replace: true });
     }
-  }, [params, router]);
+  }, [params, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-page">
       <p className="text-sm text-dim">Signing you in…</p>
     </div>
-  );
-}
-
-export default function AuthCallback() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-page">
-          <p className="text-sm text-dim">Signing you in…</p>
-        </div>
-      }
-    >
-      <CallbackInner />
-    </Suspense>
   );
 }

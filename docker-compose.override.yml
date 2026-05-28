@@ -14,7 +14,7 @@ services:
     environment:
       NODE_ENV: development
     ports:
-      - "3000:3000"
+      - "3000:80"
 
   postgres:
     ports:
@@ -30,7 +30,3 @@ services:
       - "8333:8333"
       - "8888:8888"
       - "9333:9333"
-
-  nginx:
-    ports:
-      - "8080:80"

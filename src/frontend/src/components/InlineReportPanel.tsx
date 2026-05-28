@@ -1,14 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { lazy, Suspense } from "react";
 import { ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "./StatusBadge";
 import type { CarCheckResponse } from "@/lib/api";
 
-const MDPreview = dynamic(
-  () => import("@uiw/react-md-editor").then((m) => m.default.Markdown),
-  { ssr: false }
+const MDPreview = lazy(() =>
+  import("@uiw/react-md-editor").then((m) => ({ default: m.default.Markdown }))
 );
 
 type Verdict = "buy" | "caution" | "avoid";
@@ -146,7 +145,9 @@ export function InlineReportPanel({ check, loading, onClose }: Props) {
           <>
             {verdict && <VerdictCard verdict={verdict} summary={verdictSummary} />}
             <div className="av-report wmde-markdown-var" data-color-mode="dark">
-              <MDPreview source={check.report} />
+              <Suspense fallback={<p className="text-sm text-dim">Loading…</p>}>
+                <MDPreview source={check.report} />
+              </Suspense>
             </div>
             <p className="border-t border-white/6 pt-4 text-xs text-dim leading-relaxed">
               AutoVerdict provides AI-assisted preliminary screening only. It does not replace

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AutoVerdict.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260522210845_AddOutboxRetryTracking")]
-    partial class AddOutboxRetryTracking
+    [Migration("20260528194801_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,56 +25,33 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.AiRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CarCheckId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("InputTokens")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ModelName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<long>("OutputTokens")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ProviderName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarCheckId");
-
-                    b.ToTable("ai_requests", (string)null);
-                });
-
             modelBuilder.Entity("AutoVerdict.Domain.Entities.CarCheck", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DocumentStorageKey")
-                        .IsRequired()
+                    b.Property<string>("AnalysisStorageKey")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<Guid>("CheckId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("FailureReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ListingUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
@@ -83,18 +60,23 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("VehicleIdentifier")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<string>("UserImageKeysJson")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CheckId")
+                        .IsUnique();
 
                     b.HasIndex("Status");
 
@@ -103,28 +85,95 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.ToTable("car_checks", (string)null);
                 });
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.CarReport", b =>
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.CrawlerJob", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CarCheckId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ReportData")
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("IsRetryable")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ListingUrl")
                         .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("NormalizedData")
                         .HasColumnType("jsonb");
+
+                    b.Property<string>("RawData")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ScreenshotBucket")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ScreenshotContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ScreenshotObjectKey")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long?>("ScreenshotSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTimeOffset?>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CarCheckId")
-                        .IsUnique();
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_crawler_jobs_CreatedAt");
 
-                    b.ToTable("car_reports", (string)null);
+                    b.HasIndex("ListingUrl")
+                        .HasDatabaseName("IX_crawler_jobs_ListingUrl");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_crawler_jobs_Status");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_crawler_jobs_UserId");
+
+                    b.ToTable("crawler_jobs", (string)null);
                 });
 
             modelBuilder.Entity("AutoVerdict.Domain.Entities.CreditLedgerEntry", b =>
@@ -227,6 +276,78 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_messages", (string)null);
                 });
 
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreditsGranted")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ExternalOrderId")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PackageKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalOrderId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("payment_orders", (string)null);
+                });
+
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.UploadedFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("uploaded_files", (string)null);
+                });
+
             modelBuilder.Entity("AutoVerdict.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -275,17 +396,6 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.AiRequest", b =>
-                {
-                    b.HasOne("AutoVerdict.Domain.Entities.CarCheck", "CarCheck")
-                        .WithMany("AiRequests")
-                        .HasForeignKey("CarCheckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CarCheck");
-                });
-
             modelBuilder.Entity("AutoVerdict.Domain.Entities.CarCheck", b =>
                 {
                     b.HasOne("AutoVerdict.Domain.Entities.User", "User")
@@ -295,17 +405,6 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.CarReport", b =>
-                {
-                    b.HasOne("AutoVerdict.Domain.Entities.CarCheck", "CarCheck")
-                        .WithOne("Report")
-                        .HasForeignKey("AutoVerdict.Domain.Entities.CarReport", "CarCheckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CarCheck");
                 });
 
             modelBuilder.Entity("AutoVerdict.Domain.Entities.CreditLedgerEntry", b =>
@@ -330,6 +429,28 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
+                {
+                    b.HasOne("AutoVerdict.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.UploadedFile", b =>
+                {
+                    b.HasOne("AutoVerdict.Domain.Entities.User", "User")
+                        .WithMany("UploadedFiles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AutoVerdict.Domain.Entities.UserCredits", b =>
                 {
                     b.HasOne("AutoVerdict.Domain.Entities.User", "User")
@@ -341,13 +462,6 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.CarCheck", b =>
-                {
-                    b.Navigation("AiRequests");
-
-                    b.Navigation("Report");
-                });
-
             modelBuilder.Entity("AutoVerdict.Domain.Entities.User", b =>
                 {
                     b.Navigation("CarChecks");
@@ -357,6 +471,8 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.Navigation("Credits");
 
                     b.Navigation("ExternalAuthAccounts");
+
+                    b.Navigation("UploadedFiles");
                 });
 #pragma warning restore 612, 618
         }

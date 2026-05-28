@@ -39,6 +39,13 @@ export interface FileUploadResponse {
   fileSizeBytes: number;
 }
 
+export interface CreditPackage {
+  key: string;
+  credits: number;
+  pricePln: number;
+  label: string;
+}
+
 export const api = {
   me: () => request<MeResponse>("/me"),
 
@@ -65,6 +72,16 @@ export const api = {
       }
       return res.json();
     },
+  },
+
+  payments: {
+    getPackages: () => request<CreditPackage[]>("/payments/packages"),
+    createCheckout: (packageKey: string) =>
+      request<{ checkoutUrl: string }>("/payments/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ package: packageKey }),
+      }),
   },
 
   uploads: {

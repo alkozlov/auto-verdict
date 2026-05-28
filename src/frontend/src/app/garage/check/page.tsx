@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Check, CreditCard } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { useGarage } from "@/lib/garage-context";
 import { AnalysisComposer } from "@/components/AnalysisComposer";
@@ -16,11 +16,23 @@ interface SubmissionState {
 }
 
 export default function CheckCarPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { me, refreshMe } = useGarage();
   const [submission, setSubmission] = useState<SubmissionState | null>(null);
   const [currentCheck, setCurrentCheck] = useState<CarCheckResponse | null>(null);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "success") {
+      refreshMe();
+      setPaymentSuccess(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [refreshMe]);
 
   useEffect(() => {
     if (!submission) return;
@@ -70,6 +82,19 @@ export default function CheckCarPage() {
         </p>
       </div>
 
+      {paymentSuccess && (
+        <div className="flex items-center gap-3 rounded-xl border border-ok/20 bg-ok-tint px-4 py-3">
+          <CreditCard className="h-4 w-4 shrink-0 text-ok" />
+          <p className="text-sm text-ok">Credits added to your account.</p>
+          <button
+            onClick={() => setPaymentSuccess(false)}
+            className="ml-auto text-xs text-ok/70 hover:text-ok transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {!submission ? (
         <AnalysisComposer
           onSubmitSuccess={handleSubmitSuccess}
@@ -94,7 +119,7 @@ export default function CheckCarPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => router.push(`/garage/reports/${submission.checkId}`)}
+              onClick={() => navigate(`/garage/reports/${submission.checkId}`)}
               className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
             >
               Open report

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
+import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 
 const NAV = [
   { label: "Check car", href: "/garage/check" },
@@ -19,8 +19,9 @@ interface Props {
 
 export function MobileNav({ me }: Props) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setOpen(false);
@@ -37,7 +38,7 @@ export function MobileNav({ me }: Props) {
 
   function signOut() {
     removeToken();
-    router.push("/");
+    navigate("/");
   }
 
   return (
@@ -102,7 +103,7 @@ export function MobileNav({ me }: Props) {
             return (
               <Link
                 key={href}
-                href={href}
+                to={href}
                 className={cn(
                   "flex items-center h-[42px] rounded-xl px-3 text-sm font-medium transition-colors",
                   active ? "bg-surface-raised text-hi" : "text-mid hover:bg-white/[0.04] hover:text-hi"
@@ -116,6 +117,24 @@ export function MobileNav({ me }: Props) {
         </nav>
 
         <div className="mt-auto space-y-3 border-t border-white/6 pt-4">
+          {me !== null && (
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
+                  me.credits === 0 ? "bg-surface-raised text-off" : "bg-warn-tint text-warn"
+                )}
+              >
+                {me.credits} credit{me.credits !== 1 ? "s" : ""}
+              </span>
+              <button
+                onClick={() => { setOpen(false); setShowModal(true); }}
+                className="text-xs text-dim underline underline-offset-2 transition-colors hover:text-hi"
+              >
+                Top up
+              </button>
+            </div>
+          )}
           {me && <p className="truncate text-xs text-dim">{me.email}</p>}
           <button
             onClick={signOut}
@@ -125,6 +144,8 @@ export function MobileNav({ me }: Props) {
           </button>
         </div>
       </div>
+
+      {showModal && <PurchaseCreditsModal onClose={() => setShowModal(false)} />}
     </>
   );
 }

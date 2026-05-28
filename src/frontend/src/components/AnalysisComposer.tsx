@@ -1,12 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Link2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import CodeMirror from "@uiw/react-codemirror";
+import { markdown } from "@codemirror/lang-markdown";
+import { EditorView, placeholder as cmPlaceholder } from "@codemirror/view";
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_BYTES = 2560 * 1024;
@@ -14,6 +14,35 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const PLACEHOLDER =
   "Paste listing text, seller messages, VIN, concerns, inspection notes, or ask AutoVerdict specific questions.\n\nExample:\n\n\"I'm considering this Toyota Corolla from Otomoto. What should I verify before contacting the seller?\"";
+
+const editorTheme = EditorView.theme(
+  {
+    "&": { backgroundColor: "#0F1217", color: "#F4F6F8" },
+    ".cm-content": {
+      padding: "12px 16px",
+      fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+      fontSize: "15px",
+      lineHeight: "1.6",
+      caretColor: "#F4F6F8",
+    },
+    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#F4F6F8" },
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
+      backgroundColor: "#162A45",
+    },
+    ".cm-activeLine": { backgroundColor: "transparent" },
+    ".cm-activeLineGutter": { backgroundColor: "transparent" },
+    ".cm-gutters": { display: "none" },
+    ".cm-placeholder": { color: "#596270" },
+    "&.cm-editor.cm-focused": { outline: "none" },
+  },
+  { dark: true }
+);
+
+const editorExtensions = [
+  markdown(),
+  EditorView.lineWrapping,
+  cmPlaceholder(PLACEHOLDER),
+];
 
 interface Props {
   onSubmitSuccess: (checkId: string, hasLink: boolean, hasPhotos: boolean) => void;
@@ -201,19 +230,30 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
         {/* Markdown editor */}
         <div
           ref={editorContainerRef}
-          data-color-mode="dark"
           className="overflow-hidden rounded-md border border-white/6 transition-colors focus-within:border-active"
         >
-          <MDEditor
+          <CodeMirror
             value={description}
             onChange={(v) => {
-              setDescription(v ?? "");
+              setDescription(v);
               setFormError(null);
             }}
-            preview="edit"
-            height={220}
-            textareaProps={{ placeholder: PLACEHOLDER, "aria-label": "Car details" }}
-            style={{ border: "none", borderRadius: 0, background: "transparent" }}
+            height="220px"
+            theme={editorTheme}
+            extensions={editorExtensions}
+            basicSetup={{
+              lineNumbers: false,
+              foldGutter: false,
+              dropCursor: false,
+              allowMultipleSelections: false,
+              indentOnInput: false,
+              highlightActiveLine: false,
+              highlightSelectionMatches: false,
+              closeBrackets: false,
+              autocompletion: false,
+              rectangularSelection: false,
+              crosshairCursor: false,
+            }}
           />
         </div>
 
