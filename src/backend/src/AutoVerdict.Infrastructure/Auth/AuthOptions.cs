@@ -9,4 +9,5 @@ public sealed class AuthOptions
     public int JwtExpirationDays { get; set; } = 30;
     public string GoogleClientId { get; set; } = null!;
     public string GoogleClientSecret { get; set; } = null!;
+    public int InitialCredits { get; set; } = 1;
 }

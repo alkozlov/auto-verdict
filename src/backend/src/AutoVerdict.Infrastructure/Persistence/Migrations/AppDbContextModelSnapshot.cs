@@ -426,10 +426,10 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.UploadedFile", b =>
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
                 {
                     b.HasOne("AutoVerdict.Domain.Entities.User", "User")
-                        .WithMany("UploadedFiles")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -437,10 +437,10 @@ namespace AutoVerdict.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AutoVerdict.Domain.Entities.PaymentOrder", b =>
+            modelBuilder.Entity("AutoVerdict.Domain.Entities.UploadedFile", b =>
                 {
                     b.HasOne("AutoVerdict.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("UploadedFiles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
