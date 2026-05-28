@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
@@ -18,13 +17,13 @@ interface Props {
 }
 
 export function Sidebar({ me }: Props) {
-  const pathname = usePathname();
-  const router = useRouter();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
   function signOut() {
     removeToken();
-    router.push("/");
+    navigate("/");
   }
 
   return (
@@ -41,7 +40,7 @@ export function Sidebar({ me }: Props) {
             return (
               <Link
                 key={href}
-                href={href}
+                to={href}
                 className={cn(
                   "flex items-center h-[42px] rounded-xl px-3 text-sm font-medium transition-colors",
                   active

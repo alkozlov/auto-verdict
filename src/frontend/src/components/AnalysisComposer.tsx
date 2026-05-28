@@ -1,12 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ImagePlus, Link2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+const MDEditor = lazy(() => import("@uiw/react-md-editor"));
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_BYTES = 2560 * 1024;
@@ -204,6 +203,7 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
           data-color-mode="dark"
           className="overflow-hidden rounded-md border border-white/6 transition-colors focus-within:border-active"
         >
+          <Suspense fallback={<div className="h-[220px] bg-field" />}>
           <MDEditor
             value={description}
             onChange={(v) => {
@@ -215,6 +215,7 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
             textareaProps={{ placeholder: PLACEHOLDER, "aria-label": "Car details" }}
             style={{ border: "none", borderRadius: 0, background: "transparent" }}
           />
+          </Suspense>
         </div>
 
         {/* Image thumbnails */}

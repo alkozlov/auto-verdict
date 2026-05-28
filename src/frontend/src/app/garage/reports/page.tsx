@@ -1,15 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "react-router-dom";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { AnalysisHistory } from "@/components/AnalysisHistory";
 
 const PAGE_SIZE = 10;
 
 export default function ReportsPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [checks, setChecks] = useState<CarCheckResponse[]>([]);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -55,7 +54,7 @@ export default function ReportsPage() {
           </p>
         </div>
         <Link
-          href="/garage/check"
+          to="/garage/check"
           className="shrink-0 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
         >
           Check another car
@@ -70,7 +69,7 @@ export default function ReportsPage() {
           page={page}
           hasNextPage={hasNextPage}
           selectedCheckId={null}
-          onSelectCheck={(id) => router.push(`/garage/reports/${id}`)}
+          onSelectCheck={(id) => navigate(`/garage/reports/${id}`)}
           onPageChange={handlePageChange}
         />
       )}

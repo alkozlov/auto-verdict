@@ -378,7 +378,7 @@ app.MapPost("/api/payments/checkout", async (
     return Results.Ok(new { checkoutUrl });
 }).RequireAuthorization();
 
-app.MapPost("/api/payments/webhooks/lemonsqueezy", async (
+app.MapPost("/api/billing/webhooks/lemonsqueezy", async (
     HttpContext ctx,
     IPaymentService paymentService,
     AppDbContext db,

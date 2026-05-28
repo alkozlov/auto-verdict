@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
@@ -21,8 +20,8 @@ interface Props {
 export function MobileNav({ me }: Props) {
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setOpen(false);
@@ -39,7 +38,7 @@ export function MobileNav({ me }: Props) {
 
   function signOut() {
     removeToken();
-    router.push("/");
+    navigate("/");
   }
 
   return (
@@ -104,7 +103,7 @@ export function MobileNav({ me }: Props) {
             return (
               <Link
                 key={href}
-                href={href}
+                to={href}
                 className={cn(
                   "flex items-center h-[42px] rounded-xl px-3 text-sm font-medium transition-colors",
                   active ? "bg-surface-raised text-hi" : "text-mid hover:bg-white/[0.04] hover:text-hi"

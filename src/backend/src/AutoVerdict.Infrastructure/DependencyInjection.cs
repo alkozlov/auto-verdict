@@ -74,13 +74,13 @@ public static class DependencyInjection
         services.Configure<PaymentOptions>(opts =>
         {
             configuration.GetSection(PaymentOptions.SectionName).Bind(opts);
-            if (configuration["PAYMENT_PROVIDER"] is { Length: > 0 } p) opts.Provider = p;
-            if (configuration["LS_API_KEY"] is { Length: > 0 } k) opts.ApiKey = k;
-            if (configuration["LS_WEBHOOK_SECRET"] is { Length: > 0 } s) opts.WebhookSecret = s;
-            if (configuration["LS_STORE_ID"] is { Length: > 0 } id) opts.StoreId = id;
-            if (configuration["LS_VARIANT_CREDITS_1"] is { Length: > 0 } v1)
+            if (configuration["BILLING_PROVIDER"] is { Length: > 0 } p) opts.Provider = p;
+            if (configuration["BILLING_API_KEY"] is { Length: > 0 } k) opts.ApiKey = k;
+            if (configuration["BILLING_WEBHOOK_SECRET"] is { Length: > 0 } s) opts.WebhookSecret = s;
+            if (configuration["BILLING_STORE_ID"] is { Length: > 0 } id) opts.StoreId = id;
+            if (configuration["BILLING_SINGLE_PRODUCT"] is { Length: > 0 } v1)
                 opts.PackageVariantIds["credits_1"] = v1;
-            if (configuration["LS_VARIANT_CREDITS_3"] is { Length: > 0 } v3)
+            if (configuration["BILLING_PACK_3"] is { Length: > 0 } v3)
                 opts.PackageVariantIds["credits_3"] = v3;
         });
 
@@ -94,8 +94,8 @@ public static class DependencyInjection
                     new AuthenticationHeaderValue("Bearer", paymentOpts.ApiKey);
         });
 
-        var paymentProvider = configuration["Payment:Provider"]
-            ?? configuration["PAYMENT_PROVIDER"]
+        var paymentProvider = configuration["BILLING_PROVIDER"]
+            ?? configuration["Payment:Provider"]
             ?? "mock";
         if (paymentProvider.Equals("lemonsqueezy", StringComparison.OrdinalIgnoreCase))
             services.AddScoped<IPaymentService, LemonSqueezyPaymentService>();

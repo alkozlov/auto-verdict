@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { Check, CreditCard } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { useGarage } from "@/lib/garage-context";
@@ -16,7 +16,7 @@ interface SubmissionState {
 }
 
 export default function CheckCarPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { me, refreshMe } = useGarage();
   const [submission, setSubmission] = useState<SubmissionState | null>(null);
   const [currentCheck, setCurrentCheck] = useState<CarCheckResponse | null>(null);
@@ -119,7 +119,7 @@ export default function CheckCarPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => router.push(`/garage/reports/${submission.checkId}`)}
+              onClick={() => navigate(`/garage/reports/${submission.checkId}`)}
               className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
             >
               Open report

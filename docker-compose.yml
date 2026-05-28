@@ -4,9 +4,6 @@ services:
   frontend:
     build:
       context: ./src/frontend
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000}
     depends_on:
       api:
         condition: service_started
@@ -28,12 +25,12 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       WHITELIST_EMAILS: ${WHITELIST_EMAILS:-}
-      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
-      LS_API_KEY: ${LS_API_KEY:-}
-      LS_WEBHOOK_SECRET: ${LS_WEBHOOK_SECRET:-}
-      LS_STORE_ID: ${LS_STORE_ID:-}
-      LS_VARIANT_CREDITS_1: ${LS_VARIANT_CREDITS_1:-}
-      LS_VARIANT_CREDITS_3: ${LS_VARIANT_CREDITS_3:-}
+      BILLING_PROVIDER: ${BILLING_PROVIDER:-mock}
+      BILLING_API_KEY: ${BILLING_API_KEY:-}
+      BILLING_WEBHOOK_SECRET: ${BILLING_WEBHOOK_SECRET:-}
+      BILLING_STORE_ID: ${BILLING_STORE_ID:-}
+      BILLING_SINGLE_PRODUCT: ${BILLING_SINGLE_PRODUCT:-}
+      BILLING_PACK_3: ${BILLING_PACK_3:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,6 +70,23 @@ services:
         condition: service_completed_successfully
       seaweedfs-setup:
         condition: service_completed_successfully
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+      CADDY_EMAIL: ${CADDY_EMAIL:-}
+    depends_on:
+      - frontend
+    restart: unless-stopped
 
   postgres:
     image: postgres:17-alpine
@@ -141,19 +155,9 @@ services:
       seaweedfs:
         condition: service_healthy
 
-  nginx:
-    image: nginx:1.27-alpine
-    ports:
-      - "${NGINX_PORT:-80}:80"
-    volumes:
-      - ./infra/nginx:/etc/nginx/conf.d:ro
-    depends_on:
-      frontend:
-        condition: service_started
-      api:
-        condition: service_started
-
 volumes:
   postgres_data:
   nats_data:
   seaweedfs_data:
+  caddy-data:
+  caddy-config:
