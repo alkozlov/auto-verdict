@@ -30,7 +30,7 @@ public sealed record ExtractedVehicleFacts(
     bool AccidentFreeClaimed,
     bool ImportedMentioned,
     bool FirstOwnerClaimed,
-    IReadOnlyDictionary<string, string> RawAttributes,
+    IReadOnlyDictionary<string, object?> RawAttributes,
     IReadOnlyList<string> EvidenceNotes,
     IReadOnlyList<string> MissingFields,
     string Confidence);

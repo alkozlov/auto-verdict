@@ -46,7 +46,7 @@ public sealed class FactExtractionStage(
                   "accidentFreeClaimed": boolean,
                   "importedMentioned": boolean,
                   "firstOwnerClaimed": boolean,
-                  "rawAttributes": { "key": "value" },
+                  "rawAttributes": { "key": "string | number | boolean | null" },
                   "evidenceNotes": [string],
                   "missingFields": [string],
                   "confidence": "low" | "medium" | "high"
@@ -56,6 +56,7 @@ public sealed class FactExtractionStage(
                 - Do not invent facts.
                 - Use null when unknown.
                 - Preserve useful raw listing attributes.
+                - rawAttributes may contain string, number, boolean, or null values.
                 - Inspect attached user screenshots/images for visible VIN, mileage, price, year, make, model, seller, and location.
                 - If a VIN is visible in an image, extract it exactly and set vinPresent=true.
                 - If crawler status is Failed, BlockedOrCaptcha, UnsupportedUrl, or NotProvided, rely on user text and images instead of the URL.

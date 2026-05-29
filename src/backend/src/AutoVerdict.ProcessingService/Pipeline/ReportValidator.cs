@@ -20,15 +20,6 @@ public sealed partial class ReportValidator
         "# Summary",
     ];
 
-    private static readonly string[] ForbiddenPhrases =
-    [
-        "this car is safe",
-        "the seller is dishonest",
-        "definitely damaged",
-        "guaranteed",
-        "no risk",
-    ];
-
     public ReportValidationResult Validate(string markdown)
     {
         var errors = new List<string>();
@@ -56,11 +47,7 @@ public sealed partial class ReportValidator
         if (!CheckboxRegex().IsMatch(markdown))
             warnings.Add("Inspection checklist does not appear to use markdown checkboxes.");
 
-        foreach (var phrase in ForbiddenPhrases)
-        {
-            if (markdown.Contains(phrase, StringComparison.OrdinalIgnoreCase))
-                errors.Add($"Unsafe wording detected: {phrase}");
-        }
+        AddUnsafeLanguageFindings(markdown, errors, warnings);
 
         return new ReportValidationResult(errors.Count == 0, errors, warnings);
     }
@@ -70,4 +57,37 @@ public sealed partial class ReportValidator
 
     [GeneratedRegex(@"- \[[ xX]\]")]
     private static partial Regex CheckboxRegex();
+
+    private static void AddUnsafeLanguageFindings(
+        string markdown,
+        List<string> errors,
+        List<string> warnings)
+    {
+        if (CarSafeRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: this car is safe");
+        if (DishonestSellerRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: seller dishonesty claim");
+        if (DefinitelyDamagedRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: definite damage claim");
+        if (NoRiskRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: no risk claim");
+
+        if (GuaranteedRiskRegex().IsMatch(markdown))
+            warnings.Add("Potentially overconfident guarantee wording detected.");
+    }
+
+    [GeneratedRegex(@"\bthis car is safe\b", RegexOptions.IgnoreCase)]
+    private static partial Regex CarSafeRegex();
+
+    [GeneratedRegex(@"\b(the )?seller (is|seems|appears) dishonest\b", RegexOptions.IgnoreCase)]
+    private static partial Regex DishonestSellerRegex();
+
+    [GeneratedRegex(@"\bdefinitely damaged\b", RegexOptions.IgnoreCase)]
+    private static partial Regex DefinitelyDamagedRegex();
+
+    [GeneratedRegex(@"\b(no|zero) risk\b", RegexOptions.IgnoreCase)]
+    private static partial Regex NoRiskRegex();
+
+    [GeneratedRegex(@"\b(guaranteed safe|guaranteed accident-free|guaranteed risk-free|guaranteed clean)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex GuaranteedRiskRegex();
 }
