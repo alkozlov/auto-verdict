@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, FileText, HelpCircle, ImagePlus, Link2, MessageSquare, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ClipboardCheck, FileText, HelpCircle, ImagePlus, Link2, MessageSquare, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function RiskBadge({ label, tone = "medium" }: { label: string; tone?: "low" | "medium" | "high" | "unknown" | "brand" }) {
@@ -18,7 +18,7 @@ export function ReportPreviewCard({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation();
   const concerns = ["service", "import", "claim"] as const;
   return (
-    <div className="rounded-2xl border border-slate-400/10 bg-[#101722] p-5 shadow-2xl shadow-black/20">
+    <div className="rounded-2xl border border-[#7C9CFF]/25 bg-[#101827] p-5 shadow-2xl shadow-black/30">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase text-slate-500">{t("public.reportPreview.eyebrow")}</p>
@@ -27,6 +27,7 @@ export function ReportPreviewCard({ compact = false }: { compact?: boolean }) {
         <RiskBadge label={t("public.reportPreview.risk")} />
       </div>
       <p className="mt-4 text-sm font-semibold text-slate-200">{t("public.reportPreview.vehicle")}</p>
+      <p className="mt-1 text-xs font-semibold text-[#AFC0FF]">{t("public.reportPreview.confidence")}</p>
       <div className="mt-5 space-y-3">
         <p className="text-xs font-bold uppercase text-slate-500">{t("public.reportPreview.concerns")}</p>
         <ul className="space-y-2">
@@ -39,9 +40,15 @@ export function ReportPreviewCard({ compact = false }: { compact?: boolean }) {
         </ul>
       </div>
       {!compact && (
-        <div className="mt-5 border-t border-slate-400/10 pt-4">
+        <div className="mt-5 space-y-4 border-t border-slate-400/10 pt-4">
+          <div>
           <p className="text-xs font-bold uppercase text-slate-500">{t("public.reportPreview.nextLabel")}</p>
           <p className="mt-2 text-sm leading-6 text-slate-300">{t("public.reportPreview.next")}</p>
+          </div>
+          <div className="rounded-xl border border-slate-400/10 bg-[#0D1420] p-3">
+            <p className="text-xs font-bold uppercase text-slate-500">{t("public.reportPreview.recommendationLabel")}</p>
+            <p className="mt-1 text-sm font-semibold text-slate-200">{t("public.reportPreview.recommendation")}</p>
+          </div>
         </div>
       )}
       <p className="mt-4 text-xs text-slate-500">{t("public.reportPreview.disclaimer")}</p>
@@ -109,15 +116,24 @@ export function PricingCards() {
     { key: "three", price: "40 PLN", checks: "3", featured: true },
   ] as const;
   return (
-    <div className="grid gap-5 md:grid-cols-2">
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-[#7C9CFF]/30 bg-[#7C9CFF]/10 p-5 md:flex md:items-center md:justify-between md:gap-6">
+        <div>
+          <p className="text-xs font-bold uppercase text-[#AFC0FF]">{t("public.pricing.freeLabel")}</p>
+          <h3 className="mt-1 text-lg font-bold text-white">{t("public.pricing.freeTitle")}</h3>
+        </div>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:mt-0">{t("public.pricing.freeBody")}</p>
+      </div>
+      <div className="grid gap-5 md:grid-cols-2">
       {cards.map((card) => (
-        <div key={card.key} className={cn("rounded-2xl border bg-[#101722] p-6", card.featured ? "border-[#7C9CFF]/45" : "border-slate-400/10")}>
+        <div key={card.key} className={cn("rounded-2xl border bg-[#101827] p-6 shadow-xl shadow-black/15", card.featured ? "border-[#7C9CFF]/45" : "border-slate-400/14")}>
           <div className="flex items-center justify-between gap-4">
             <h3 className="text-xl font-bold text-white">{t(`public.pricing.${card.key}.title`)}</h3>
             {card.featured && <RiskBadge label={t("public.pricing.better")} tone="brand" />}
           </div>
           <p className="mt-4 text-4xl font-extrabold text-white">{card.price}</p>
           <p className="mt-3 text-sm leading-6 text-slate-400">{t(`public.pricing.${card.key}.body`)}</p>
+          <p className="mt-3 text-sm font-semibold text-slate-300">{t("public.pricing.creditRule")}</p>
           <ul className="mt-5 space-y-2">
             {["report", "risk", "missing", "questions", "checklist"].map((item) => (
               <li key={item} className="flex gap-2 text-sm text-slate-300">
@@ -131,13 +147,15 @@ export function PricingCards() {
           </a>
         </div>
       ))}
+      </div>
+      <p className="text-xs leading-5 text-slate-500">{t("public.pricing.safetyNote")}</p>
     </div>
   );
 }
 
 export function FaqList() {
   const { t } = useTranslation();
-  const keys = ["replaceInspection", "marketplaces", "credits", "chatbot"] as const;
+  const keys = ["replaceInspection", "partialInfo", "beforeTravel", "safeToBuy", "marketplaces", "notExpert", "credits", "chatbot"] as const;
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {keys.map((key) => (
@@ -157,9 +175,46 @@ export function FinalCta() {
     <div className="rounded-3xl border border-[#7C9CFF]/25 bg-[#7C9CFF]/10 p-8 text-center md:p-10">
       <h2 className="text-3xl font-extrabold text-white md:text-4xl">{t("public.finalCta.title")}</h2>
       <p className="mx-auto mt-3 max-w-2xl text-base text-slate-300">{t("public.finalCta.body")}</p>
+      <p className="mt-4 text-sm font-bold text-[#AFC0FF]">{t("public.finalCta.free")}</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <a href="/api/auth/google" className="av-btn-primary">{t("public.cta.analyze")}</a>
+        <a href="/api/auth/google" className="av-btn-primary">{t("public.cta.startFree")}</a>
         <Link to="/sample-report" className="av-btn-secondary">{t("public.cta.sample")}</Link>
+      </div>
+    </div>
+  );
+}
+
+export function ReportIncludes() {
+  const { t } = useTranslation();
+  const keys = ["risk", "facts", "missing", "signals", "questions", "checklist", "model", "recommendation"] as const;
+  return (
+    <div className="grid gap-8 md:grid-cols-[0.85fr_1.15fr] md:items-center">
+      <div>
+        <h2 className="text-3xl font-extrabold leading-tight text-white md:text-4xl">{t("public.reportIncludes.title")}</h2>
+        <p className="mt-4 text-base leading-7 text-slate-400 md:text-lg">{t("public.reportIncludes.lead")}</p>
+        <Link to="/sample-report" className="av-btn-secondary mt-6">{t("public.cta.sample")}</Link>
+      </div>
+      <div className="rounded-2xl border border-[#7C9CFF]/28 bg-[#101827] p-5 shadow-xl shadow-black/20">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase text-[#AFC0FF]">{t("public.reportIncludes.badge")}</p>
+            <h3 className="mt-1 text-xl font-extrabold text-white">{t("public.reportIncludes.cardTitle")}</h3>
+          </div>
+          <ClipboardCheck className="h-6 w-6 text-[#7C9CFF]" />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {keys.map((key) => (
+            <div key={key} className="rounded-xl border border-slate-400/10 bg-[#0D1420] p-3">
+              <div className="flex gap-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+                <div>
+                  <p className="text-sm font-bold text-white">{t(`public.reportIncludes.items.${key}.title`)}</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">{t(`public.reportIncludes.items.${key}.body`)}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

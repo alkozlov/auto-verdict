@@ -29,11 +29,11 @@ export function PublicLayout({ children }: Props) {
 
   const cta = loggedIn ? (
     <Link to="/garage/check" className="av-btn-primary">
-      {t("home.goToGarage")}
+      {t("public.cta.goAnalyses")}
     </Link>
   ) : (
     <a href="/api/auth/google" className="av-btn-primary">
-      {t("public.cta.analyze")}
+      {t("public.cta.startFree")}
     </a>
   );
 
@@ -119,7 +119,7 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={cn("border-t border-slate-400/10 py-16 md:py-24", className)}>
+    <section id={id} className={cn("border-t border-slate-400/10 py-12 md:py-20", className)}>
       <div className="mx-auto max-w-[1200px] px-5 lg:px-8">{children}</div>
     </section>
   );

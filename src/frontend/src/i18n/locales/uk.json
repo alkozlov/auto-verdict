@@ -110,7 +110,9 @@
     },
     "cta": {
       "analyze": "Analyze a listing",
-      "sample": "See sample report"
+      "sample": "See sample report",
+      "startFree": "Start free analysis",
+      "goAnalyses": "Go to analyses"
     },
     "meta": {
       "home": {
@@ -148,7 +150,8 @@
       "eyebrow": "Built for private used-car buyers across Europe",
       "title": "Check a used-car listing before you contact the seller.",
       "body": "Paste a marketplace listing, seller messages, VIN, vehicle notes, or photos. AutoVerdict gives you a structured AI risk report with red flags, missing information, seller questions, inspection points, and a clear next step.",
-      "trust": "AI-assisted preliminary screening. Not a replacement for professional inspection."
+      "trust": "AI-assisted preliminary screening. Not a replacement for professional inspection.",
+      "free": "First analysis is free. No card required."
     },
     "trust": {
       "structured": "Structured risk report",
@@ -217,7 +220,10 @@
       },
       "nextLabel": "Recommended next step",
       "next": "Ask for VIN, service invoices, accident history, and ownership documents before arranging inspection.",
-      "disclaimer": "AI-assisted screening, not a professional inspection."
+      "disclaimer": "AI-assisted screening, not a professional inspection.",
+      "confidence": "Confidence: Medium",
+      "recommendationLabel": "Recommendation",
+      "recommendation": "Request more information before inspection"
     },
     "samplePreviewTitle": "See what the report looks like.",
     "samplePreviewLead": "AutoVerdict returns a structured decision report, not a generic chat transcript.",
@@ -245,18 +251,18 @@
       "autoTitle": "AutoVerdict",
       "autoBody": "The product produces a repeatable report with risk categories, missing information, seller questions, checklist, and cautious recommendation."
     },
-    "pricingTitle": "Simple pricing before registration.",
-    "pricingLead": "Credits are not a subscription. Buy checks when you need them and use them for completed reports.",
+    "pricingTitle": "Simple pricing. No subscription.",
+    "pricingLead": "Buy checks only when you need them. One completed report uses one credit. Credits are not a subscription and there is no monthly fee.",
     "pricing": {
       "better": "Better value",
       "one": {
         "title": "1 check",
-        "body": "For one car you want to verify before taking the next step.",
+        "body": "For one extra car you want to verify before taking the next step.",
         "cta": "Start with 1 check"
       },
       "three": {
         "title": "3 checks",
-        "body": "For comparing several cars and choosing which ones are worth inspection.",
+        "body": "For comparing several cars after your free first analysis. Better value for comparing multiple cars.",
         "cta": "Get 3 checks"
       },
       "includes": {
@@ -265,7 +271,12 @@
         "missing": "Missing information",
         "questions": "Seller questions",
         "checklist": "Inspection checklist"
-      }
+      },
+      "freeLabel": "Free starter credit",
+      "freeTitle": "First analysis included",
+      "freeBody": "New users get 1 free analysis after sign-in. No card required.",
+      "creditRule": "One completed report uses one credit.",
+      "safetyNote": "Credits are intended for completed reports. Technical failures should not cost you an additional check."
     },
     "safetyTitle": "A screening tool, not a guarantee.",
     "safetyLead": "AutoVerdict does not replace professional vehicle inspection, official history reports, mechanic diagnostics, legal verification, or independent expert evaluation.",
@@ -277,21 +288,38 @@
         "a": "No. It is preliminary AI-assisted screening that helps you prepare before professional inspection."
       },
       "marketplaces": {
-        "q": "Does it work only with one marketplace?",
-        "a": "No. You can paste listing text, seller messages, notes, VIN details, or photos. Automatic URL extraction may be limited by marketplace support."
+        "q": "Does AutoVerdict work only with one marketplace?",
+        "a": "No. You can paste listing text, seller messages, VIN details, notes, or screenshots from different marketplaces. Automatic URL extraction may depend on marketplace support, but manual input can still be analyzed."
       },
       "credits": {
         "q": "How do credits work?",
         "a": "One completed report uses one credit. Credits are stored in your account and are not a subscription."
       },
       "chatbot": {
-        "q": "How is this different from a chatbot?",
-        "a": "AutoVerdict structures the workflow around used-car risk screening, seller questions, inspection points, and a recommendation."
+        "q": "Is this better than asking a generic AI chatbot?",
+        "a": "AutoVerdict is built around the used-car buying workflow. It organizes the result into risk level, missing information, seller questions, inspection checklist, model-specific things to verify, and a clear recommendation."
+      },
+      "partialInfo": {
+        "q": "Can I use AutoVerdict if I only have photos or seller messages?",
+        "a": "Yes. You can submit partial information such as screenshots, seller replies, VIN details, vehicle notes, or copied listing text. The report will show what is known and what still needs verification."
+      },
+      "beforeTravel": {
+        "q": "What should I check before travelling to view a used car?",
+        "a": "Before travelling, you should clarify the VIN, ownership history, service records, accident history, import status, mileage consistency, and whether the seller can provide documents. AutoVerdict helps turn these points into practical seller questions and inspection items."
+      },
+      "safeToBuy": {
+        "q": "Can AutoVerdict tell me if a car is safe to buy?",
+        "a": "No. AutoVerdict is a preliminary screening tool. It can highlight risks, missing information, and questions to ask, but it cannot guarantee that a car is safe. Always verify documents and use professional inspection before purchase."
+      },
+      "notExpert": {
+        "q": "Is AutoVerdict useful if I am not a car expert?",
+        "a": "Yes. AutoVerdict is designed for private buyers who want a structured second opinion before contacting the seller, travelling to view the car, or booking an inspection."
       }
     },
     "finalCta": {
       "title": "Found a car you like? Check it before you call.",
-      "body": "Spend a few minutes screening the listing before you spend hours messaging, travelling, or booking inspection."
+      "body": "Spend a few minutes screening the listing before you spend hours messaging, travelling, or booking inspection.",
+      "free": "Start with 1 free analysis. No card required."
     },
     "howPage": {
       "title": "From listing details to a structured buyer report.",
@@ -442,6 +470,46 @@
       "lead": "Have a question about a report, payment, or the product? Send us a message.",
       "emailLabel": "Email",
       "placeholder": "Placeholder support address until the final support mailbox is configured. Response time target: 1-2 business days."
+    },
+    "reportIncludes": {
+      "title": "What you get in the report",
+      "lead": "AutoVerdict turns messy listing information into a structured buyer report you can use before calling the seller, travelling to view the car, or booking an inspection.",
+      "badge": "Structured output",
+      "cardTitle": "Buyer-ready report",
+      "items": {
+        "risk": {
+          "title": "Risk level and confidence",
+          "body": "Understand whether the listing looks low, medium, high, or unknown risk."
+        },
+        "facts": {
+          "title": "Extracted vehicle facts",
+          "body": "See the key facts AutoVerdict found in the listing or user-provided data."
+        },
+        "missing": {
+          "title": "Missing information",
+          "body": "Know what is not provided but should be clarified before inspection."
+        },
+        "signals": {
+          "title": "Risk signals",
+          "body": "Review suspicious wording, unsupported claims, unclear ownership, import or accident-history ambiguity."
+        },
+        "questions": {
+          "title": "Seller questions",
+          "body": "Get practical questions you can send before calling or travelling."
+        },
+        "checklist": {
+          "title": "Inspection checklist",
+          "body": "Use concrete inspection points if the car reaches viewing or mechanic stage."
+        },
+        "model": {
+          "title": "Model-specific things to verify",
+          "body": "See common areas to check for the specific model, engine, year, or configuration when available."
+        },
+        "recommendation": {
+          "title": "Clear recommendation",
+          "body": "Proceed, proceed with caution, request more information, or avoid."
+        }
+      }
     }
   }
 }

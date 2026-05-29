@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PublicLayout, Section } from "@/components/public/PublicLayout";
-import { ChecksGrid, FaqList, FinalCta, HowSteps, InputSources, PricingCards, ReportPreviewCard } from "@/components/public/PublicComponents";
+import { ChecksGrid, FaqList, FinalCta, HowSteps, InputSources, PricingCards, ReportIncludes, ReportPreviewCard } from "@/components/public/PublicComponents";
 import { PublicSeo } from "@/lib/public-seo";
 
 export default function HomePage() {
@@ -32,8 +32,8 @@ export default function HomePage() {
         jsonLd={jsonLd}
       />
       <main>
-        <section className="bg-[radial-gradient(circle_at_20%_20%,rgba(124,156,255,0.16),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(245,158,11,0.08),transparent_26%),#070A0F]">
-          <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 md:grid-cols-[1.05fr_0.95fr] md:py-24 lg:px-8">
+        <section className="relative overflow-hidden bg-[radial-gradient(circle_at_20%_20%,rgba(124,156,255,0.16),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(245,158,11,0.08),transparent_26%),#05080D] before:pointer-events-none before:absolute before:right-[8%] before:top-[8%] before:hidden before:h-[680px] before:w-[680px] before:rounded-full before:bg-[radial-gradient(circle,rgba(117,146,255,0.13),transparent_62%)] before:blur-sm md:before:block">
+          <div className="relative mx-auto grid max-w-[1200px] gap-10 px-5 py-14 md:grid-cols-[1.05fr_0.95fr] md:py-24 lg:px-8">
             <div className="flex flex-col justify-center">
               <p className="text-sm font-bold text-[#9AB3FF]">{t("public.hero.eyebrow")}</p>
               <h1 className="mt-4 max-w-3xl text-4xl font-extrabold leading-tight text-white md:text-6xl">
@@ -46,13 +46,14 @@ export default function HomePage() {
                 <a href="/api/auth/google" className="av-btn-primary">{t("public.cta.analyze")}</a>
                 <Link to="/sample-report" className="av-btn-secondary">{t("public.cta.sample")}</Link>
               </div>
-              <p className="mt-5 text-sm text-slate-500">{t("public.hero.trust")}</p>
+              <p className="mt-5 text-sm font-semibold text-[#AFC0FF]">{t("public.hero.free")}</p>
+              <p className="mt-1.5 text-[13px] text-slate-500">{t("public.hero.trust")}</p>
             </div>
             <ReportPreviewCard />
           </div>
         </section>
 
-        <Section className="py-10 md:py-12">
+        <Section className="py-8 md:py-10">
           <div className="grid gap-3 md:grid-cols-4">
             {["structured", "questions", "checklist", "buyers"].map((key) => (
               <div key={key} className="rounded-2xl border border-slate-400/10 bg-[#101722] px-5 py-4 text-sm font-bold text-slate-200">
@@ -70,6 +71,10 @@ export default function HomePage() {
         <Section>
           <SectionHeader title={t("public.checksTitle")} lead={t("public.checksLead")} />
           <ChecksGrid />
+        </Section>
+
+        <Section>
+          <ReportIncludes />
         </Section>
 
         <Section>
@@ -133,7 +138,7 @@ function CompareCard({ title, body, highlighted }: { title: string; body: string
 }
 
 function faqJsonLd(t: (key: string) => string) {
-  const keys = ["replaceInspection", "marketplaces", "credits", "chatbot"];
+  const keys = ["replaceInspection", "partialInfo", "beforeTravel", "safeToBuy", "marketplaces", "notExpert", "credits", "chatbot"];
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
