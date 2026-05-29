@@ -1,34 +1,51 @@
 "use client";
 
-import { lazy, Suspense } from "react";
 import { ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "./StatusBadge";
+import { ReportMarkdownViewer } from "./ReportMarkdownViewer";
 import type { CarCheckResponse } from "@/lib/api";
-
-const MDPreview = lazy(() =>
-  import("@uiw/react-md-editor").then((m) => ({ default: m.default.Markdown }))
-);
 
 type Verdict = "buy" | "caution" | "avoid";
 
 function parseVerdict(report: string): Verdict | null {
-  const match = report.match(/##\s+Recommendation[\s\S]*?(?=\n##|$)/i);
-  if (!match) return null;
-  const s = match[0].toLowerCase();
-  if (s.includes("buy with caution")) return "caution";
-  if (s.includes("avoid")) return "avoid";
-  if (s.includes("buy")) return "buy";
+  const s = report.slice(0, 1000).toLowerCase();
+  if (
+    s.includes("buy with caution") ||
+    s.includes("kupuj ostrożnie") ||
+    s.includes("mit vorsicht kaufen") ||
+    s.includes("купувати обережно") ||
+    s.includes("acheter avec prudence")
+  )
+    return "caution";
+  if (
+    s.includes("avoid") ||
+    s.includes("unikaj") ||
+    s.includes("vermeiden") ||
+    s.includes("уникати") ||
+    s.includes("éviter") ||
+    s.includes("eviter")
+  )
+    return "avoid";
+  if (
+    s.includes("buy") ||
+    s.includes("kup") ||
+    s.includes("kaufen") ||
+    s.includes("купувати") ||
+    s.includes("acheter")
+  )
+    return "buy";
   return null;
 }
 
 function extractVerdictSummary(report: string): string {
-  const match = report.match(/##\s+Recommendation([\s\S]*?)(?=\n##|$)/i);
+  const match = report.match(/^#\s+.*?\n([\s\S]*?)(?=\n#{1,3}\s+At a glance|\n#{1,3}\s+|$)/i);
   if (!match) return "";
   return match[1]
     .replace(/\*\*(.*?)\*\*/g, "$1")
     .replace(/\*(.*?)\*/g, "$1")
-    .replace(/^[\s—–-]+/, "")
+    .replace(/[🟢🟠🔴⚪]/gu, "")
+    .replace(/^[\s-]+/, "")
     .trim()
     .slice(0, 300);
 }
@@ -144,10 +161,8 @@ export function InlineReportPanel({ check, loading, onClose }: Props) {
         ) : check.report ? (
           <>
             {verdict && <VerdictCard verdict={verdict} summary={verdictSummary} />}
-            <div className="av-report wmde-markdown-var" data-color-mode="dark">
-              <Suspense fallback={<p className="text-sm text-dim">Loading…</p>}>
-                <MDPreview source={check.report} />
-              </Suspense>
+            <div className="rounded-xl border border-white/6 bg-[#0D121A] p-5">
+              <ReportMarkdownViewer markdown={check.report} />
             </div>
             <p className="border-t border-white/6 pt-4 text-xs text-dim leading-relaxed">
               AutoVerdict provides AI-assisted preliminary screening only. It does not replace

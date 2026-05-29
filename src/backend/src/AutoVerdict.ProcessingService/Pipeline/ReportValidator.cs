@@ -14,9 +14,10 @@ public sealed partial class ReportValidator
         if (string.IsNullOrWhiteSpace(markdown) || markdown.Length < 800)
             errors.Add("Report is empty or too short.");
 
+        var reportHeadings = ExtractMarkdownHeadings(markdown);
         foreach (var heading in reportLanguage.RequiredHeadings)
         {
-            if (!markdown.Contains(heading, StringComparison.Ordinal))
+            if (!ContainsRequiredHeading(reportHeadings, heading))
                 errors.Add($"Missing required heading: {heading}");
         }
 
@@ -25,6 +26,12 @@ public sealed partial class ReportValidator
 
         if (!ContainsAllowedVerdict(markdown, reportLanguage))
             errors.Add("Missing allowed verdict.");
+
+        if (!ContainsAny(markdown, YourQuestionsAnsweredHeadings(reportLanguage)))
+            warnings.Add("Missing user-question answer tracking subsection.");
+
+        if (!ContainsAny(markdown, AtAGlanceHeadings(reportLanguage)))
+            warnings.Add("Missing at-a-glance verdict summary.");
 
         if (!markdown.Contains("|", StringComparison.Ordinal) ||
             !markdown.Contains(reportLanguage.RequiredHeadings[9], StringComparison.Ordinal))
@@ -43,8 +50,54 @@ public sealed partial class ReportValidator
         markdown.Contains(reportLanguage.CautionVerdict, StringComparison.OrdinalIgnoreCase) ||
         markdown.Contains(reportLanguage.AvoidVerdict, StringComparison.OrdinalIgnoreCase);
 
+    private static bool ContainsAny(string markdown, IEnumerable<string> needles) =>
+        needles.Any(needle => markdown.Contains(needle, StringComparison.OrdinalIgnoreCase));
+
+    private static IReadOnlySet<string> ExtractMarkdownHeadings(string markdown)
+    {
+        var headings = new HashSet<string>(StringComparer.Ordinal);
+        foreach (Match match in MarkdownHeadingRegex().Matches(markdown))
+            headings.Add(NormalizeHeadingText(match.Groups["text"].Value));
+        return headings;
+    }
+
+    private static bool ContainsRequiredHeading(IReadOnlySet<string> reportHeadings, string requiredHeading) =>
+        reportHeadings.Contains(NormalizeHeadingText(requiredHeading));
+
+    private static string NormalizeHeadingText(string heading) =>
+        HeadingPrefixRegex()
+            .Replace(heading.Trim(), "")
+            .Trim()
+            .TrimEnd(':');
+
+    private static IEnumerable<string> YourQuestionsAnsweredHeadings(ReportLanguage reportLanguage) =>
+        reportLanguage.Locale switch
+        {
+            "pl" => ["### Odpowiedzi na Twoje pytania", "## Odpowiedzi na Twoje pytania"],
+            "de" => ["### Ihre Fragen beantwortet", "## Ihre Fragen beantwortet"],
+            "uk" => ["### Відповіді на ваші запитання", "## Відповіді на ваші запитання"],
+            "fr" => ["### Réponses à vos questions", "## Réponses à vos questions"],
+            _ => ["### Your questions answered", "## Your questions answered"],
+        };
+
+    private static IEnumerable<string> AtAGlanceHeadings(ReportLanguage reportLanguage) =>
+        reportLanguage.Locale switch
+        {
+            "pl" => ["### W skrócie", "## W skrócie"],
+            "de" => ["### Auf einen Blick", "## Auf einen Blick"],
+            "uk" => ["### Коротко", "## Коротко"],
+            "fr" => ["### En bref", "## En bref"],
+            _ => ["### At a glance", "## At a glance"],
+        };
+
     [GeneratedRegex(@"- \[[ xX]\]")]
     private static partial Regex CheckboxRegex();
+
+    [GeneratedRegex(@"(?m)^\s{0,3}#{1,6}\s+(?<text>.+?)\s*$")]
+    private static partial Regex MarkdownHeadingRegex();
+
+    [GeneratedRegex(@"^#{1,6}\s+")]
+    private static partial Regex HeadingPrefixRegex();
 
     private static void AddUnsafeLanguageFindings(
         string markdown,
@@ -59,6 +112,12 @@ public sealed partial class ReportValidator
             errors.Add("Unsafe wording detected: definite damage claim");
         if (NoRiskRegex().IsMatch(markdown))
             errors.Add("Unsafe wording detected: no risk claim");
+        if (DefinitelySafeRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: definite safety claim");
+        if (SellerLyingRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: direct seller accusation");
+        if (FraudAccusationRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: direct fraud accusation");
 
         if (GuaranteedRiskRegex().IsMatch(markdown))
             warnings.Add("Potentially overconfident guarantee wording detected.");
@@ -78,4 +137,13 @@ public sealed partial class ReportValidator
 
     [GeneratedRegex(@"\b(guaranteed safe|guaranteed accident-free|guaranteed risk-free|guaranteed clean)\b", RegexOptions.IgnoreCase)]
     private static partial Regex GuaranteedRiskRegex();
+
+    [GeneratedRegex(@"\b(definitely safe|100%\s*safe|certainly accident-free)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex DefinitelySafeRegex();
+
+    [GeneratedRegex(@"\b(seller is lying|the seller is lying)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex SellerLyingRegex();
+
+    [GeneratedRegex(@"\b(the seller|this seller|seller) (committed fraud|is committing fraud|is a fraud|is fraudulent)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex FraudAccusationRegex();
 }

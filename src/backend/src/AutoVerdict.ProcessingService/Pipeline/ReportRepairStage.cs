@@ -11,6 +11,7 @@ public sealed class ReportRepairStage(
 {
     private const string StageName = "ReportRepair";
     private const string PromptVersion = "report-repair.v1";
+    private const int MinRepairMaxTokens = 12_000;
 
     private readonly AiPipelineOptions _options = options.Value;
 
@@ -22,7 +23,8 @@ public sealed class ReportRepairStage(
         AiBudgetTracker budget,
         CancellationToken cancellationToken)
     {
-        var stage = _options.GetStage(StageName, "claude-haiku-4-5", 8000);
+        var stage = _options.GetStage(StageName, "claude-haiku-4-5", MinRepairMaxTokens);
+        var maxTokens = Math.Max(stage.MaxTokens, MinRepairMaxTokens);
         var response = await runner.RunAsync(
             new AiTextRequest(
                 checkId,
@@ -49,9 +51,18 @@ public sealed class ReportRepairStage(
                         Requirements:
                         - Preserve the original analysis content as much as possible.
                         - Do not add new unsupported facts.
-                        - Add missing required sections if needed, using exactly these headings in this exact order:
+                        - Add missing required sections if needed.
+                        - The repaired report must contain every required heading line below exactly as written, including the markdown level and wording.
+                        - Do not convert required ## headings into ### headings.
+                        - Do not merge Technical Risks, Listing Risks, or Deal Risks into one section.
+                        - Use exactly these headings in this exact order:
                         {string.Join("\n", reportLanguage.RequiredHeadings.Select(h => "- " + h))}
                         - Use one localized verdict: {reportLanguage.VerdictLabels}.
+                        - Preserve the At a glance table if present.
+                        - Preserve the Your questions answered subsection if present.
+                        - If user-question answers were present in the original report, keep them near the top of the repaired report.
+                        - Do not invent new user questions or answers.
+                        - Keep risk tables concise and readable.
                         - The report must end with this exact localized disclaimer after a horizontal rule:
                         ---
                         {reportLanguage.Disclaimer}
@@ -62,7 +73,7 @@ public sealed class ReportRepairStage(
                         {markdown}
                         """),
                 ],
-                stage.MaxTokens),
+                maxTokens),
             budget,
             validationWarningsJson: AiJson.Serialize(validation),
             cancellationToken: cancellationToken);
