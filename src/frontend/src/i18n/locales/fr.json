@@ -1,0 +1,98 @@
+{
+  "app": {
+    "name": "AutoVerdict"
+  },
+  "auth": {
+    "continueWithGoogle": "Continuer avec Google",
+    "signOut": "Se déconnecter",
+    "signingIn": "Connexion..."
+  },
+  "common": {
+    "loading": "Chargement..."
+  },
+  "credits": {
+    "label": "Crédits : {{count}}",
+    "short": "{{count}}",
+    "available_one": "{{count}} crédit",
+    "available_other": "{{count}} crédits",
+    "topUp": "Recharger"
+  },
+  "language": {
+    "label": "Langue de l'interface",
+    "switcher": "Changer de langue"
+  },
+  "nav": {
+    "checkCar": "Vérifier une voiture",
+    "myReports": "Mes rapports",
+    "garageNavigation": "Navigation du garage",
+    "navigationMenu": "Menu de navigation",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "home": {
+    "loginTitle": "Évitez les erreurs coûteuses à l'achat d'une voiture.",
+    "loginBody": "Collez les détails de l'annonce, les messages du vendeur, un lien Otomoto ou des photos. Obtenez une analyse de risque structurée par IA avant de contacter le vendeur.",
+    "loginDisclaimer": "Pré-évaluation assistée par IA uniquement. Vérifiez toujours les documents et organisez une inspection professionnelle avant l'achat.",
+    "howItWorksLink": "Fonctionnement",
+    "goToGarage": "Aller au garage",
+    "heroTitleLine1": "Évitez les erreurs",
+    "heroTitleLine2": "coûteuses à l'achat.",
+    "heroBody": "Collez le texte de l'annonce, les messages du vendeur, un lien Otomoto, des photos, le VIN ou vos propres questions. AutoVerdict vous donne une analyse de risque structurée par IA avant de contacter le vendeur.",
+    "disclaimerShortLine1": "Pré-évaluation assistée par IA.",
+    "disclaimerShortLine2": "Ne remplace pas une inspection professionnelle.",
+    "previewVerdict": "Acheter avec prudence",
+    "previewConcernsLabel": "Principales préoccupations",
+    "previewConcerns": {
+      "serviceHistory": "Historique d'entretien manquant",
+      "importHistory": "Historique d'importation incertain",
+      "sellerDetails": "Description du vendeur peu détaillée"
+    },
+    "recommendedNextStepLabel": "Prochaine étape recommandée",
+    "recommendedNextStep": "Demandez le VIN, les factures et l'historique des accidents avant l'inspection.",
+    "howItWorksTitle": "Fonctionnement",
+    "steps": {
+      "paste": {
+        "title": "Collez ce que vous savez",
+        "desc": "Ajoutez le texte de l'annonce, les réponses du vendeur, le VIN, des notes, des photos ou un lien Otomoto."
+      },
+      "review": {
+        "title": "L'IA examine les risques",
+        "desc": "AutoVerdict recherche les informations manquantes, les formulations suspectes, les risques de transaction et les problèmes propres au modèle."
+      },
+      "nextSteps": {
+        "title": "Recevez des étapes concrètes",
+        "desc": "Obtenez des questions pour le vendeur, des points d'inspection, des coûts estimés et une recommandation claire."
+      }
+    },
+    "checksTitle": "Ce qu'AutoVerdict vérifie",
+    "checks": {
+      "suspiciousWording": "Formulations suspectes",
+      "missingServiceHistory": "Historique d'entretien manquant",
+      "mileageConcerns": "Doutes sur le kilométrage",
+      "importUncertainty": "Incertitude liée à l'importation",
+      "accidentAmbiguity": "Accident ou réparation peu clairs",
+      "sellerClaims": "Affirmations du vendeur imprécises",
+      "modelIssues": "Problèmes fréquents du modèle",
+      "ownershipCosts": "Coûts de la première année",
+      "sellerQuestions": "Questions avant la visite",
+      "inspectionChecklist": "Liste de contrôle d'inspection"
+    },
+    "audienceTitle": "Pour les acheteurs prudents de voitures d'occasion.",
+    "audienceBody": "AutoVerdict est conçu pour les acheteurs particuliers qui ne sont pas experts automobiles et veulent un deuxième avis structuré avant d'appeler le vendeur, de planifier une inspection ou de dépenser de l'argent sur une annonce risquée.",
+    "safetyTitle": "Un outil de pré-évaluation, pas une garantie.",
+    "safetyBody": "AutoVerdict vous aide à identifier des questions et des risques. Il ne remplace pas un diagnostic professionnel, une vérification juridique, les rapports officiels d'historique du véhicule ni une inspection indépendante.",
+    "seoTitle": "Analyse IA d'annonces de voitures d'occasion pour les acheteurs en Pologne",
+    "seoBody": "Acheter une voiture d'occasion en Pologne implique souvent de comparer des annonces, vérifier les déclarations du vendeur, examiner l'historique d'entretien et décider si une inspection vaut la peine. AutoVerdict aide à analyser les annonces Otomoto et les informations fournies par le vendeur en signalant les risques, les détails manquants, les questions pratiques et les points d'inspection.",
+    "seoWhyTitle": "Pourquoi analyser une annonce avant de contacter le vendeur ?",
+    "seoWhyBody": "Contacter un vendeur pour une annonce problématique fait perdre du temps aux deux parties. Une vérification IA rapide aide à filtrer les risques évidents avant les appels ou les visites.",
+    "seoInfoTitle": "Quelles informations vérifier avant d'acheter une voiture d'occasion ?",
+    "seoInfoBody": "L'historique d'entretien, les accidents, la cohérence du kilométrage, les documents d'importation, la réputation du vendeur et les problèmes connus du modèle sont des signaux importants lors de l'évaluation d'une annonce.",
+    "seoOtomotoTitle": "Comment AutoVerdict aide avec les annonces Otomoto",
+    "seoOtomotoBody": "Collez une URL Otomoto ou le texte copié de l'annonce. AutoVerdict lit le contenu, repère les lacunes, signale les schémas suspects et fournit des questions pratiques avant de décider d'une inspection.",
+    "footer": {
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "contact": "Contact"
+    }
+  }
+}

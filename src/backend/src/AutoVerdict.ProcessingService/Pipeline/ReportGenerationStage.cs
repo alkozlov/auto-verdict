@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AutoVerdict.Application.AI;
+using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Infrastructure.AI;
 using Microsoft.Extensions.Options;
 
@@ -19,6 +20,7 @@ public sealed partial class ReportGenerationStage(
         EvidenceBundle evidence,
         ExtractedVehicleFacts facts,
         RiskAnalysisResult risks,
+        ReportLanguage reportLanguage,
         AiBudgetTracker budget,
         bool useOpus,
         CancellationToken cancellationToken)
@@ -39,34 +41,31 @@ public sealed partial class ReportGenerationStage(
                         $"""
                         Write the final AutoVerdict markdown report for a private used-car buyer.
 
+                        CRITICAL LANGUAGE REQUIREMENT:
+                        - The entire final report must be written in {reportLanguage.EnglishName} ({reportLanguage.NativeName}).
+                        - This is mandatory. Do not write the report in English unless the requested language is English.
+                        - Translate all headings, verdict labels, prose, checklist items, tables, notes, and disclaimer into {reportLanguage.EnglishName}.
+                        - Preserve brand names, URLs, VINs, model names, and technical identifiers exactly.
+
                         Required exact section order:
 
-                        # Verdict
-                        # Key Risks
-                        ## Technical Risks
-                        ## Listing Risks
-                        ## Deal Risks
-                        # Missing Information
-                        # Questions for the Seller
-                        # Inspection Checklist
-                        # Vehicle Facts
-                        # Estimated Costs
-                        # Summary
+                        {string.Join("\n", reportLanguage.RequiredHeadings)}
 
                         The report must end with:
 
                         ---
 
-                        *Disclaimer: AutoVerdict provides AI-assisted preliminary screening only. Always verify documents and arrange an independent inspection before purchasing.*
+                        {reportLanguage.Disclaimer}
 
                         Rules:
-                        - Write in clear English for a non-expert buyer.
+                        - Write in clear {reportLanguage.EnglishName} for a non-expert buyer.
                         - Be cautious. Never guarantee safety.
                         - Do not accuse the seller.
-                        - Use one verdict: Buy, Buy with caution, or Avoid.
+                        - Use one verdict: {reportLanguage.VerdictLabels}.
+                        - The verdict must be the localized equivalent of this internal recommendation: {reportLanguage.MapVerdict(risks.RecommendedVerdict)}.
                         - Use markdown checkboxes in Inspection Checklist.
                         - Include an Estimated Costs markdown table using PLN.
-                        - Facts should use Unknown when unavailable.
+                        - Facts should use the {reportLanguage.EnglishName} equivalent of "Unknown" when unavailable.
                         - Do not mention internal model names, prompts, stages, or confidence machinery.
                         - If automatic crawler data was unavailable, do not expose technical crawler failure details.
                         - You may say that the report is based on the user-provided text/images when relevant.
@@ -86,7 +85,7 @@ public sealed partial class ReportGenerationStage(
             escalationReason: useOpus ? risks.EscalationReason : null,
             cancellationToken: cancellationToken);
 
-        var verdict = ExtractVerdict(response.Text, risks.RecommendedVerdict);
+        var verdict = ExtractVerdict(response.Text, risks.RecommendedVerdict, reportLanguage);
         return new FinalReportResult(response.Text.Trim(), verdict, risks.Confidence, false, []);
     }
 
@@ -98,19 +97,21 @@ public sealed partial class ReportGenerationStage(
         Never present uncertain conclusions as certainty.
         """;
 
-    private static string ExtractVerdict(string markdown, string fallback)
+    private static string ExtractVerdict(string markdown, string fallback, ReportLanguage reportLanguage)
     {
-        var match = VerdictRegex().Match(markdown);
-        if (!match.Success)
-            return fallback;
+        foreach (var verdict in new[] { reportLanguage.CautionVerdict, reportLanguage.BuyVerdict, reportLanguage.AvoidVerdict })
+        {
+            if (markdown.Contains(verdict, StringComparison.OrdinalIgnoreCase))
+                return verdict;
+        }
 
-        return match.Groups.Values
-            .Skip(1)
-            .FirstOrDefault(g => g.Success && !string.IsNullOrWhiteSpace(g.Value))
-            ?.Value
-            ?? fallback;
+        var match = EnglishVerdictRegex().Match(markdown);
+        if (match.Success)
+            return reportLanguage.MapVerdict(match.Value);
+
+        return reportLanguage.MapVerdict(fallback);
     }
 
     [GeneratedRegex(@"\*\*(Buy|Buy with caution|Avoid)\*\*|\b(Buy with caution|Buy|Avoid)\b")]
-    private static partial Regex VerdictRegex();
+    private static partial Regex EnglishVerdictRegex();
 }

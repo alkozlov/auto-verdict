@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getToken } from "@/lib/auth";
 import { api, type MeResponse } from "@/lib/api";
 import { GarageContext } from "@/lib/garage-context";
@@ -9,6 +10,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
 
 export default function GarageLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [ready, setReady] = useState(false);
@@ -41,7 +43,7 @@ export default function GarageLayout() {
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-page">
-        <p className="text-sm text-dim">Loading…</p>
+        <p className="text-sm text-dim">{t("common.loading")}</p>
       </div>
     );
   }

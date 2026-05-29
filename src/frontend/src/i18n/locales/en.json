@@ -1,0 +1,98 @@
+{
+  "app": {
+    "name": "AutoVerdict"
+  },
+  "auth": {
+    "continueWithGoogle": "Continue with Google",
+    "signOut": "Sign out",
+    "signingIn": "Signing you in..."
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "credits": {
+    "label": "Credits: {{count}}",
+    "short": "{{count}}",
+    "available_one": "{{count}} credit",
+    "available_other": "{{count}} credits",
+    "topUp": "Top up"
+  },
+  "language": {
+    "label": "Interface language",
+    "switcher": "Change language"
+  },
+  "nav": {
+    "checkCar": "Check car",
+    "myReports": "My reports",
+    "garageNavigation": "Garage navigation",
+    "navigationMenu": "Navigation menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "home": {
+    "loginTitle": "Avoid expensive used-car mistakes.",
+    "loginBody": "Paste listing details, seller messages, an Otomoto link, or photos. Get a structured AI risk analysis before you contact the seller.",
+    "loginDisclaimer": "AI-assisted screening only. Always verify documents and arrange a professional inspection before buying.",
+    "howItWorksLink": "How it works",
+    "goToGarage": "Go to Garage",
+    "heroTitleLine1": "Avoid expensive",
+    "heroTitleLine2": "used-car mistakes.",
+    "heroBody": "Paste listing text, seller messages, an Otomoto link, photos, VIN, or your own questions. AutoVerdict gives you a structured AI risk analysis before you contact the seller.",
+    "disclaimerShortLine1": "AI-assisted preliminary screening.",
+    "disclaimerShortLine2": "Not a replacement for professional inspection.",
+    "previewVerdict": "Buy with caution",
+    "previewConcernsLabel": "Main concerns",
+    "previewConcerns": {
+      "serviceHistory": "Missing service history",
+      "importHistory": "Imported vehicle history unclear",
+      "sellerDetails": "Seller description lacks details"
+    },
+    "recommendedNextStepLabel": "Recommended next step",
+    "recommendedNextStep": "Ask for VIN, invoices, and accident history before inspection.",
+    "howItWorksTitle": "How it works",
+    "steps": {
+      "paste": {
+        "title": "Paste what you know",
+        "desc": "Add listing text, seller replies, VIN, notes, photos, or an Otomoto link."
+      },
+      "review": {
+        "title": "AI reviews the risks",
+        "desc": "AutoVerdict checks for missing information, suspicious wording, deal risks, and model-specific concerns."
+      },
+      "nextSteps": {
+        "title": "Get practical next steps",
+        "desc": "Receive seller questions, inspection points, estimated costs, and a clear recommendation."
+      }
+    },
+    "checksTitle": "What AutoVerdict checks",
+    "checks": {
+      "suspiciousWording": "Suspicious wording",
+      "missingServiceHistory": "Missing service history",
+      "mileageConcerns": "Mileage concerns",
+      "importUncertainty": "Import-related uncertainty",
+      "accidentAmbiguity": "Accident or repair ambiguity",
+      "sellerClaims": "Unclear seller claims",
+      "modelIssues": "Model-specific common issues",
+      "ownershipCosts": "First-year ownership costs",
+      "sellerQuestions": "Questions to ask before viewing",
+      "inspectionChecklist": "Inspection checklist"
+    },
+    "audienceTitle": "Built for cautious used-car buyers.",
+    "audienceBody": "AutoVerdict is designed for private buyers who are not car experts and want a structured second opinion before calling the seller, arranging inspection, or spending money on a risky listing.",
+    "safetyTitle": "A screening tool, not a guarantee.",
+    "safetyBody": "AutoVerdict helps you identify questions and risks. It does not replace professional diagnostics, legal verification, official vehicle history reports, or an independent inspection.",
+    "seoTitle": "AI used-car listing analysis for buyers in Poland",
+    "seoBody": "Buying a used car in Poland often means comparing listings, checking seller claims, reviewing service history, and deciding whether a car is worth inspecting. AutoVerdict helps buyers analyze Otomoto listings and other seller-provided information by highlighting possible risks, missing details, practical seller questions, and inspection points.",
+    "seoWhyTitle": "Why analyze a used-car listing before contacting the seller?",
+    "seoWhyBody": "Contacting a seller about a problematic listing wastes time for both parties. A quick AI screening helps you filter out obvious risks before investing time in phone calls or viewings.",
+    "seoInfoTitle": "What information should you check before buying a used car?",
+    "seoInfoBody": "Service history, accident records, mileage consistency, import documentation, seller reputation, and model-specific known issues are all important signals when evaluating a used-car listing.",
+    "seoOtomotoTitle": "How AutoVerdict helps with Otomoto listings",
+    "seoOtomotoBody": "Paste an Otomoto listing URL or copy the listing text. AutoVerdict reads the content, identifies gaps, flags suspicious patterns, and gives you practical questions to ask before deciding whether to arrange an inspection.",
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    }
+  }
+}

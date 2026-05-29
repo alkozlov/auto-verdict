@@ -1,4 +1,5 @@
 using AutoVerdict.Application.AI;
+using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Infrastructure.AI;
 using Microsoft.Extensions.Options;
 
@@ -17,6 +18,7 @@ public sealed class ReportRepairStage(
         Guid checkId,
         string markdown,
         ReportValidationResult validation,
+        ReportLanguage reportLanguage,
         AiBudgetTracker budget,
         CancellationToken cancellationToken)
     {
@@ -33,6 +35,11 @@ public sealed class ReportRepairStage(
                         $"""
                         Repair this AutoVerdict markdown report so it passes validation.
 
+                        CRITICAL LANGUAGE REQUIREMENT:
+                        - The repaired report must be written in {reportLanguage.EnglishName} ({reportLanguage.NativeName}).
+                        - Do not leave English prose, English section headings, or the English disclaimer unless the requested language is English.
+                        - Preserve brand names, URLs, VINs, model names, and technical identifiers exactly.
+
                         Validation errors:
                         {string.Join("\n", validation.Errors.Select(e => "- " + e))}
 
@@ -42,7 +49,12 @@ public sealed class ReportRepairStage(
                         Requirements:
                         - Preserve the original analysis content as much as possible.
                         - Do not add new unsupported facts.
-                        - Add missing required sections if needed.
+                        - Add missing required sections if needed, using exactly these headings in this exact order:
+                        {string.Join("\n", reportLanguage.RequiredHeadings.Select(h => "- " + h))}
+                        - Use one localized verdict: {reportLanguage.VerdictLabels}.
+                        - The report must end with this exact localized disclaimer after a horizontal rule:
+                        ---
+                        {reportLanguage.Disclaimer}
                         - Remove unsafe certainty language.
                         - Return only the repaired markdown report.
 

@@ -3,6 +3,7 @@ using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Listing;
 using AutoVerdict.Contracts.Messages;
+using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Parsing;
@@ -31,6 +32,7 @@ public sealed class CarCheckAnalysisPipeline(
         CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Running staged AI analysis for check {CheckId}.", message.CheckId);
+        var reportLanguage = ReportLanguage.Resolve(message.ReportLocale);
 
         var userImages = await DownloadUserImagesAsync(message.UserImageKeys, cancellationToken);
         var crawlResult = await CrawlListingAsync(message, cancellationToken);
@@ -55,11 +57,12 @@ public sealed class CarCheckAnalysisPipeline(
             evidence,
             facts,
             risks,
+            reportLanguage,
             budget,
             useOpusForReport,
             cancellationToken);
 
-        var validation = reportValidator.Validate(report.Markdown);
+        var validation = reportValidator.Validate(report.Markdown, reportLanguage);
         var finalMarkdown = report.Markdown;
         if (!validation.IsValid)
         {
@@ -72,10 +75,11 @@ public sealed class CarCheckAnalysisPipeline(
                 message.CheckId,
                 report.Markdown,
                 validation,
+                reportLanguage,
                 budget,
                 cancellationToken);
 
-            validation = reportValidator.Validate(finalMarkdown);
+            validation = reportValidator.Validate(finalMarkdown, reportLanguage);
             if (!validation.IsValid)
                 throw new InvalidOperationException(
                     "AI report failed validation after repair: " + string.Join("; ", validation.Errors));

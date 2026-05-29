@@ -1,26 +1,12 @@
 using System.Text.RegularExpressions;
 using AutoVerdict.Application.AI;
+using AutoVerdict.Contracts.Reports;
 
 namespace AutoVerdict.ProcessingService.Pipeline;
 
 public sealed partial class ReportValidator
 {
-    private static readonly string[] RequiredHeadings =
-    [
-        "# Verdict",
-        "# Key Risks",
-        "## Technical Risks",
-        "## Listing Risks",
-        "## Deal Risks",
-        "# Missing Information",
-        "# Questions for the Seller",
-        "# Inspection Checklist",
-        "# Vehicle Facts",
-        "# Estimated Costs",
-        "# Summary",
-    ];
-
-    public ReportValidationResult Validate(string markdown)
+    public ReportValidationResult Validate(string markdown, ReportLanguage reportLanguage)
     {
         var errors = new List<string>();
         var warnings = new List<string>();
@@ -28,20 +14,20 @@ public sealed partial class ReportValidator
         if (string.IsNullOrWhiteSpace(markdown) || markdown.Length < 800)
             errors.Add("Report is empty or too short.");
 
-        foreach (var heading in RequiredHeadings)
+        foreach (var heading in reportLanguage.RequiredHeadings)
         {
             if (!markdown.Contains(heading, StringComparison.Ordinal))
                 errors.Add($"Missing required heading: {heading}");
         }
 
-        if (!markdown.Contains("AutoVerdict provides AI-assisted preliminary screening only", StringComparison.OrdinalIgnoreCase))
+        if (!markdown.Contains(reportLanguage.Disclaimer, StringComparison.OrdinalIgnoreCase))
             errors.Add("Missing required disclaimer.");
 
-        if (!AllowedVerdictRegex().IsMatch(markdown))
+        if (!ContainsAllowedVerdict(markdown, reportLanguage))
             errors.Add("Missing allowed verdict.");
 
         if (!markdown.Contains("|", StringComparison.Ordinal) ||
-            !markdown.Contains("# Estimated Costs", StringComparison.Ordinal))
+            !markdown.Contains(reportLanguage.RequiredHeadings[9], StringComparison.Ordinal))
             warnings.Add("Estimated costs table may be missing.");
 
         if (!CheckboxRegex().IsMatch(markdown))
@@ -52,8 +38,10 @@ public sealed partial class ReportValidator
         return new ReportValidationResult(errors.Count == 0, errors, warnings);
     }
 
-    [GeneratedRegex(@"\b(Buy with caution|Buy|Avoid)\b", RegexOptions.IgnoreCase)]
-    private static partial Regex AllowedVerdictRegex();
+    private static bool ContainsAllowedVerdict(string markdown, ReportLanguage reportLanguage) =>
+        markdown.Contains(reportLanguage.BuyVerdict, StringComparison.OrdinalIgnoreCase) ||
+        markdown.Contains(reportLanguage.CautionVerdict, StringComparison.OrdinalIgnoreCase) ||
+        markdown.Contains(reportLanguage.AvoidVerdict, StringComparison.OrdinalIgnoreCase);
 
     [GeneratedRegex(@"- \[[ xX]\]")]
     private static partial Regex CheckboxRegex();

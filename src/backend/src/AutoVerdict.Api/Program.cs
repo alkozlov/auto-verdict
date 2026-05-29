@@ -10,6 +10,7 @@ using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Dtos;
 using AutoVerdict.Contracts.Enums;
+using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure;
 using AutoVerdict.Infrastructure.Auth;
@@ -220,6 +221,11 @@ app.MapPost("/api/checks", async (
         listingUrl = normalized;
     }
 
+    var reportLocale = form["reportLocale"].FirstOrDefault()?.Trim();
+    if (!ReportLanguage.IsSupported(reportLocale))
+        return Results.BadRequest("Unsupported report locale. Supported values: en, pl, de, uk, fr.");
+    reportLocale = ReportLanguage.Resolve(reportLocale).Locale;
+
     // Optional images — up to 5, each ≤ 2560 KB
     var imageFiles = form.Files
         .Where(f => f.Name.StartsWith("image", StringComparison.OrdinalIgnoreCase))
@@ -260,7 +266,7 @@ app.MapPost("/api/checks", async (
     try
     {
         var check = await checkService.CreateAsync(
-            userId.Value, checkId, description, listingUrl, [.. imageKeys], ct);
+            userId.Value, checkId, description, listingUrl, reportLocale, [.. imageKeys], ct);
 
         return Results.Created($"/api/checks/{check.CheckId}", ToResponse(check));
     }
