@@ -1,35 +1,54 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ReportMarkdownViewer } from "@/components/ReportMarkdownViewer";
 import { cn } from "@/lib/utils";
-
-const MDPreview = lazy(() =>
-  import("@uiw/react-md-editor").then((m) => ({ default: m.default.Markdown }))
-);
 
 type Verdict = "buy" | "caution" | "avoid";
 
 function parseVerdict(report: string): Verdict | null {
-  const match = report.match(/##\s+Recommendation[\s\S]*?(?=\n##|$)/i);
-  if (!match) return null;
-  const s = match[0].toLowerCase();
-  if (s.includes("buy with caution")) return "caution";
-  if (s.includes("avoid")) return "avoid";
-  if (s.includes("buy")) return "buy";
+  const firstSection = report.split(/\n#\s+/)[0].toLowerCase();
+  const s = firstSection || report.slice(0, 1000).toLowerCase();
+  if (
+    s.includes("buy with caution") ||
+    s.includes("kupuj ostrożnie") ||
+    s.includes("mit vorsicht kaufen") ||
+    s.includes("купувати обережно") ||
+    s.includes("acheter avec prudence")
+  )
+    return "caution";
+  if (
+    s.includes("avoid") ||
+    s.includes("unikaj") ||
+    s.includes("vermeiden") ||
+    s.includes("уникати") ||
+    s.includes("éviter") ||
+    s.includes("eviter")
+  )
+    return "avoid";
+  if (
+    s.includes("buy") ||
+    s.includes("kup") ||
+    s.includes("kaufen") ||
+    s.includes("купувати") ||
+    s.includes("acheter")
+  )
+    return "buy";
   return null;
 }
 
 function extractVerdictSummary(report: string): string {
-  const match = report.match(/##\s+Recommendation([\s\S]*?)(?=\n##|$)/i);
+  const match = report.match(/^#\s+.*?\n([\s\S]*?)(?=\n#{1,3}\s+At a glance|\n#{1,3}\s+|$)/i);
   if (!match) return "";
   return match[1]
     .replace(/\*\*(.*?)\*\*/g, "$1")
     .replace(/\*(.*?)\*/g, "$1")
-    .replace(/^[\s—–-]+/, "")
+    .replace(/[🟢🟠🔴⚪]/gu, "")
+    .replace(/^[\s-]+/, "")
     .trim()
     .slice(0, 300);
 }
@@ -52,17 +71,12 @@ const VERDICT_STYLES: Record<Verdict, { card: string; badge: string; label: stri
   },
 };
 
-function VerdictCard({ verdict, summary }: { verdict: Verdict; summary: string }) {
+function VerdictBadge({ verdict }: { verdict: Verdict }) {
   const s = VERDICT_STYLES[verdict];
   return (
-    <div className={cn("rounded-lg border p-5 space-y-2.5", s.card)}>
-      <span className={cn("inline-flex items-center rounded-sm px-3 py-1 text-sm font-semibold", s.badge)}>
-        {s.label}
-      </span>
-      {summary && (
-        <p className="text-sm text-mid leading-relaxed">{summary}</p>
-      )}
-    </div>
+    <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold", s.badge)}>
+      {s.label}
+    </span>
   );
 }
 
@@ -93,7 +107,7 @@ export default function ReportPage() {
   const verdictSummary = check?.report ? extractVerdictSummary(check.report) : "";
 
   return (
-    <div className="mx-auto max-w-[760px] space-y-6">
+    <div className="mx-auto max-w-[960px] space-y-6 pb-16">
       <Link
         to="/garage/reports"
         className="inline-flex items-center gap-1.5 text-sm text-dim transition-colors hover:text-mid"
@@ -103,41 +117,50 @@ export default function ReportPage() {
       </Link>
 
       {loading ? (
-        <div className="rounded-xl border border-white/6 bg-surface p-6">
+        <div className="rounded-xl border border-white/8 bg-surface p-6">
           <p className="text-sm text-dim">Loading report…</p>
         </div>
       ) : !check ? (
-        <div className="rounded-xl border border-white/6 bg-surface p-6">
+        <div className="rounded-xl border border-white/8 bg-surface p-6">
           <p className="text-sm text-bad">Report not found.</p>
         </div>
       ) : (
         <>
-          <div className="rounded-xl border border-white/6 bg-surface px-6 py-5 space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-base font-semibold text-hi">
-                {check.title ?? check.listingUrl ?? "Listing analysis"}
-              </h1>
-              <StatusBadge status={check.status} />
+          <div className="rounded-2xl border border-white/8 bg-gradient-to-b from-[#111823] to-[#0D121A] px-6 py-5 shadow-[0_18px_60px_rgba(0,0,0,0.25)] sm:px-7">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {verdict && <VerdictBadge verdict={verdict} />}
+                  <StatusBadge status={check.status} />
+                </div>
+                <h1 className="text-xl font-[720] leading-tight text-hi sm:text-2xl">
+                  {check.title ?? check.listingUrl ?? "Listing analysis"}
+                </h1>
+                {verdictSummary && (
+                  <p className="max-w-3xl text-sm leading-6 text-mid">{verdictSummary}</p>
+                )}
+              </div>
+              <div className="shrink-0 text-left sm:text-right">
+                <p className="text-xs uppercase tracking-wide text-off">Created</p>
+                <p className="mt-1 text-sm text-mid">
+                  {new Date(check.createdAt).toLocaleString()}
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-dim">
-              {new Date(check.createdAt).toLocaleString()}
-              {check.listingUrl && (
-                <>
-                  {" · "}
-                  <a
-                    href={check.listingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-brand hover:text-brand-hi transition-colors"
-                  >
-                    View listing
-                  </a>
-                </>
-              )}
-            </p>
+            {check.listingUrl && (
+              <a
+                href={check.listingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex max-w-full items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-3 py-2 text-sm text-brand transition-colors hover:text-brand-hi"
+              >
+                <ExternalLink className="h-4 w-4 shrink-0" />
+                <span className="truncate">{check.listingUrl}</span>
+              </a>
+            )}
           </div>
 
-          <div className="rounded-xl border border-white/6 bg-surface p-6 space-y-5">
+          <div className="rounded-[18px] border border-white/8 bg-gradient-to-b from-[#111823] to-[#0D121A] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.35)] sm:rounded-3xl sm:p-10">
             {check.status === "Pending" || check.status === "Processing" ? (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-mid">Analysis in progress</p>
@@ -154,14 +177,7 @@ export default function ReportPage() {
               </div>
             ) : check.report ? (
               <>
-                {verdict && (
-                  <VerdictCard verdict={verdict} summary={verdictSummary} />
-                )}
-                <div className="av-report wmde-markdown-var" data-color-mode="dark">
-                  <Suspense fallback={<p className="text-sm text-dim">Loading report…</p>}>
-                    <MDPreview source={check.report} />
-                  </Suspense>
-                </div>
+                <ReportMarkdownViewer markdown={check.report} />
                 <p className="border-t border-white/6 pt-4 text-xs text-dim leading-relaxed">
                   AutoVerdict provides AI-assisted preliminary screening only. It does not replace
                   professional inspection, vehicle history verification, legal checks, or independent
@@ -169,6 +185,21 @@ export default function ReportPage() {
                 </p>
               </>
             ) : null}
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/garage/check"
+              className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
+            >
+              Check another car
+            </Link>
+            <Link
+              to="/garage/reports"
+              className="rounded-lg border border-white/8 px-5 py-2.5 text-sm text-dim transition-colors hover:text-hi"
+            >
+              Back to reports
+            </Link>
           </div>
         </>
       )}

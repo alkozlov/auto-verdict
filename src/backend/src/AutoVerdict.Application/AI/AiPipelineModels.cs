@@ -48,14 +48,23 @@ public sealed record RiskAnalysisResult(
     IReadOnlyList<string> CostAssumptions,
     IReadOnlyList<string> Inconsistencies,
     bool NeedsEscalation,
-    string? EscalationReason);
+    string? EscalationReason,
+    string? MainConcern = null,
+    string RecommendedNextStep = "",
+    IReadOnlyList<UserQuestionAnswer>? UserQuestions = null);
 
 public sealed record RiskItem(
     string Severity,
     string Title,
     string Explanation,
     string Source,
-    string HowToVerify);
+    string HowToVerify,
+    string EvidenceStrength = "medium");
+
+public sealed record UserQuestionAnswer(
+    string Question,
+    string Answer,
+    string Status);
 
 public sealed record FinalReportResult(
     string Markdown,

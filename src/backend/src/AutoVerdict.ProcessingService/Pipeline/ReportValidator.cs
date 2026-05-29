@@ -26,6 +26,12 @@ public sealed partial class ReportValidator
         if (!ContainsAllowedVerdict(markdown, reportLanguage))
             errors.Add("Missing allowed verdict.");
 
+        if (!ContainsAny(markdown, YourQuestionsAnsweredHeadings(reportLanguage)))
+            warnings.Add("Missing user-question answer tracking subsection.");
+
+        if (!ContainsAny(markdown, AtAGlanceHeadings(reportLanguage)))
+            warnings.Add("Missing at-a-glance verdict summary.");
+
         if (!markdown.Contains("|", StringComparison.Ordinal) ||
             !markdown.Contains(reportLanguage.RequiredHeadings[9], StringComparison.Ordinal))
             warnings.Add("Estimated costs table may be missing.");
@@ -43,6 +49,29 @@ public sealed partial class ReportValidator
         markdown.Contains(reportLanguage.CautionVerdict, StringComparison.OrdinalIgnoreCase) ||
         markdown.Contains(reportLanguage.AvoidVerdict, StringComparison.OrdinalIgnoreCase);
 
+    private static bool ContainsAny(string markdown, IEnumerable<string> needles) =>
+        needles.Any(needle => markdown.Contains(needle, StringComparison.OrdinalIgnoreCase));
+
+    private static IEnumerable<string> YourQuestionsAnsweredHeadings(ReportLanguage reportLanguage) =>
+        reportLanguage.Locale switch
+        {
+            "pl" => ["### Odpowiedzi na Twoje pytania", "## Odpowiedzi na Twoje pytania"],
+            "de" => ["### Ihre Fragen beantwortet", "## Ihre Fragen beantwortet"],
+            "uk" => ["### Відповіді на ваші запитання", "## Відповіді на ваші запитання"],
+            "fr" => ["### Réponses à vos questions", "## Réponses à vos questions"],
+            _ => ["### Your questions answered", "## Your questions answered"],
+        };
+
+    private static IEnumerable<string> AtAGlanceHeadings(ReportLanguage reportLanguage) =>
+        reportLanguage.Locale switch
+        {
+            "pl" => ["### W skrócie", "## W skrócie"],
+            "de" => ["### Auf einen Blick", "## Auf einen Blick"],
+            "uk" => ["### Коротко", "## Коротко"],
+            "fr" => ["### En bref", "## En bref"],
+            _ => ["### At a glance", "## At a glance"],
+        };
+
     [GeneratedRegex(@"- \[[ xX]\]")]
     private static partial Regex CheckboxRegex();
 
@@ -59,6 +88,12 @@ public sealed partial class ReportValidator
             errors.Add("Unsafe wording detected: definite damage claim");
         if (NoRiskRegex().IsMatch(markdown))
             errors.Add("Unsafe wording detected: no risk claim");
+        if (DefinitelySafeRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: definite safety claim");
+        if (SellerLyingRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: direct seller accusation");
+        if (FraudAccusationRegex().IsMatch(markdown))
+            errors.Add("Unsafe wording detected: direct fraud accusation");
 
         if (GuaranteedRiskRegex().IsMatch(markdown))
             warnings.Add("Potentially overconfident guarantee wording detected.");
@@ -78,4 +113,13 @@ public sealed partial class ReportValidator
 
     [GeneratedRegex(@"\b(guaranteed safe|guaranteed accident-free|guaranteed risk-free|guaranteed clean)\b", RegexOptions.IgnoreCase)]
     private static partial Regex GuaranteedRiskRegex();
+
+    [GeneratedRegex(@"\b(definitely safe|100%\s*safe|certainly accident-free)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex DefinitelySafeRegex();
+
+    [GeneratedRegex(@"\b(seller is lying|the seller is lying)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex SellerLyingRegex();
+
+    [GeneratedRegex(@"\b(the seller|this seller|seller) (committed fraud|is committing fraud|is a fraud|is fraudulent)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex FraudAccusationRegex();
 }

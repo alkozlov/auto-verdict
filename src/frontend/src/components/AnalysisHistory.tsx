@@ -1,16 +1,9 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CarCheckResponse } from "@/lib/api";
-
-type Status = CarCheckResponse["status"];
-
-const STATUS_COLOR: Record<Status, string> = {
-  Pending: "text-warn",
-  Processing: "text-info",
-  Completed: "text-ok",
-  Failed: "text-bad",
-};
+import { StatusBadge } from "./StatusBadge";
 
 interface Props {
   checks: CarCheckResponse[];
@@ -61,21 +54,37 @@ export function AnalysisHistory({
                 <button
                   onClick={() => onSelectCheck(c.checkId)}
                   className={cn(
-                    "w-full rounded-lg border px-6 py-5 text-left",
+                    "group w-full rounded-xl border px-6 py-5 text-left",
                     "transition-[transform,background-color,border-color] duration-150",
                     c.checkId === selectedCheckId
                       ? "border-brand/40 bg-brand-tint"
                       : "border-white/6 bg-surface hover:-translate-y-px hover:bg-surface-raised"
                   )}
                 >
-                  <p className="truncate text-sm font-[650] text-hi">
-                    {formatTitle(c)}
-                  </p>
-                  <p className="mt-2 text-xs">
-                    <span className={STATUS_COLOR[c.status]}>{c.status}</span>
-                    <span className="text-off"> · </span>
-                    <span className="text-dim">{formatDate(c.createdAt)}</span>
-                  </p>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <StatusBadge status={c.status} />
+                        <span className="text-xs text-dim">
+                          Created {formatDate(c.createdAt)}
+                        </span>
+                      </div>
+                      <p className="truncate text-sm font-[650] text-hi">
+                        {formatTitle(c)}
+                      </p>
+                      <p className="line-clamp-2 text-xs leading-5 text-dim">
+                        {c.status === "Completed"
+                          ? "Report ready. Open the buyer memo for verdict, risks, seller questions, checklist, and estimated costs."
+                          : c.status === "Failed"
+                            ? c.failureReason ?? "The analysis could not be completed."
+                            : "AutoVerdict is preparing the buyer report."}
+                      </p>
+                    </div>
+                    <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand opacity-80 transition-opacity group-hover:opacity-100">
+                      View
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
                 </button>
               </li>
             ))}

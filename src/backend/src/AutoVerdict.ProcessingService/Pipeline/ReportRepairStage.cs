@@ -52,6 +52,11 @@ public sealed class ReportRepairStage(
                         - Add missing required sections if needed, using exactly these headings in this exact order:
                         {string.Join("\n", reportLanguage.RequiredHeadings.Select(h => "- " + h))}
                         - Use one localized verdict: {reportLanguage.VerdictLabels}.
+                        - Preserve the At a glance table if present.
+                        - Preserve the Your questions answered subsection if present.
+                        - If user-question answers were present in the original report, keep them near the top of the repaired report.
+                        - Do not invent new user questions or answers.
+                        - Keep risk tables concise and readable.
                         - The report must end with this exact localized disclaimer after a horizontal rule:
                         ---
                         {reportLanguage.Disclaimer}
