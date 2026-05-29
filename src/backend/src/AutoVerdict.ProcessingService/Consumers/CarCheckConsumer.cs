@@ -1,8 +1,11 @@
 using AutoVerdict.Application.Checks;
 using AutoVerdict.Contracts.Configuration;
+using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Contracts.Messages;
 using AutoVerdict.Infrastructure.Messaging;
+using AutoVerdict.Infrastructure.Persistence;
 using AutoVerdict.ProcessingService.Pipeline;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
@@ -55,6 +58,14 @@ public sealed class CarCheckConsumer(
         {
             logger.LogInformation("Processing check {CheckId}.", data.CheckId);
 
+            if (await IsAlreadyCompletedAsync(data.CheckId, ct))
+            {
+                logger.LogInformation(
+                    "Check {CheckId} is already completed; acknowledging duplicate message without reprocessing.",
+                    data.CheckId);
+                return (shouldAck: true, processed: false);
+            }
+
             var storageKey = await pipeline.ExecuteAsync(data, ct);
             await RecordAndPublishSuccessAsync(js, data, storageKey, ct);
 
@@ -71,6 +82,15 @@ public sealed class CarCheckConsumer(
             await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
             return (shouldAck: false, processed: false);
         }
+    }
+
+    private async Task<bool> IsAlreadyCompletedAsync(Guid checkId, CancellationToken ct)
+    {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return await db.CarChecks
+            .AsNoTracking()
+            .AnyAsync(c => c.CheckId == checkId && c.Status == CarCheckStatus.Completed, ct);
     }
 
     private async Task RecordAndPublishSuccessAsync(
@@ -123,7 +143,7 @@ public sealed class CarCheckConsumer(
                 DeliverPolicy = ConsumerConfigDeliverPolicy.All,
                 AckPolicy = ConsumerConfigAckPolicy.Explicit,
                 MaxDeliver = 5,
-                AckWait = TimeSpan.FromMinutes(2),
+                AckWait = TimeSpan.FromMinutes(10),
             },
             ct);
 }

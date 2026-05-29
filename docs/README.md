@@ -57,6 +57,9 @@ The report includes:
 - `postgres` — shared relational database.
 - `nats` — message bus with JetStream persistence.
 - `seaweedfs` — S3-compatible object storage.
+- `otel-collector` — OpenTelemetry metrics receiver and VictoriaMetrics writer.
+- `victoria-metrics` — local metrics time-series store.
+- `grafana` — local metrics dashboards.
 - `nginx` — production reverse proxy.
 - `docker-compose` — single local and production orchestration entry point.
 
@@ -72,3 +75,4 @@ The report includes:
 - [08_BACKLOG.md](./08_BACKLOG.md)
 - [09_BEADS_WORKFLOW.md](./09_BEADS_WORKFLOW.md)
 - [10_PROCESSING_DEBUG.md](./10_PROCESSING_DEBUG.md)
+- [12_OBSERVABILITY.md](./12_OBSERVABILITY.md)

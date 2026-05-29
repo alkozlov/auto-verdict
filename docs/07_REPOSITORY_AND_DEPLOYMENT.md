@@ -135,6 +135,9 @@ postgres
 nats
 seaweedfs
 nginx
+otel-collector
+victoria-metrics
+grafana
 ```
 
 Local development may skip nginx and access frontend/API directly.
@@ -157,6 +160,8 @@ API:      http://localhost:5000
 NATS:     localhost:4222
 SeaweedFS S3: http://localhost:8333
 Postgres: localhost:5432
+VictoriaMetrics: http://localhost:8428
+Grafana:         http://localhost:3001
 ```
 
 Actual ports may be adjusted.

@@ -54,6 +54,7 @@ public sealed class CarCheckResultService(AppDbContext db, IOptions<WhitelistOpt
 
         check.AnalysisStorageKey = analysisStorageKey;
         check.Status = CarCheckStatus.Completed;
+        check.FailureReason = null;
         check.UpdatedAt = now;
 
         await db.SaveChangesAsync(cancellationToken);
