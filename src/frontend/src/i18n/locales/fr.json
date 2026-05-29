@@ -97,20 +97,20 @@
   },
   "public": {
     "nav": {
-      "label": "Public navigation",
-      "how": "How it works",
-      "sample": "Sample report",
-      "pricing": "Pricing"
+      "label": "Navigation publique",
+      "how": "Fonctionnement",
+      "sample": "Exemple de rapport",
+      "pricing": "Tarifs"
     },
     "footer": {
-      "label": "Footer navigation",
-      "description": "AI-assisted used-car listing risk reports for private buyers across Europe."
+      "label": "Navigation du pied de page",
+      "description": "Rapports de risque assistés par IA pour les annonces de voitures d’occasion, destinés aux acheteurs particuliers en Europe."
     },
     "cta": {
-      "analyze": "Analyze a listing",
-      "sample": "See sample report",
-      "startFree": "Start free analysis",
-      "goAnalyses": "Go to analyses"
+      "analyze": "Analyser une annonce",
+      "sample": "Voir un exemple de rapport",
+      "startFree": "Démarrer l’analyse gratuite",
+      "goAnalyses": "Aller aux analyses"
     },
     "meta": {
       "home": {
@@ -145,179 +145,179 @@
       }
     },
     "hero": {
-      "eyebrow": "Built for private used-car buyers across Europe",
-      "title": "Check a used-car listing before you contact the seller.",
-      "body": "Paste a marketplace listing, seller messages, VIN, vehicle notes, or photos. AutoVerdict gives you a structured AI risk report with red flags, missing information, seller questions, inspection points, and a clear next step.",
-      "trust": "AI-assisted preliminary screening. Not a replacement for professional inspection.",
-      "free": "First analysis is free. No card required."
+      "eyebrow": "Pour les acheteurs particuliers de voitures d’occasion en Europe",
+      "title": "Vérifiez une annonce de voiture d’occasion avant de contacter le vendeur.",
+      "body": "Collez une annonce de marketplace, des messages du vendeur, un VIN, des notes véhicule ou des photos. AutoVerdict fournit un rapport de risque IA structuré avec signaux d’alerte, informations manquantes, questions au vendeur, points d’inspection et prochaine étape claire.",
+      "trust": "Pré-évaluation assistée par IA. Ne remplace pas une inspection professionnelle.",
+      "free": "La première analyse est gratuite. Aucune carte requise."
     },
     "trust": {
-      "structured": "Structured risk report",
-      "questions": "Seller questions included",
-      "checklist": "Inspection checklist included",
-      "buyers": "Built for private buyers"
+      "structured": "Rapport de risque structuré",
+      "questions": "Questions au vendeur incluses",
+      "checklist": "Checklist d’inspection incluse",
+      "buyers": "Conçu pour les acheteurs particuliers"
     },
-    "inputsTitle": "Use whatever information you already have.",
-    "inputsLead": "AutoVerdict can work with a full listing or partial information. The report clearly shows what is known and what still needs verification.",
+    "inputsTitle": "Utilisez les informations que vous avez déjà.",
+    "inputsLead": "AutoVerdict peut travailler avec une annonce complète ou des informations partielles. Le rapport montre clairement ce qui est connu et ce qui doit encore être vérifié.",
     "inputs": {
       "listing": {
-        "title": "Marketplace listing",
-        "body": "Paste a used-car listing URL or copied ad text from the marketplace you are browsing."
+        "title": "Annonce de marketplace",
+        "body": "Collez l’URL d’une annonce ou le texte copié depuis le marketplace que vous consultez."
       },
       "messages": {
-        "title": "Seller messages",
-        "body": "Add claims about service history, accident history, ownership, import status, or recent repairs."
+        "title": "Messages du vendeur",
+        "body": "Ajoutez les déclarations sur l’entretien, les accidents, la propriété, l’importation ou les réparations récentes."
       },
       "details": {
-        "title": "Vehicle details",
-        "body": "Add VIN, registration details, mileage, price, first registration date, or vehicle history notes."
+        "title": "Détails du véhicule",
+        "body": "Ajoutez le VIN, les informations d’immatriculation, le kilométrage, le prix, la première mise en circulation ou des notes d’historique."
       },
       "photos": {
-        "title": "Photos and screenshots",
-        "body": "Upload listing screenshots, exterior photos, interior photos, dashboard photos, or document screenshots."
+        "title": "Photos et captures",
+        "body": "Téléversez des captures de l’annonce, des photos extérieures, intérieures, du tableau de bord ou de documents."
       }
     },
-    "checksTitle": "What AutoVerdict checks before you spend time on a car.",
-    "checksLead": "The report focuses on practical buying risks: missing documents, unclear claims, suspicious wording, ownership signals, model-specific areas to verify, and questions to ask before inspection.",
+    "checksTitle": "Ce qu’AutoVerdict vérifie avant que vous passiez du temps sur une voiture.",
+    "checksLead": "Le rapport se concentre sur les risques pratiques d’achat : documents manquants, affirmations floues, formulations suspectes, signaux de propriété, points propres au modèle et questions avant inspection.",
     "checks": {
       "missing": {
-        "title": "Missing information",
-        "body": "Highlights missing VIN, service records, ownership details, accident history, import status, or unclear seller claims."
+        "title": "Informations manquantes",
+        "body": "Signale VIN, dossiers d’entretien, détails de propriété, historique d’accident, statut d’importation ou affirmations vendeur manquants ou flous."
       },
       "claims": {
-        "title": "Risky claims",
-        "body": "Flags unsupported statements such as accident-free, full service history, first owner, or urgent sale wording."
+        "title": "Affirmations risquées",
+        "body": "Repère les affirmations non étayées comme sans accident, historique complet, premier propriétaire ou vente urgente."
       },
       "costs": {
-        "title": "Cost signals",
-        "body": "Points out areas that may create first-year ownership costs and should be checked before inspection."
+        "title": "Signaux de coûts",
+        "body": "Indique les zones pouvant générer des coûts la première année et à vérifier avant inspection."
       },
       "questions": {
-        "title": "Seller questions",
-        "body": "Turns risk signals into practical questions you can send before calling or travelling."
+        "title": "Questions au vendeur",
+        "body": "Transforme les signaux de risque en questions pratiques avant l’appel ou le déplacement."
       },
       "checklist": {
-        "title": "Inspection checklist",
-        "body": "Gives concrete items to verify if the car reaches viewing or mechanic inspection stage."
+        "title": "Checklist d’inspection",
+        "body": "Donne des points concrets à vérifier si la voiture passe à la visite ou au mécanicien."
       },
       "recommendation": {
-        "title": "Clear next step",
-        "body": "Summarizes whether to proceed, request more information, inspect carefully, or avoid the listing."
+        "title": "Prochaine étape claire",
+        "body": "Résume s’il faut continuer, demander plus d’informations, inspecter prudemment ou éviter l’annonce."
       }
     },
     "reportPreview": {
-      "eyebrow": "Example risk report",
-      "title": "Structured report preview",
-      "risk": "Medium risk",
-      "vehicle": "2021 Volvo XC60 - 84,000 km - Diesel",
-      "concerns": "Main concerns",
+      "eyebrow": "Exemple de rapport de risque",
+      "title": "Aperçu d’un rapport structuré",
+      "risk": "Risque moyen",
+      "vehicle": "Volvo XC60 2021 - 84 000 km - Diesel",
+      "concerns": "Principales préoccupations",
       "items": {
-        "service": "Service history is incomplete",
-        "import": "Import history needs clarification",
-        "claim": "Accident-free claim is not supported by documents"
+        "service": "Historique d’entretien incomplet",
+        "import": "Historique d’importation à clarifier",
+        "claim": "La mention sans accident n’est pas étayée par des documents"
       },
-      "nextLabel": "Recommended next step",
-      "next": "Ask for VIN, service invoices, accident history, and ownership documents before arranging inspection.",
-      "disclaimer": "AI-assisted screening, not a professional inspection.",
-      "confidence": "Confidence: Medium",
-      "recommendationLabel": "Recommendation",
-      "recommendation": "Request more information before inspection"
+      "nextLabel": "Prochaine étape recommandée",
+      "next": "Demandez le VIN, les factures d’entretien, l’historique d’accident et les documents de propriété avant l’inspection.",
+      "disclaimer": "Pré-évaluation assistée par IA, pas une inspection professionnelle.",
+      "confidence": "Confiance : moyenne",
+      "recommendationLabel": "Recommandation",
+      "recommendation": "Demander plus d’informations avant inspection"
     },
-    "samplePreviewTitle": "See what the report looks like.",
-    "samplePreviewLead": "AutoVerdict returns a structured decision report, not a generic chat transcript.",
-    "stepsTitle": "How it works",
-    "stepsLead": "A simple flow for turning messy listing information into a practical buyer checklist.",
+    "samplePreviewTitle": "Voyez à quoi ressemble le rapport.",
+    "samplePreviewLead": "AutoVerdict fournit un rapport de décision structuré, pas une simple conversation.",
+    "stepsTitle": "Fonctionnement",
+    "stepsLead": "Un flux simple qui transforme des informations d’annonce désordonnées en checklist pratique pour l’acheteur.",
     "steps": {
       "submit": {
-        "title": "Submit what you know",
-        "body": "Paste listing text, seller messages, vehicle notes, VIN, or photos."
+        "title": "Soumettez ce que vous savez",
+        "body": "Collez le texte de l’annonce, les messages du vendeur, les notes véhicule, le VIN ou des photos."
       },
       "analyze": {
-        "title": "AutoVerdict screens risks",
-        "body": "The AI pipeline extracts facts, identifies missing data, and organizes practical risk signals."
+        "title": "AutoVerdict analyse les risques",
+        "body": "Le pipeline IA extrait les faits, identifie les données manquantes et organise les signaux de risque."
       },
       "act": {
-        "title": "Decide the next step",
-        "body": "Use seller questions, inspection points, and recommendation to decide whether the car is worth your time."
+        "title": "Décidez de la prochaine étape",
+        "body": "Utilisez les questions, les points d’inspection et la recommandation pour décider si la voiture vaut votre temps."
       }
     },
-    "chatbotTitle": "Why not just use a generic chatbot?",
-    "chatbotLead": "AutoVerdict is designed around the used-car buying workflow.",
+    "chatbotTitle": "Pourquoi pas simplement un chatbot générique ?",
+    "chatbotLead": "AutoVerdict est conçu autour du parcours d’achat d’une voiture d’occasion.",
     "chatbot": {
-      "genericTitle": "Generic chatbot",
-      "genericBody": "You must design the prompt, structure the answer, remember safety limits, and convert output into questions yourself.",
+      "genericTitle": "Chatbot générique",
+      "genericBody": "Vous devez concevoir le prompt, structurer la réponse, garder les limites de sécurité en tête et convertir le résultat en questions.",
       "autoTitle": "AutoVerdict",
-      "autoBody": "The product produces a repeatable report with risk categories, missing information, seller questions, checklist, and cautious recommendation."
+      "autoBody": "Le produit génère un rapport reproductible avec catégories de risque, informations manquantes, questions, checklist et recommandation prudente."
     },
-    "pricingTitle": "Simple pricing. No subscription.",
-    "pricingLead": "Buy checks only when you need them. One completed report uses one credit. Credits are not a subscription and there is no monthly fee.",
+    "pricingTitle": "Tarifs simples. Sans abonnement.",
+    "pricingLead": "Achetez des checks uniquement quand vous en avez besoin. Un rapport terminé utilise un crédit. Les crédits ne sont pas un abonnement et il n’y a pas de frais mensuels.",
     "pricing": {
-      "better": "Better value",
+      "better": "Meilleure valeur",
       "one": {
         "title": "1 check",
-        "body": "For one extra car you want to verify before taking the next step.",
-        "cta": "Start with 1 check"
+        "body": "Pour une voiture supplémentaire à vérifier avant l’étape suivante.",
+        "cta": "Commencer avec 1 check"
       },
       "three": {
         "title": "3 checks",
-        "body": "For comparing several cars after your free first analysis. Better value for comparing multiple cars.",
-        "cta": "Get 3 checks"
+        "body": "Pour comparer plusieurs voitures après votre première analyse gratuite. Meilleure valeur pour comparer plusieurs voitures.",
+        "cta": "Obtenir 3 checks"
       },
       "includes": {
-        "report": "Structured AI risk report",
-        "risk": "Risk level and confidence",
-        "missing": "Missing information",
-        "questions": "Seller questions",
-        "checklist": "Inspection checklist"
+        "report": "Rapport de risque IA structuré",
+        "risk": "Niveau de risque et confiance",
+        "missing": "Informations manquantes",
+        "questions": "Questions au vendeur",
+        "checklist": "Checklist d’inspection"
       },
-      "freeLabel": "Free starter credit",
-      "freeTitle": "First analysis included",
-      "freeBody": "New users get 1 free analysis after sign-in. No card required.",
-      "creditRule": "One completed report uses one credit.",
-      "safetyNote": "Credits are intended for completed reports. Technical failures should not cost you an additional check."
+      "freeLabel": "Crédit de départ gratuit",
+      "freeTitle": "Première analyse incluse",
+      "freeBody": "Les nouveaux utilisateurs obtiennent 1 analyse gratuite après connexion. Aucune carte requise.",
+      "creditRule": "Un rapport terminé utilise un crédit.",
+      "safetyNote": "Les crédits sont destinés aux rapports terminés. Une erreur technique ne devrait pas coûter un check supplémentaire."
     },
-    "safetyTitle": "A screening tool, not a guarantee.",
-    "safetyLead": "AutoVerdict does not replace professional vehicle inspection, official history reports, mechanic diagnostics, legal verification, or independent expert evaluation.",
-    "seoTitle": "Used-car listing analysis for cautious buyers.",
-    "seoLead": "Use AutoVerdict before contacting the seller, booking inspection, or travelling to view a car. The report helps you spot red flags, request evidence, and compare listings more calmly.",
+    "safetyTitle": "Un outil de pré-évaluation, pas une garantie.",
+    "safetyLead": "AutoVerdict ne remplace pas une inspection professionnelle du véhicule, les rapports officiels d’historique, le diagnostic d’un mécanicien, la vérification juridique ou une expertise indépendante.",
+    "seoTitle": "Analyse d’annonces de voitures d’occasion pour acheteurs prudents.",
+    "seoLead": "Utilisez AutoVerdict avant de contacter le vendeur, réserver une inspection ou vous déplacer. Le rapport aide à repérer les signaux d’alerte, demander des preuves et comparer les annonces plus calmement.",
     "faq": {
       "replaceInspection": {
-        "q": "Does AutoVerdict replace inspection?",
-        "a": "No. It is preliminary AI-assisted screening that helps you prepare before professional inspection."
+        "q": "AutoVerdict remplace-t-il une inspection ?",
+        "a": "Non. C’est une pré-évaluation assistée par IA pour vous préparer avant une inspection professionnelle."
       },
       "marketplaces": {
-        "q": "Does AutoVerdict work only with one marketplace?",
-        "a": "No. You can paste listing text, seller messages, VIN details, notes, or screenshots from different marketplaces. Automatic URL extraction may depend on marketplace support, but manual input can still be analyzed."
+        "q": "AutoVerdict fonctionne-t-il avec un seul marketplace ?",
+        "a": "Non. Vous pouvez coller du texte d’annonce, des messages vendeur, VIN, notes ou captures de différents marketplaces. L’extraction automatique d’URL dépend de la prise en charge."
       },
       "credits": {
-        "q": "How do credits work?",
-        "a": "One completed report uses one credit. Credits are stored in your account and are not a subscription."
+        "q": "Comment fonctionnent les crédits ?",
+        "a": "Un rapport terminé utilise un crédit. Les crédits restent dans votre compte et ne sont pas un abonnement."
       },
       "chatbot": {
-        "q": "Is this better than asking a generic AI chatbot?",
-        "a": "AutoVerdict is built around the used-car buying workflow. It organizes the result into risk level, missing information, seller questions, inspection checklist, model-specific things to verify, and a clear recommendation."
+        "q": "Est-ce mieux qu’un chatbot IA générique ?",
+        "a": "AutoVerdict est construit autour du parcours d’achat d’occasion. Il organise le résultat en niveau de risque, informations manquantes, questions vendeur, checklist, points propres au modèle et recommandation claire."
       },
       "partialInfo": {
-        "q": "Can I use AutoVerdict if I only have photos or seller messages?",
-        "a": "Yes. You can submit partial information such as screenshots, seller replies, VIN details, vehicle notes, or copied listing text. The report will show what is known and what still needs verification."
+        "q": "Puis-je utiliser AutoVerdict avec seulement des photos ou messages vendeur ?",
+        "a": "Oui. Vous pouvez soumettre des informations partielles comme captures, réponses vendeur, VIN, notes véhicule ou texte d’annonce copié. Le rapport indique ce qui est connu et ce qui reste à vérifier."
       },
       "beforeTravel": {
-        "q": "What should I check before travelling to view a used car?",
-        "a": "Before travelling, you should clarify the VIN, ownership history, service records, accident history, import status, mileage consistency, and whether the seller can provide documents. AutoVerdict helps turn these points into practical seller questions and inspection items."
+        "q": "Que vérifier avant de se déplacer voir une voiture d’occasion ?",
+        "a": "Avant de vous déplacer, clarifiez le VIN, l’historique de propriété, les dossiers d’entretien, les accidents, l’importation, la cohérence du kilométrage et les documents disponibles. AutoVerdict transforme ces points en questions et éléments d’inspection."
       },
       "safeToBuy": {
-        "q": "Can AutoVerdict tell me if a car is safe to buy?",
-        "a": "No. AutoVerdict is a preliminary screening tool. It can highlight risks, missing information, and questions to ask, but it cannot guarantee that a car is safe. Always verify documents and use professional inspection before purchase."
+        "q": "AutoVerdict peut-il dire si une voiture est sûre à acheter ?",
+        "a": "Non. AutoVerdict est un outil de pré-évaluation. Il peut signaler risques, informations manquantes et questions, mais ne garantit pas qu’une voiture est sûre. Vérifiez les documents et utilisez une inspection professionnelle."
       },
       "notExpert": {
-        "q": "Is AutoVerdict useful if I am not a car expert?",
-        "a": "Yes. AutoVerdict is designed for private buyers who want a structured second opinion before contacting the seller, travelling to view the car, or booking an inspection."
+        "q": "AutoVerdict est-il utile si je ne suis pas expert auto ?",
+        "a": "Oui. AutoVerdict est conçu pour les acheteurs particuliers qui veulent un deuxième avis structuré avant contact, déplacement ou inspection."
       }
     },
     "finalCta": {
-      "title": "Found a car you like? Check it before you call.",
-      "body": "Spend a few minutes screening the listing before you spend hours messaging, travelling, or booking inspection.",
-      "free": "Start with 1 free analysis. No card required."
+      "title": "Vous avez trouvé une voiture intéressante ? Vérifiez-la avant d’appeler.",
+      "body": "Passez quelques minutes à évaluer l’annonce avant de consacrer des heures aux messages, au déplacement ou à l’inspection.",
+      "free": "Commencez avec 1 analyse gratuite. Aucune carte requise."
     },
     "howPage": {
       "title": "From listing details to a structured buyer report.",
@@ -470,42 +470,42 @@
       "placeholder": "Placeholder support address until the final support mailbox is configured. Response time target: 1-2 business days."
     },
     "reportIncludes": {
-      "title": "What you get in the report",
-      "lead": "AutoVerdict turns messy listing information into a structured buyer report you can use before calling the seller, travelling to view the car, or booking an inspection.",
-      "badge": "Structured output",
-      "cardTitle": "Buyer-ready report",
+      "title": "Ce que vous obtenez dans le rapport",
+      "lead": "AutoVerdict transforme des informations d’annonce désordonnées en rapport acheteur structuré à utiliser avant d’appeler, vous déplacer ou réserver une inspection.",
+      "badge": "Sortie structurée",
+      "cardTitle": "Rapport prêt pour l’acheteur",
       "items": {
         "risk": {
-          "title": "Risk level and confidence",
-          "body": "Understand whether the listing looks low, medium, high, or unknown risk."
+          "title": "Niveau de risque et confiance",
+          "body": "Comprenez si l’annonce semble à risque faible, moyen, élevé ou inconnu."
         },
         "facts": {
-          "title": "Extracted vehicle facts",
-          "body": "See the key facts AutoVerdict found in the listing or user-provided data."
+          "title": "Faits véhicule extraits",
+          "body": "Voyez les faits clés trouvés dans l’annonce ou les données fournies."
         },
         "missing": {
-          "title": "Missing information",
-          "body": "Know what is not provided but should be clarified before inspection."
+          "title": "Informations manquantes",
+          "body": "Sachez ce qui manque et doit être clarifié avant inspection."
         },
         "signals": {
-          "title": "Risk signals",
-          "body": "Review suspicious wording, unsupported claims, unclear ownership, import or accident-history ambiguity."
+          "title": "Signaux de risque",
+          "body": "Passez en revue formulations suspectes, affirmations non étayées, propriété floue, importation ou ambiguïtés d’accident."
         },
         "questions": {
-          "title": "Seller questions",
-          "body": "Get practical questions you can send before calling or travelling."
+          "title": "Questions au vendeur",
+          "body": "Obtenez des questions pratiques avant appel ou déplacement."
         },
         "checklist": {
-          "title": "Inspection checklist",
-          "body": "Use concrete inspection points if the car reaches viewing or mechanic stage."
+          "title": "Checklist d’inspection",
+          "body": "Utilisez des points concrets si la voiture passe à la visite ou au mécanicien."
         },
         "model": {
-          "title": "Model-specific things to verify",
-          "body": "See common areas to check for the specific model, engine, year, or configuration when available."
+          "title": "Points propres au modèle",
+          "body": "Voyez les zones typiques à vérifier pour le modèle, moteur, année ou configuration quand disponible."
         },
         "recommendation": {
-          "title": "Clear recommendation",
-          "body": "Proceed, proceed with caution, request more information, or avoid."
+          "title": "Recommandation claire",
+          "body": "Continuer, continuer avec prudence, demander plus d’informations ou éviter."
         }
       }
     }
