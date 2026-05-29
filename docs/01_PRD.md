@@ -67,10 +67,12 @@ This persona is outside MVP scope.
 
 ## 5. Initial Market
 
-- Country: Poland.
-- Primary marketplace: Otomoto.pl.
+- Initial operational focus: Poland, with broader public positioning for private used-car buyers across Europe.
+- Initial automatic crawler support: Otomoto.pl listing URLs.
+- Supported manual input: copied listing text, seller messages, VIN/details, notes, vehicle history text, and images from any source.
 - Vehicle segment: relatively recent used cars, approximately model year 2022 or newer.
-- Language: English (UI, reports, internal documentation).
+- Interface languages: English, Polish, German, Ukrainian, and French.
+- Report language: selected from the user's current interface language and passed through the analysis pipeline.
 
 ---
 
@@ -100,6 +102,31 @@ The following features are **implemented and functional**.
 - New users are created automatically on first sign-in.
 - New users receive a configurable number of free analysis credits.
 
+### Frontend
+
+- Frontend stack: Vite + React + TypeScript + React Router.
+- Styling: Tailwind CSS with local reusable components.
+- The frontend is a single-page application served as static assets by nginx.
+- React Router provides real routes for public pages and authenticated garage screens; nginx falls back to `index.html` for direct URL loads.
+- Public pages currently set title, meta description, canonical URL, Open Graph tags, Twitter Card tags, and JSON-LD client-side. This is an MVP-level SEO implementation; public pages should later be prerendered or moved to an SSR/SSG-compatible setup for serious SEO.
+- Language selection is available in the UI and persists in browser local storage.
+
+### Public Pages
+
+Implemented public routes:
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Marketing landing page with report preview, free-first-analysis hook, pricing preview, FAQ, and CTA |
+| `/how-it-works` | Product workflow explanation |
+| `/sample-report` | Example report structure |
+| `/pricing` | Credit pricing and no-subscription explanation |
+| `/privacy` | MVP privacy policy text |
+| `/terms` | MVP terms of use text |
+| `/contact` | Static contact page with placeholder support email |
+
+The public pages are positioned for European used-car buyers and must not present the product as Poland-only or Otomoto-only.
+
 ### Check Submission
 
 Users can submit a car check by providing:
@@ -109,6 +136,7 @@ Users can submit a car check by providing:
 | Description | Yes | Free-form text; any combination of copied listing text, seller messages, specs, VIN, inspection notes |
 | Listing URL | No | Otomoto.pl URLs only; page is auto-crawled by the system |
 | Images | No | Up to 5 files; JPEG, PNG, or WEBP; max 2 560 KB each |
+| Report locale | Yes | Sent by the frontend based on selected UI language; supported values: `en`, `pl`, `de`, `uk`, `fr` |
 
 - Submitting a check costs one credit.
 - If the user has no credits, the API returns HTTP 402 and the check is not created.
@@ -132,19 +160,23 @@ Crawl failures degrade gracefully — if the page cannot be crawled, the AI anal
 
 ### AI Report
 
-The AI generates a structured markdown document with the following nine sections in fixed order:
+The AI pipeline generates a structured markdown report in the requested report language. Report generation has a strict language requirement, and the repair/validation stages use the same language definition.
 
-1. **Car Summary** — one-paragraph overview of the vehicle.
-2. **Listing Facts** — key facts: make, model, year, mileage, price, seller type, location, URL.
-3. **Model Risks** — known model-specific technical issues and common faults.
-4. **Listing Risks** — red flags found in the listing text or images.
-5. **Deal Risks** — financial, legal, and transactional risks.
-6. **Estimated Costs** — table of one-time and first-year purchase costs in PLN.
-7. **Questions for the Seller** — numbered list of questions to ask before buying.
-8. **Inspection Checklist** — checkboxes for physical inspection items.
-9. **Recommendation** — a direct verdict: **buy**, **buy with caution**, or **avoid**.
+The current report structure uses the following section order, localized per language:
 
-The report ends with a standard disclaimer. All monetary estimates are in PLN.
+1. **Verdict**
+2. **Key Risks**
+3. **Technical Risks**
+4. **Listing Risks**
+5. **Deal Risks**
+6. **Missing Information**
+7. **Questions for the Seller**
+8. **Inspection Checklist**
+9. **Vehicle Facts**
+10. **Estimated Costs**
+11. **Summary**
+
+The report ends with a localized standard disclaimer. All monetary estimates are in PLN.
 
 ### Check History
 
@@ -173,11 +205,11 @@ The report ends with a standard disclaimer. All monetary estimates are in PLN.
 
 The following features are **not yet built** but are required before public launch.
 
-### Payment (Stripe)
+### Payment
 
 - Single check purchase.
-- Package of five checks.
-- Stripe webhooks are authoritative for granting credits.
+- Package of three checks.
+- Payment provider/webhooks are authoritative for granting credits.
 - No subscription billing.
 
 ### Admin Operations (Minimal)
@@ -201,12 +233,12 @@ New users must receive free credits automatically (already implemented). The ful
 - Mobile app.
 - Subscription billing.
 - B2B workflows.
-- Multi-marketplace Europe-wide support (Mobile.de, etc.).
+- Automatic multi-marketplace Europe-wide crawling (Mobile.de, etc.).
 - Automatic VIN lookup on paid third-party services.
 - PDF report export.
 - Complex admin panel.
 - Presigned direct browser uploads to object storage.
-- Report language selection (English only for now).
+- Server-side rendering or static prerendering for public marketing pages.
 
 ---
 
@@ -214,29 +246,36 @@ New users must receive free credits automatically (already implemented). The ful
 
 This section describes the required screens for the UI/UX design.
 
-### 10.1 Screen: Landing / Login
+### 10.1 Public Marketing Pages
 
-**Route:** `/`  
-**Shown to:** unauthenticated users
+**Routes:** `/`, `/how-it-works`, `/sample-report`, `/pricing`, `/privacy`, `/terms`, `/contact`  
+**Shown to:** all visitors
 
-**Purpose:** Entry point for new and returning users who are not signed in.
+**Purpose:** Explain the product, show pricing before registration, present an example report, support basic SEO/SMM readiness, and convert visitors into first-check users.
 
 **Elements:**
 - Product name: **AutoVerdict**
-- Tagline: "AI-powered car listing analysis. Spot risks, verify facts, and get a purchase recommendation."
-- Primary CTA: **Sign in with Google** (redirects to `/api/auth/google`)
+- Main CTA: **Start free analysis** for unauthenticated users; **Go to analyses** for authenticated users.
+- Secondary CTA: **See sample report**.
+- Visible free-first-analysis message: "First analysis is free. No card required."
+- Report preview card.
+- Input-source explanation.
+- Report-includes section.
+- Pricing cards.
+- FAQ.
+- Safety disclaimer.
+- Footer links to all public pages.
 
-**States:**
-- Default (single state — no loading, no errors)
+Public navigation uses real links. The public page copy is stored in the i18n dictionaries.
 
 ---
 
-### 10.2 Screen: Main App
+### 10.2 Screen: Authenticated App / Garage
 
-**Route:** `/`  
+**Route:** `/garage/check`  
 **Shown to:** authenticated users
 
-**Purpose:** The core product screen. Users submit car checks here and view their history.
+**Purpose:** The core product screen. Users submit car checks and view their report history.
 
 #### 10.2.1 Header (persistent)
 
@@ -244,7 +283,7 @@ This section describes the required screens for the UI/UX design.
 |---------|-------|
 | Logo / product name | Left-aligned |
 | User email | Right area, hidden on small screens |
-| Credit balance | Right area; label "Credits:" + number |
+| Credit balance | Visible in navigation/header |
 | Sign out | Right area; clears token, returns to login screen |
 
 #### 10.2.2 Submission Form
@@ -303,7 +342,7 @@ Below the form, a list of the user's previous checks.
 | Status badge | Colour-coded pill: Pending (yellow), Processing (blue), Completed (green), Failed (red) |
 | Created date | Localised timestamp below the title |
 
-Clicking a list item opens the Check Modal.
+Clicking a list item opens or navigates to the report view, depending on the current responsive route/component.
 
 **Pagination:**
 
@@ -313,10 +352,10 @@ Clicking a list item opens the Check Modal.
 
 ---
 
-### 10.3 Screen: Check Modal
+### 10.3 Screen: Report View / Inline Report Panel
 
 **Trigger:** clicking any check in the history list  
-**Type:** overlay modal, scrollable
+**Type:** inline report panel and/or report route depending on page context
 
 **Purpose:** Display the full AI analysis report or the current status if processing is still in progress.
 
@@ -340,8 +379,9 @@ Clicking a list item opens the Check Modal.
 - Shows: "Analysis failed" label + error reason text.
 
 **Common elements:**
-- Close button (×) in the top-right corner.
-- Clicking the backdrop closes the modal.
+- Report title/status.
+- Listing URL when available.
+- Markdown-rendered report when completed.
 
 ---
 
@@ -350,7 +390,7 @@ Clicking a list item opens the Check Modal.
 **Route:** `/auth/callback`  
 **Type:** Technical redirect handler — no user-visible design needed.
 
-After Google OAuth completes, the backend redirects to this page with the JWT token in the URL query string. The page extracts and stores the token, then redirects to `/`.
+After Google OAuth completes, the backend redirects to this page with the JWT token in the URL query string. The page extracts and stores the token, then redirects to `/garage/check`.
 
 ---
 
@@ -396,8 +436,8 @@ MVP uses a credit system.
 - When the balance reaches zero, submitting a new check shows a payment prompt (design TBD, Stripe integration pending).
 
 Payment options (planned, not yet implemented):
-- Single check — e.g., €2–3.
-- Package of five checks — e.g., €8–10.
+- Single check — currently configured as 20 PLN.
+- Package of three checks — currently configured as 40 PLN.
 
 Stripe webhooks will be the authoritative signal for granting credits. Exact pricing is subject to market validation.
 
