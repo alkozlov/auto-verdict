@@ -1,0 +1,98 @@
+{
+  "app": {
+    "name": "AutoVerdict"
+  },
+  "auth": {
+    "continueWithGoogle": "Mit Google fortfahren",
+    "signOut": "Abmelden",
+    "signingIn": "Anmeldung läuft..."
+  },
+  "common": {
+    "loading": "Wird geladen..."
+  },
+  "credits": {
+    "label": "Credits: {{count}}",
+    "short": "{{count}}",
+    "available_one": "{{count}} Credit",
+    "available_other": "{{count}} Credits",
+    "topUp": "Aufladen"
+  },
+  "language": {
+    "label": "Sprache der Oberfläche",
+    "switcher": "Sprache ändern"
+  },
+  "nav": {
+    "checkCar": "Auto prüfen",
+    "myReports": "Meine Berichte",
+    "garageNavigation": "Garage-Navigation",
+    "navigationMenu": "Navigationsmenü",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
+  },
+  "home": {
+    "loginTitle": "Vermeide teure Fehler beim Gebrauchtwagenkauf.",
+    "loginBody": "Füge Anzeigendetails, Verkäufernachrichten, einen Otomoto-Link oder Fotos ein. Erhalte eine strukturierte KI-Risikoanalyse, bevor du den Verkäufer kontaktierst.",
+    "loginDisclaimer": "Nur KI-gestützte Vorprüfung. Prüfe Dokumente immer selbst und vereinbare vor dem Kauf eine professionelle Inspektion.",
+    "howItWorksLink": "So funktioniert es",
+    "goToGarage": "Zur Garage",
+    "heroTitleLine1": "Vermeide teure",
+    "heroTitleLine2": "Fehler beim Gebrauchtwagenkauf.",
+    "heroBody": "Füge Anzeigentext, Verkäufernachrichten, einen Otomoto-Link, Fotos, VIN oder eigene Fragen ein. AutoVerdict liefert dir eine strukturierte KI-Risikoanalyse, bevor du den Verkäufer kontaktierst.",
+    "disclaimerShortLine1": "KI-gestützte Vorprüfung.",
+    "disclaimerShortLine2": "Kein Ersatz für eine professionelle Inspektion.",
+    "previewVerdict": "Mit Vorsicht kaufen",
+    "previewConcernsLabel": "Wichtigste Bedenken",
+    "previewConcerns": {
+      "serviceHistory": "Fehlende Servicehistorie",
+      "importHistory": "Importhistorie des Fahrzeugs unklar",
+      "sellerDetails": "Verkäuferbeschreibung enthält zu wenige Details"
+    },
+    "recommendedNextStepLabel": "Empfohlener nächster Schritt",
+    "recommendedNextStep": "Frage vor der Besichtigung nach VIN, Rechnungen und Unfallhistorie.",
+    "howItWorksTitle": "So funktioniert es",
+    "steps": {
+      "paste": {
+        "title": "Füge ein, was du weißt",
+        "desc": "Ergänze Anzeigentext, Verkäuferantworten, VIN, Notizen, Fotos oder einen Otomoto-Link."
+      },
+      "review": {
+        "title": "KI prüft die Risiken",
+        "desc": "AutoVerdict sucht nach fehlenden Informationen, verdächtigen Formulierungen, Kaufrisiken und modellspezifischen Schwachstellen."
+      },
+      "nextSteps": {
+        "title": "Erhalte konkrete nächste Schritte",
+        "desc": "Du bekommst Verkäuferfragen, Prüfpunkte, geschätzte Kosten und eine klare Empfehlung."
+      }
+    },
+    "checksTitle": "Was AutoVerdict prüft",
+    "checks": {
+      "suspiciousWording": "Verdächtige Formulierungen",
+      "missingServiceHistory": "Fehlende Servicehistorie",
+      "mileageConcerns": "Zweifel am Kilometerstand",
+      "importUncertainty": "Unsicherheit beim Import",
+      "accidentAmbiguity": "Unklare Unfall- oder Reparaturangaben",
+      "sellerClaims": "Unklare Aussagen des Verkäufers",
+      "modelIssues": "Typische Probleme des Modells",
+      "ownershipCosts": "Kosten im ersten Jahr",
+      "sellerQuestions": "Fragen vor der Besichtigung",
+      "inspectionChecklist": "Checkliste für die Inspektion"
+    },
+    "audienceTitle": "Für vorsichtige Gebrauchtwagenkäufer.",
+    "audienceBody": "AutoVerdict richtet sich an private Käufer ohne Expertenwissen, die eine strukturierte Zweitmeinung wollen, bevor sie den Verkäufer anrufen, eine Besichtigung vereinbaren oder Geld für ein riskantes Angebot ausgeben.",
+    "safetyTitle": "Ein Screening-Tool, keine Garantie.",
+    "safetyBody": "AutoVerdict hilft dir, Fragen und Risiken zu erkennen. Es ersetzt keine professionelle Diagnose, rechtliche Prüfung, offiziellen Fahrzeughistorienberichte oder unabhängige Inspektion.",
+    "seoTitle": "KI-Analyse von Gebrauchtwagenanzeigen für Käufer in Polen",
+    "seoBody": "Beim Kauf eines Gebrauchtwagens in Polen vergleicht man oft Anzeigen, prüft Verkäuferangaben, Servicehistorie und ob sich eine Besichtigung lohnt. AutoVerdict hilft bei der Analyse von Otomoto-Anzeigen und anderen Verkäuferinformationen, indem es Risiken, fehlende Angaben, praktische Fragen und Prüfpunkte hervorhebt.",
+    "seoWhyTitle": "Warum eine Anzeige vor dem Verkäuferkontakt analysieren?",
+    "seoWhyBody": "Der Kontakt zu problematischen Anzeigen kostet beide Seiten Zeit. Eine schnelle KI-Vorprüfung hilft, offensichtliche Risiken vor Anrufen oder Besichtigungen auszusortieren.",
+    "seoInfoTitle": "Welche Informationen sollte man vor dem Gebrauchtwagenkauf prüfen?",
+    "seoInfoBody": "Servicehistorie, Unfallschäden, Kilometerstand, Importdokumente, Verkäuferreputation und modellspezifische Schwachstellen sind wichtige Signale bei der Bewertung einer Anzeige.",
+    "seoOtomotoTitle": "Wie AutoVerdict bei Otomoto-Anzeigen hilft",
+    "seoOtomotoBody": "Füge eine Otomoto-URL oder den kopierten Anzeigentext ein. AutoVerdict liest den Inhalt, erkennt Lücken, markiert verdächtige Muster und gibt praktische Fragen für die Entscheidung vor der Besichtigung.",
+    "footer": {
+      "privacy": "Datenschutz",
+      "terms": "Bedingungen",
+      "contact": "Kontakt"
+    }
+  }
+}

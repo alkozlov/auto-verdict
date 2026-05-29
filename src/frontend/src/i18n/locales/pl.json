@@ -1,0 +1,100 @@
+{
+  "app": {
+    "name": "AutoVerdict"
+  },
+  "auth": {
+    "continueWithGoogle": "Kontynuuj z Google",
+    "signOut": "Wyloguj",
+    "signingIn": "Logowanie..."
+  },
+  "common": {
+    "loading": "Ładowanie..."
+  },
+  "credits": {
+    "label": "Kredyty: {{count}}",
+    "short": "{{count}}",
+    "available_one": "{{count}} kredyt",
+    "available_few": "{{count}} kredyty",
+    "available_many": "{{count}} kredytów",
+    "available_other": "{{count}} kredytu",
+    "topUp": "Doładuj"
+  },
+  "language": {
+    "label": "Język interfejsu",
+    "switcher": "Zmień język"
+  },
+  "nav": {
+    "checkCar": "Sprawdź auto",
+    "myReports": "Moje raporty",
+    "garageNavigation": "Nawigacja garażu",
+    "navigationMenu": "Menu nawigacji",
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu"
+  },
+  "home": {
+    "loginTitle": "Unikaj kosztownych błędów przy zakupie auta.",
+    "loginBody": "Wklej szczegóły ogłoszenia, wiadomości sprzedawcy, link z Otomoto albo zdjęcia. Otrzymaj uporządkowaną analizę ryzyka AI przed kontaktem ze sprzedawcą.",
+    "loginDisclaimer": "To tylko wstępna analiza wspierana przez AI. Zawsze sprawdź dokumenty i umów profesjonalne oględziny przed zakupem.",
+    "howItWorksLink": "Jak to działa",
+    "goToGarage": "Przejdź do garażu",
+    "heroTitleLine1": "Unikaj kosztownych",
+    "heroTitleLine2": "błędów przy zakupie auta.",
+    "heroBody": "Wklej treść ogłoszenia, wiadomości od sprzedawcy, link z Otomoto, zdjęcia, VIN albo własne pytania. AutoVerdict przygotuje uporządkowaną analizę ryzyka AI, zanim skontaktujesz się ze sprzedawcą.",
+    "disclaimerShortLine1": "Wstępna analiza wspierana przez AI.",
+    "disclaimerShortLine2": "Nie zastępuje profesjonalnych oględzin.",
+    "previewVerdict": "Kupuj ostrożnie",
+    "previewConcernsLabel": "Główne ryzyka",
+    "previewConcerns": {
+      "serviceHistory": "Brak historii serwisowej",
+      "importHistory": "Niejasna historia importu pojazdu",
+      "sellerDetails": "Opis sprzedawcy zawiera za mało szczegółów"
+    },
+    "recommendedNextStepLabel": "Zalecany kolejny krok",
+    "recommendedNextStep": "Poproś o VIN, faktury i historię szkód przed oględzinami.",
+    "howItWorksTitle": "Jak to działa",
+    "steps": {
+      "paste": {
+        "title": "Wklej to, co wiesz",
+        "desc": "Dodaj treść ogłoszenia, odpowiedzi sprzedawcy, VIN, notatki, zdjęcia albo link z Otomoto."
+      },
+      "review": {
+        "title": "AI analizuje ryzyka",
+        "desc": "AutoVerdict sprawdza brakujące informacje, podejrzane sformułowania, ryzyka transakcji i typowe problemy modelu."
+      },
+      "nextSteps": {
+        "title": "Otrzymujesz praktyczne kroki",
+        "desc": "Dostajesz pytania do sprzedawcy, punkty do oględzin, szacowane koszty i jasną rekomendację."
+      }
+    },
+    "checksTitle": "Co sprawdza AutoVerdict",
+    "checks": {
+      "suspiciousWording": "Podejrzane sformułowania",
+      "missingServiceHistory": "Brak historii serwisowej",
+      "mileageConcerns": "Wątpliwości dotyczące przebiegu",
+      "importUncertainty": "Niepewność związana z importem",
+      "accidentAmbiguity": "Niejasności dotyczące szkód lub napraw",
+      "sellerClaims": "Nieprecyzyjne deklaracje sprzedawcy",
+      "modelIssues": "Typowe problemy danego modelu",
+      "ownershipCosts": "Koszty pierwszego roku posiadania",
+      "sellerQuestions": "Pytania przed oględzinami",
+      "inspectionChecklist": "Lista kontrolna oględzin"
+    },
+    "audienceTitle": "Dla ostrożnych kupujących auta używane.",
+    "audienceBody": "AutoVerdict jest dla prywatnych kupujących, którzy nie są ekspertami motoryzacyjnymi i chcą uporządkowanej drugiej opinii przed telefonem do sprzedawcy, oględzinami albo wydaniem pieniędzy na ryzykowne ogłoszenie.",
+    "safetyTitle": "Narzędzie do wstępnej oceny, nie gwarancja.",
+    "safetyBody": "AutoVerdict pomaga wskazać pytania i ryzyka. Nie zastępuje diagnostyki, weryfikacji prawnej, oficjalnych raportów historii pojazdu ani niezależnych oględzin.",
+    "seoTitle": "Analiza ogłoszeń aut używanych AI dla kupujących w Polsce",
+    "seoBody": "Zakup auta używanego w Polsce zwykle oznacza porównywanie ogłoszeń, sprawdzanie deklaracji sprzedawcy, historii serwisowej i ocenę, czy auto warto oglądać. AutoVerdict pomaga analizować ogłoszenia z Otomoto i inne informacje od sprzedawcy, wskazując możliwe ryzyka, braki, praktyczne pytania i punkty do oględzin.",
+    "seoWhyTitle": "Po co analizować ogłoszenie przed kontaktem ze sprzedawcą?",
+    "seoWhyBody": "Kontakt w sprawie problematycznego ogłoszenia zabiera czas obu stronom. Szybka analiza AI pomaga odsiać oczywiste ryzyka przed telefonami i oględzinami.",
+    "seoInfoTitle": "Co sprawdzić przed zakupem auta używanego?",
+    "seoInfoBody": "Historia serwisowa, szkody, spójność przebiegu, dokumenty importowe, wiarygodność sprzedawcy i typowe problemy modelu to ważne sygnały przy ocenie ogłoszenia.",
+    "seoOtomotoTitle": "Jak AutoVerdict pomaga z ogłoszeniami Otomoto",
+    "seoOtomotoBody": "Wklej link do ogłoszenia Otomoto albo skopiowaną treść. AutoVerdict czyta zawartość, wykrywa braki, oznacza podejrzane wzorce i podaje praktyczne pytania przed decyzją o oględzinach.",
+    "footer": {
+      "privacy": "Prywatność",
+      "terms": "Regulamin",
+      "contact": "Kontakt"
+    }
+  }
+}

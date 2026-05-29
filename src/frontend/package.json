@@ -15,9 +15,11 @@
     "@uiw/react-md-editor": "^4.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "i18next": "^26.3.0",
     "lucide-react": "^1.16.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-i18next": "^17.0.8",
     "react-router-dom": "^7.6.1",
     "tailwind-merge": "^3.6.0",
     "turndown": "^7.2.4"
