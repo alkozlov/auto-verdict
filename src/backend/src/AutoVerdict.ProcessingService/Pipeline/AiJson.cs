@@ -8,6 +8,7 @@ internal static class AiJson
     {
         PropertyNameCaseInsensitive = true,
         WriteIndented = true,
+        Converters = { new FlexibleStringListJsonConverter() },
     };
 
     internal static T DeserializeFromModel<T>(string text)

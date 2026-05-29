@@ -58,6 +58,7 @@ public sealed class RiskAnalysisStage(
                         - Do not infer listing facts from the URL alone.
                         - Model-specific risks must be verification points, not definitive defects.
                         - Include only useful questions and checklist items.
+                        - missingInformation, sellerQuestions, inspectionChecklist, costAssumptions, and inconsistencies must be arrays of plain strings.
                         - Use PLN assumptions for costs.
                         - Set needsEscalation=true only if a stronger model review is likely to materially improve the report.
 
