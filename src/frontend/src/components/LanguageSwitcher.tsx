@@ -61,7 +61,7 @@ export function LanguageSwitcher({ className }: Props) {
         <div
           role="menu"
           aria-label={t("language.label")}
-          className="absolute right-0 top-11 z-50 grid grid-cols-5 gap-1 rounded-lg border border-white/10 bg-[#0E1116] p-1 shadow-2xl"
+          className="absolute right-0 top-11 z-50 flex w-11 flex-col gap-1 rounded-lg border border-white/10 bg-[#0E1116] p-1 shadow-2xl"
         >
           {LANGUAGES.map((language) => {
             const selected = language.code === currentLanguage.code;
@@ -74,7 +74,7 @@ export function LanguageSwitcher({ className }: Props) {
                 aria-label={language.label}
                 onClick={() => selectLanguage(language.code)}
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors",
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-sm transition-colors",
                   selected ? "bg-white/[0.06] text-hi" : "text-mid hover:bg-white/[0.04] hover:text-hi"
                 )}
               >
