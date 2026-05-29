@@ -18,7 +18,7 @@ This gives separation of concerns without operational complexity of a full distr
 ```txt
                  ┌────────────────────┐
                  │      Frontend      │
-                 │ Next.js + TS       │
+                 │ Vite + React + TS  │
                  └─────────┬──────────┘
                            │ HTTP
                            ▼
@@ -59,16 +59,18 @@ This gives separation of concerns without operational complexity of a full distr
 
 Technology:
 
-- Next.js;
+- Vite;
+- React;
+- React Router;
 - TypeScript;
 - Tailwind CSS;
-- shadcn/ui.
+- lucide-react icons.
 
-The frontend runs as a separate Next.js Node service behind nginx. Static export is not used for MVP.
+The frontend is a static single-page application. Vite builds static assets into `src/frontend/dist`, and nginx serves them with an SPA fallback to `index.html`.
 
 Responsibilities:
 
-- landing page;
+- public marketing pages;
 - sign-in flow;
 - user dashboard;
 - check creation form;
@@ -78,9 +80,40 @@ Responsibilities:
 - check status display;
 - report display.
 
+Implemented public routes:
+
+```txt
+/
+/how-it-works
+/sample-report
+/pricing
+/privacy
+/terms
+/contact
+```
+
+Implemented authenticated routes:
+
+```txt
+/garage/check
+/garage/reports
+/garage/reports/:id
+/auth/callback
+```
+
+The frontend uses `react-i18next`/`i18next` for interface language selection. Supported UI/report locales are:
+
+```txt
+en, pl, de, uk, fr
+```
+
+The selected locale is stored in browser local storage and is sent as `reportLocale` when creating a car check.
+
+Public pages set route-specific title, meta description, canonical URL, Open Graph tags, Twitter Card tags, and JSON-LD client-side. This is an MVP-level SEO implementation only; public pages should later be statically prerendered, split into an SSR/SSG marketing site, or moved to an SSR/SSG framework.
+
 Frontend must not contain business-critical payment or credit logic.
 
-Frontend must not own authentication. It calls backend auth endpoints and uses the backend-issued auth cookie or JWT.
+Frontend must not own authentication. It calls backend auth endpoints and uses the backend-issued JWT.
 
 ### 3.2 API Service
 
@@ -190,10 +223,13 @@ Subjects:
 
 ```json
 {
-  "messageId": "uuid",
   "checkId": "uuid",
   "userId": "uuid",
-  "createdAt": "2026-05-22T12:00:00Z"
+  "description": "copied listing text, seller messages, VIN details, or notes",
+  "listingUrl": "https://www.otomoto.pl/...",
+  "requestedAt": "2026-05-22T12:00:00Z",
+  "reportLocale": "en",
+  "userImageKeys": ["check-id/user-images/image-1.jpg"]
 }
 ```
 
@@ -206,10 +242,7 @@ When creating a check, API writes both the check and an outbox message in the sa
 ```txt
 BEGIN
   INSERT car_checks
-  INSERT car_check_inputs
-  INSERT uploaded_files metadata
-  UPDATE user_credits
-  INSERT credit_ledger
+  INSERT uploaded file metadata when applicable
   INSERT outbox_messages
 COMMIT
 ```
@@ -218,7 +251,7 @@ A publisher loop reads unpublished outbox messages and publishes them to NATS Je
 
 This prevents losing analysis commands if PostgreSQL succeeds but NATS publishing fails.
 
-The transaction must not create a queued check without consuming a credit, and must not consume a credit without creating the check and outbox message.
+The transaction must not create a queued check without ensuring the user has an available credit or whitelist access. Credit consumption is finalized on successful report completion.
 
 ## 7. Inbox / Idempotency
 
@@ -273,20 +306,19 @@ Future implementations may include OpenAI, Gemini, or another provider.
 ```txt
 1. User submits check form.
 2. API validates input with FluentValidation.
-3. API validates and stores screenshots in SeaweedFS through the storage abstraction.
+3. API validates and stores user images in SeaweedFS through the storage abstraction.
 4. API starts a PostgreSQL transaction.
-5. API checks and consumes one available credit.
-6. API writes car check, normalized input, uploaded file metadata, credit ledger entry, and outbox message in the same transaction.
+5. API checks that the user has one available credit or whitelist access.
+6. API writes car check, uploaded file metadata as needed, and an outbox message in the same transaction.
 7. API commits the transaction.
 8. API returns checkId and status Queued.
 9. Outbox publisher publishes message to NATS JetStream.
 10. ProcessingService consumes message.
-11. ProcessingService marks check as Processing.
-12. ProcessingService loads input data and files.
-13. ProcessingService calls Claude.
-14. ProcessingService validates structured AI response.
-15. ProcessingService saves report.
-16. ProcessingService marks check as Completed.
+11. ProcessingService downloads uploaded files and crawls supported listing URLs when available.
+12. ProcessingService runs staged AI analysis and report generation.
+13. ProcessingService validates the localized markdown report.
+14. ProcessingService saves report.
+15. ProcessingService marks check as Completed and consumes one credit.
 ```
 
 ## 11. Failure Flow
@@ -321,7 +353,7 @@ nginx
 
 Local and production deployments share the same basic structure, with different environment variables and compose overrides.
 
-The frontend service is a Node-based Next.js container behind nginx.
+The frontend service is an nginx/static-assets container serving the Vite build output. Nginx proxies `/api/*` to the API service and serves all other routes from the SPA with fallback to `index.html`.
 
 ## 13. Minimal Internal Admin Operations
 
@@ -381,8 +413,10 @@ Decision: screenshots are uploaded to the API, not directly from the browser to 
 
 Reason: simpler validation, authorization, metadata persistence, and local development for MVP.
 
-### ADR-008: Next.js Node frontend service
+### ADR-008: Vite React SPA frontend
 
-Decision: run Next.js as a separate Node container behind nginx.
+Decision: run the frontend as a Vite-built React SPA served by nginx.
 
-Reason: the MVP has authenticated dashboard and dynamic user-specific flows; static export is not suitable.
+Reason: the current MVP frontend is primarily client-side, simple to deploy as static assets, and sufficient for authenticated dashboard flows.
+
+Consequence: public-page SEO metadata is currently injected client-side. Before serious SEO work, add static prerendering, split public marketing pages into an SSR/SSG site, or move public pages to an SSR/SSG-compatible framework.

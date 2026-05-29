@@ -56,6 +56,50 @@ body {
   line-height: 1.6;
 }
 
+.av-btn-primary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #7c9cff;
+  padding: 0 18px;
+  color: #06111f;
+  font-size: 14px;
+  font-weight: 800;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.av-btn-primary:hover {
+  background: #9ab3ff;
+}
+
+.av-btn-primary:focus-visible,
+.av-btn-secondary:focus-visible {
+  outline: 2px solid #9ab3ff;
+  outline-offset: 2px;
+}
+
+.av-btn-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(16, 23, 34, 0.88);
+  padding: 0 18px;
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 800;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.av-btn-secondary:hover {
+  border-color: rgba(148, 163, 184, 0.35);
+  background: #1a2433;
+}
+
 /* ── Panel entrance animation ───────────────────────────────────── */
 
 @keyframes panel-in {

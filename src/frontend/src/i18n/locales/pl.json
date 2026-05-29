@@ -96,5 +96,270 @@
       "terms": "Regulamin",
       "contact": "Kontakt"
     }
+  },
+  "public": {
+    "nav": {
+      "label": "Nawigacja publiczna",
+      "how": "Jak to działa",
+      "sample": "Przykładowy raport",
+      "pricing": "Cennik"
+    },
+    "footer": {
+      "label": "Nawigacja w stopce",
+      "description": "Raporty ryzyka ogłoszeń aut używanych wspierane przez AI dla prywatnych kupujących w Europie."
+    },
+    "cta": {
+      "analyze": "Analizuj ogłoszenie",
+      "sample": "Zobacz przykładowy raport",
+      "startFree": "Rozpocznij darmową analizę",
+      "goAnalyses": "Przejdź do analiz"
+    },
+    "meta": {
+      "home": {
+        "title": "AutoVerdict - analiza ogłoszeń aut używanych AI przed zakupem",
+        "description": "Wklej ogłoszenie auta używanego, wiadomości sprzedawcy, VIN, notatki lub zdjęcia. AutoVerdict przygotuje uporządkowany raport ryzyka AI z czerwonymi flagami, brakującymi informacjami, pytaniami do sprzedawcy, punktami kontroli i jasnym następnym krokiem.",
+        "ogTitle": "Sprawdź ogłoszenie auta używanego przed kontaktem ze sprzedawcą",
+        "ogDescription": "AutoVerdict pomaga prywatnym kupującym oceniać ogłoszenia, wykrywać ryzyka i przygotować pytania przed oględzinami."
+      },
+      "how": {
+        "title": "Jak działa AutoVerdict",
+        "description": "Zobacz, jak AutoVerdict zamienia ogłoszenia, wiadomości sprzedawcy, notatki, dane VIN i zdjęcia w uporządkowane raporty ryzyka AI."
+      },
+      "sample": {
+        "title": "Przykładowy raport ryzyka AI auta używanego - AutoVerdict",
+        "description": "Zobacz przykładowy raport AutoVerdict z sygnałami ryzyka, brakującymi informacjami, pytaniami do sprzedawcy, listą kontroli i rekomendacją."
+      },
+      "pricing": {
+        "title": "Cennik AutoVerdict - raporty ryzyka AI aut używanych",
+        "description": "Prosty cennik kredytowy dla analizy ogłoszeń aut używanych AutoVerdict. Kup jeden check albo pakiet do porównania kilku aut przed oględzinami."
+      },
+      "privacy": {
+        "title": "Polityka prywatności - AutoVerdict",
+        "description": "Dowiedz się, jak AutoVerdict obsługuje dane konta, informacje o pojeździe, przesłane obrazy, przetwarzanie AI, płatności i raporty."
+      },
+      "terms": {
+        "title": "Warunki korzystania - AutoVerdict",
+        "description": "Przeczytaj warunki AutoVerdict, w tym ograniczenia produktu, zastrzeżenia raportów AI, zasady kredytów i obowiązki użytkownika."
+      },
+      "contact": {
+        "title": "Kontakt - AutoVerdict",
+        "description": "Skontaktuj się z AutoVerdict w sprawie analizy ogłoszeń, raportów, płatności lub wsparcia produktu."
+      }
+    },
+    "hero": {
+      "eyebrow": "Dla prywatnych kupujących auta używane w Europie",
+      "title": "Sprawdź ogłoszenie auta używanego, zanim skontaktujesz się ze sprzedawcą.",
+      "body": "Wklej ogłoszenie z marketplace, wiadomości sprzedawcy, VIN, notatki o pojeździe lub zdjęcia. AutoVerdict przygotuje uporządkowany raport ryzyka AI z czerwonymi flagami, brakującymi informacjami, pytaniami do sprzedawcy, punktami kontroli i jasnym następnym krokiem.",
+      "trust": "Wstępna analiza wspierana przez AI. Nie zastępuje profesjonalnych oględzin.",
+      "free": "Pierwsza analiza jest darmowa. Karta nie jest wymagana."
+    },
+    "trust": {
+      "structured": "Uporządkowany raport ryzyka",
+      "questions": "Pytania do sprzedawcy w zestawie",
+      "checklist": "Lista kontrolna oględzin",
+      "buyers": "Dla prywatnych kupujących"
+    },
+    "inputsTitle": "Użyj informacji, które już masz.",
+    "inputsLead": "AutoVerdict może pracować z pełnym ogłoszeniem albo częściowymi danymi. Raport jasno pokaże, co wiadomo, a co nadal wymaga weryfikacji.",
+    "inputs": {
+      "listing": {
+        "title": "Ogłoszenie z marketplace",
+        "body": "Wklej URL ogłoszenia auta używanego albo skopiowaną treść ogłoszenia z serwisu, który przeglądasz."
+      },
+      "messages": {
+        "title": "Wiadomości sprzedawcy",
+        "body": "Dodaj deklaracje o historii serwisowej, szkodach, własności, imporcie lub ostatnich naprawach."
+      },
+      "details": {
+        "title": "Dane pojazdu",
+        "body": "Dodaj VIN, dane rejestracyjne, przebieg, cenę, datę pierwszej rejestracji albo notatki z historii pojazdu."
+      },
+      "photos": {
+        "title": "Zdjęcia i zrzuty ekranu",
+        "body": "Prześlij zrzuty ogłoszenia, zdjęcia zewnętrzne, wnętrze, deskę rozdzielczą albo dokumenty."
+      }
+    },
+    "checksTitle": "Co AutoVerdict sprawdza, zanim poświęcisz czas na auto.",
+    "checksLead": "Raport skupia się na praktycznych ryzykach zakupu: brakujących dokumentach, niejasnych deklaracjach, podejrzanych sformułowaniach, sygnałach własności, obszarach modelu do weryfikacji i pytaniach przed oględzinami.",
+    "checks": {
+      "missing": {
+        "title": "Brakujące informacje",
+        "body": "Wskazuje brak VIN, dokumentów serwisowych, danych właściciela, historii szkód, statusu importu lub niejasnych deklaracji."
+      },
+      "claims": {
+        "title": "Ryzykowne deklaracje",
+        "body": "Oznacza niepotwierdzone stwierdzenia typu bezwypadkowy, pełna historia serwisowa, pierwszy właściciel lub pilna sprzedaż."
+      },
+      "costs": {
+        "title": "Sygnały kosztów",
+        "body": "Pokazuje obszary, które mogą generować koszty w pierwszym roku i powinny zostać sprawdzone przed oględzinami."
+      },
+      "questions": {
+        "title": "Pytania do sprzedawcy",
+        "body": "Zamienia sygnały ryzyka w praktyczne pytania do wysłania przed telefonem lub podróżą."
+      },
+      "checklist": {
+        "title": "Lista kontrolna oględzin",
+        "body": "Daje konkretne punkty do sprawdzenia, jeśli auto trafi do oględzin lub mechanika."
+      },
+      "recommendation": {
+        "title": "Jasny następny krok",
+        "body": "Podsumowuje, czy kontynuować, poprosić o więcej informacji, dokładnie sprawdzić auto, czy odpuścić ogłoszenie."
+      }
+    },
+    "reportPreview": {
+      "eyebrow": "Przykładowy raport ryzyka",
+      "title": "Podgląd uporządkowanego raportu",
+      "risk": "Średnie ryzyko",
+      "vehicle": "2021 Volvo XC60 - 84 000 km - Diesel",
+      "concerns": "Główne ryzyka",
+      "items": {
+        "service": "Historia serwisowa jest niepełna",
+        "import": "Historia importu wymaga wyjaśnienia",
+        "claim": "Deklaracja bezwypadkowości nie jest poparta dokumentami"
+      },
+      "nextLabel": "Zalecany następny krok",
+      "next": "Poproś o VIN, faktury serwisowe, historię szkód i dokumenty własności przed umawianiem oględzin.",
+      "disclaimer": "Analiza wspierana przez AI, nie profesjonalne oględziny.",
+      "confidence": "Pewność: średnia",
+      "recommendationLabel": "Rekomendacja",
+      "recommendation": "Poproś o więcej informacji przed oględzinami"
+    },
+    "samplePreviewTitle": "Zobacz, jak wygląda raport.",
+    "samplePreviewLead": "AutoVerdict zwraca uporządkowany raport decyzyjny, a nie zwykły zapis czatu.",
+    "stepsTitle": "Jak to działa",
+    "stepsLead": "Prosty proces zamiany chaotycznych informacji z ogłoszenia w praktyczną listę dla kupującego.",
+    "steps": {
+      "submit": {
+        "title": "Prześlij to, co wiesz",
+        "body": "Wklej treść ogłoszenia, wiadomości sprzedawcy, notatki o pojeździe, VIN lub zdjęcia."
+      },
+      "analyze": {
+        "title": "AutoVerdict analizuje ryzyka",
+        "body": "Pipeline AI wyodrębnia fakty, wykrywa braki i porządkuje praktyczne sygnały ryzyka."
+      },
+      "act": {
+        "title": "Wybierz następny krok",
+        "body": "Użyj pytań do sprzedawcy, punktów kontroli i rekomendacji, aby zdecydować, czy auto jest warte czasu."
+      }
+    },
+    "chatbotTitle": "Dlaczego nie zwykły chatbot?",
+    "chatbotLead": "AutoVerdict jest zbudowany wokół procesu zakupu auta używanego.",
+    "chatbot": {
+      "genericTitle": "Zwykły chatbot",
+      "genericBody": "Musisz samodzielnie ułożyć prompt, strukturę odpowiedzi, pamiętać o ograniczeniach i zamienić wynik na pytania.",
+      "autoTitle": "AutoVerdict",
+      "autoBody": "Produkt tworzy powtarzalny raport z kategoriami ryzyka, brakującymi informacjami, pytaniami, checklistą i ostrożną rekomendacją."
+    },
+    "pricingTitle": "Prosty cennik. Bez abonamentu.",
+    "pricingLead": "Kupuj checki tylko wtedy, gdy ich potrzebujesz. Jeden ukończony raport zużywa jeden kredyt. Kredyty nie są abonamentem i nie ma opłaty miesięcznej.",
+    "pricing": {
+      "better": "Lepsza cena",
+      "one": {
+        "title": "1 check",
+        "body": "Dla jednego dodatkowego auta, które chcesz sprawdzić przed kolejnym krokiem.",
+        "cta": "Zacznij od 1 checka"
+      },
+      "three": {
+        "title": "3 checki",
+        "body": "Do porównania kilku aut po darmowej pierwszej analizie. Lepsza cena przy porównywaniu wielu aut.",
+        "cta": "Kup 3 checki"
+      },
+      "includes": {
+        "report": "Uporządkowany raport ryzyka AI",
+        "risk": "Poziom ryzyka i pewność",
+        "missing": "Brakujące informacje",
+        "questions": "Pytania do sprzedawcy",
+        "checklist": "Lista kontrolna oględzin"
+      },
+      "freeLabel": "Darmowy kredyt startowy",
+      "freeTitle": "Pierwsza analiza w zestawie",
+      "freeBody": "Nowi użytkownicy otrzymują 1 darmową analizę po zalogowaniu. Karta nie jest wymagana.",
+      "creditRule": "Jeden ukończony raport zużywa jeden kredyt.",
+      "safetyNote": "Kredyty są przeznaczone na ukończone raporty. Błąd techniczny nie powinien kosztować dodatkowego checka."
+    },
+    "safetyTitle": "Narzędzie przesiewowe, nie gwarancja.",
+    "safetyLead": "AutoVerdict nie zastępuje profesjonalnych oględzin, oficjalnych raportów historii pojazdu, diagnostyki mechanika, weryfikacji prawnej ani niezależnej ekspertyzy.",
+    "seoTitle": "Analiza ogłoszeń aut używanych dla ostrożnych kupujących.",
+    "seoLead": "Użyj AutoVerdict przed kontaktem ze sprzedawcą, rezerwacją oględzin lub podróżą. Raport pomaga wykryć czerwone flagi, poprosić o dowody i spokojniej porównywać ogłoszenia.",
+    "faq": {
+      "replaceInspection": {
+        "q": "Czy AutoVerdict zastępuje oględziny?",
+        "a": "Nie. To wstępna analiza wspierana przez AI, która pomaga przygotować się przed profesjonalnymi oględzinami."
+      },
+      "partialInfo": {
+        "q": "Czy mogę użyć AutoVerdict, jeśli mam tylko zdjęcia lub wiadomości sprzedawcy?",
+        "a": "Tak. Możesz przesłać częściowe informacje, takie jak zrzuty ekranu, odpowiedzi sprzedawcy, dane VIN, notatki o pojeździe albo skopiowaną treść ogłoszenia. Raport pokaże, co wiadomo i co nadal trzeba zweryfikować."
+      },
+      "beforeTravel": {
+        "q": "Co sprawdzić przed podróżą na oględziny auta używanego?",
+        "a": "Przed podróżą warto wyjaśnić VIN, historię własności, dokumenty serwisowe, historię szkód, status importu, spójność przebiegu i dostępność dokumentów. AutoVerdict zamienia te punkty w praktyczne pytania i elementy kontroli."
+      },
+      "safeToBuy": {
+        "q": "Czy AutoVerdict powie mi, czy auto jest bezpieczne do kupienia?",
+        "a": "Nie. AutoVerdict to narzędzie wstępnej oceny. Może wskazać ryzyka, braki i pytania, ale nie gwarantuje bezpieczeństwa auta. Zawsze weryfikuj dokumenty i korzystaj z profesjonalnych oględzin."
+      },
+      "marketplaces": {
+        "q": "Czy AutoVerdict działa tylko z jednym marketplace?",
+        "a": "Nie. Możesz wkleić treść ogłoszenia, wiadomości sprzedawcy, dane VIN, notatki lub zrzuty ekranu z różnych serwisów. Automatyczne pobieranie z URL może zależeć od obsługi danego serwisu, ale ręczne dane nadal można analizować."
+      },
+      "notExpert": {
+        "q": "Czy AutoVerdict przyda mi się, jeśli nie znam się na autach?",
+        "a": "Tak. AutoVerdict jest dla prywatnych kupujących, którzy chcą uporządkowanej drugiej opinii przed kontaktem ze sprzedawcą, podróżą lub rezerwacją oględzin."
+      },
+      "credits": {
+        "q": "Jak działają kredyty?",
+        "a": "Jeden ukończony raport zużywa jeden kredyt. Kredyty są zapisane na koncie i nie są abonamentem."
+      },
+      "chatbot": {
+        "q": "Czy to lepsze niż pytanie zwykłego chatbota AI?",
+        "a": "AutoVerdict jest zbudowany pod proces zakupu auta używanego. Porządkuje wynik w poziom ryzyka, braki, pytania do sprzedawcy, checklistę, rzeczy specyficzne dla modelu i jasną rekomendację."
+      }
+    },
+    "finalCta": {
+      "title": "Znalazłeś ciekawe auto? Sprawdź je, zanim zadzwonisz.",
+      "body": "Poświęć kilka minut na ocenę ogłoszenia, zanim stracisz godziny na wiadomości, podróż lub umawianie oględzin.",
+      "free": "Zacznij od 1 darmowej analizy. Karta nie jest wymagana."
+    },
+    "reportIncludes": {
+      "title": "Co otrzymujesz w raporcie",
+      "lead": "AutoVerdict zamienia chaotyczne informacje z ogłoszenia w uporządkowany raport kupującego, którego możesz użyć przed telefonem do sprzedawcy, podróżą lub rezerwacją oględzin.",
+      "badge": "Uporządkowany wynik",
+      "cardTitle": "Raport gotowy dla kupującego",
+      "items": {
+        "risk": {
+          "title": "Poziom ryzyka i pewność",
+          "body": "Zrozum, czy ogłoszenie wygląda na niskie, średnie, wysokie lub nieznane ryzyko."
+        },
+        "facts": {
+          "title": "Wyodrębnione fakty o pojeździe",
+          "body": "Zobacz kluczowe fakty znalezione w ogłoszeniu lub danych od użytkownika."
+        },
+        "missing": {
+          "title": "Brakujące informacje",
+          "body": "Dowiedz się, czego brakuje i co trzeba wyjaśnić przed oględzinami."
+        },
+        "signals": {
+          "title": "Sygnały ryzyka",
+          "body": "Przejrzyj podejrzane sformułowania, niepotwierdzone deklaracje, niejasną własność, import lub historię szkód."
+        },
+        "questions": {
+          "title": "Pytania do sprzedawcy",
+          "body": "Otrzymaj praktyczne pytania do wysłania przed telefonem lub podróżą."
+        },
+        "checklist": {
+          "title": "Lista kontrolna oględzin",
+          "body": "Użyj konkretnych punktów kontroli, jeśli auto trafi do oględzin lub mechanika."
+        },
+        "model": {
+          "title": "Rzeczy specyficzne dla modelu",
+          "body": "Zobacz typowe obszary do sprawdzenia dla modelu, silnika, rocznika lub konfiguracji, gdy są dostępne."
+        },
+        "recommendation": {
+          "title": "Jasna rekomendacja",
+          "body": "Kontynuuj, kontynuuj ostrożnie, poproś o więcej informacji albo odpuść."
+        }
+      }
+    }
   }
 }

@@ -1,5 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './app/page'
+import HowItWorksPage from './app/how-it-works/page'
+import SampleReportPage from './app/sample-report/page'
+import PricingPage from './app/pricing/page'
+import PrivacyPage from './app/privacy/page'
+import TermsPage from './app/terms/page'
+import ContactPage from './app/contact/page'
 import AuthCallback from './app/auth/callback/page'
 import GarageLayout from './app/garage/layout'
 import CheckPage from './app/garage/check/page'
@@ -10,6 +16,12 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/how-it-works" element={<HowItWorksPage />} />
+      <Route path="/sample-report" element={<SampleReportPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/dashboard" element={<Navigate to="/" replace />} />
       <Route path="/garage" element={<GarageLayout />}>
