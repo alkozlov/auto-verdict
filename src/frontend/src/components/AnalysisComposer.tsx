@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Link2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api";
+import { api, type CarCheckResponse } from "@/lib/api";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorView, placeholder as cmPlaceholder } from "@codemirror/view";
@@ -45,8 +45,9 @@ const editorExtensions = [
 ];
 
 interface Props {
-  onSubmitSuccess: (checkId: string, hasLink: boolean, hasPhotos: boolean) => void;
+  onSubmitSuccess: (check: CarCheckResponse) => void;
   onImagePreview: (url: string) => void;
+  disabled?: boolean;
 }
 
 function isValidUrl(s: string): boolean {
@@ -76,7 +77,7 @@ function formatLinkPreview(url: string): string {
   }
 }
 
-export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
+export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = false }: Props) {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -181,6 +182,7 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (disabled) return;
     setFormError(null);
     const desc = description.trim();
     if (!desc) {
@@ -196,25 +198,26 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
         link: link || undefined,
         images,
       });
-      const hadLink = !!link;
-      const hadPhotos = images.length > 0;
       setDescription("");
       imageUrls.forEach(URL.revokeObjectURL);
       setImages([]);
       setImageUrls([]);
       setLink("");
-      onSubmitSuccess(check.checkId, hadLink, hadPhotos);
+      onSubmitSuccess(check);
     } catch (err) {
-      setFormError(
-        err instanceof Error ? err.message : "Something went wrong."
-      );
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.startsWith("409:")) {
+        setFormError("An analysis is already in progress. Please wait for it to complete.");
+      } else {
+        setFormError(msg || "Something went wrong.");
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="rounded-xl border border-white/6 bg-surface overflow-hidden">
+    <div className={cn("rounded-xl border border-white/6 bg-surface overflow-hidden transition-opacity", disabled && "opacity-60")}>
       {/* Card header */}
       <div className="border-b border-white/6 px-7 py-5">
         <h2 className="text-[15px] font-[650] text-hi">
@@ -235,12 +238,15 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
           <CodeMirror
             value={description}
             onChange={(v) => {
-              setDescription(v);
-              setFormError(null);
+              if (!disabled) {
+                setDescription(v);
+                setFormError(null);
+              }
             }}
             height="220px"
             theme={editorTheme}
             extensions={editorExtensions}
+            editable={!disabled}
             basicSetup={{
               lineNumbers: false,
               foldGutter: false,
@@ -372,8 +378,9 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
           ) : (
             <button
               type="button"
+              disabled={disabled}
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-sm text-dim transition-colors hover:bg-white/3 hover:text-mid"
+              className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-sm text-dim transition-colors hover:bg-white/3 hover:text-mid disabled:cursor-not-allowed"
             >
               <ImagePlus className="h-3.5 w-3.5" />
               {images.length > 0
@@ -384,11 +391,12 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
           {!showLinkInput && (
             <button
               type="button"
+              disabled={disabled}
               onClick={() => {
                 setLinkDraft(link);
                 setShowLinkInput(true);
               }}
-              className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-sm text-dim transition-colors hover:bg-white/3 hover:text-mid"
+              className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-sm text-dim transition-colors hover:bg-white/3 hover:text-mid disabled:cursor-not-allowed"
             >
               <Link2 className="h-3.5 w-3.5" />
               {link ? "Change link" : "Add Otomoto link"}
@@ -405,14 +413,14 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview }: Props) {
         {/* Primary submit button */}
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || disabled}
           className={cn(
             "flex h-14 w-full items-center justify-center rounded-lg bg-brand px-4",
             "text-sm font-semibold text-page transition-all",
             "hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
           )}
         >
-          {submitting ? "Submitting…" : "Analyze with AI"}
+          {submitting ? "Submitting…" : disabled ? "Analysis in progress…" : "Analyze with AI"}
         </button>
       </form>
     </div>

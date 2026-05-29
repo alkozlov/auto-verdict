@@ -6,22 +6,58 @@ import { Check, CreditCard } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { useGarage } from "@/lib/garage-context";
 import { AnalysisComposer } from "@/components/AnalysisComposer";
-import { ProcessingPanel } from "@/components/ProcessingPanel";
 import { ImageLightbox } from "@/components/ImageLightbox";
-
-interface SubmissionState {
-  checkId: string;
-  hasLink: boolean;
-  hasPhotos: boolean;
-}
+import { ProcessingBar } from "@/components/ProcessingBar";
 
 export default function CheckCarPage() {
   const navigate = useNavigate();
-  const { me, refreshMe } = useGarage();
-  const [submission, setSubmission] = useState<SubmissionState | null>(null);
-  const [currentCheck, setCurrentCheck] = useState<CarCheckResponse | null>(null);
+  const { refreshMe } = useGarage();
+  const [activeCheck, setActiveCheck] = useState<CarCheckResponse | null>(null);
+  const [completedCheck, setCompletedCheck] = useState<CarCheckResponse | null>(null);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+
+  // On mount, detect any existing active check so the form is locked if needed
+  useEffect(() => {
+    api.checks
+      .list(1, 1)
+      .then((checks) => {
+        const first = checks[0];
+        if (first && (first.status === "Pending" || first.status === "Processing")) {
+          setActiveCheck(first);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setInitializing(false));
+  }, []);
+
+  // Poll the active check every 3 s until it settles
+  useEffect(() => {
+    if (!activeCheck) return;
+    if (activeCheck.status === "Completed" || activeCheck.status === "Failed") {
+      setCompletedCheck(activeCheck);
+      setActiveCheck(null);
+      return;
+    }
+
+    function poll() {
+      api.checks
+        .get(activeCheck!.checkId)
+        .then((check) => {
+          if (check.status === "Completed" || check.status === "Failed") {
+            setCompletedCheck(check);
+            setActiveCheck(null);
+          } else {
+            setActiveCheck(check);
+          }
+        })
+        .catch(() => {});
+    }
+    poll();
+    const id = setInterval(poll, 3000);
+    return () => clearInterval(id);
+  }, [activeCheck?.checkId, activeCheck?.status]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -34,47 +70,24 @@ export default function CheckCarPage() {
     }
   }, [refreshMe]);
 
-  useEffect(() => {
-    if (!submission) return;
-    if (
-      currentCheck?.status === "Completed" ||
-      currentCheck?.status === "Failed"
-    )
-      return;
-
-    function poll() {
-      api.checks
-        .get(submission!.checkId)
-        .then(setCurrentCheck)
-        .catch(() => {});
-    }
-    poll();
-    const id = setInterval(poll, 3000);
-    return () => clearInterval(id);
-  }, [submission, currentCheck?.status]);
-
-  function handleSubmitSuccess(checkId: string, hasLink: boolean, hasPhotos: boolean) {
-    setSubmission({ checkId, hasLink, hasPhotos });
-    setCurrentCheck(null);
+  function handleSubmitSuccess(check: CarCheckResponse) {
+    setActiveCheck(check);
+    setCompletedCheck(null);
     refreshMe();
   }
 
-  function handleCheckAnother() {
-    setSubmission(null);
-    setCurrentCheck(null);
+  function handleDismissCompleted() {
+    setCompletedCheck(null);
   }
 
-  const isProcessing =
-    !!submission &&
-    (!currentCheck ||
-      currentCheck.status === "Pending" ||
-      currentCheck.status === "Processing");
-
-  const isCompleted = currentCheck?.status === "Completed";
-  const isFailed = currentCheck?.status === "Failed";
+  const isProcessing = !!activeCheck;
+  const isCompleted = completedCheck?.status === "Completed";
+  const isFailed = completedCheck?.status === "Failed";
 
   return (
     <div className="mx-auto max-w-[760px] space-y-8">
+      {isProcessing && <ProcessingBar />}
+
       <div>
         <h1 className="text-[22px] font-[650] text-hi">Check car</h1>
         <p className="mt-1.5 text-sm text-dim">
@@ -95,21 +108,10 @@ export default function CheckCarPage() {
         </div>
       )}
 
-      {!submission ? (
-        <AnalysisComposer
-          onSubmitSuccess={handleSubmitSuccess}
-          onImagePreview={setLightboxUrl}
-        />
-      ) : isProcessing ? (
-        <ProcessingPanel
-          key={submission.checkId}
-          hasLink={submission.hasLink}
-          hasPhotos={submission.hasPhotos}
-        />
-      ) : isCompleted ? (
-        <div className="animate-panel-in rounded-xl border border-white/6 bg-surface p-7 space-y-5">
+      {isCompleted && (
+        <div className="animate-panel-in rounded-xl border border-ok/20 bg-ok-tint p-7 space-y-5">
           <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ok-tint">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ok/15">
               <Check className="h-4 w-4 text-ok" />
             </span>
             <div>
@@ -119,33 +121,41 @@ export default function CheckCarPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => navigate(`/garage/reports/${submission.checkId}`)}
+              onClick={() => navigate(`/garage/reports/${completedCheck!.checkId}`)}
               className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
             >
               Open report
             </button>
             <button
-              onClick={handleCheckAnother}
+              onClick={handleDismissCompleted}
               className="rounded-lg border border-white/6 px-5 py-2.5 text-sm text-dim transition-colors hover:text-hi"
             >
               Check another car
             </button>
           </div>
         </div>
-      ) : isFailed ? (
+      )}
+
+      {isFailed && (
         <div className="animate-panel-in rounded-xl border border-bad/20 bg-bad-tint p-7 space-y-3">
           <p className="text-sm font-semibold text-bad">Analysis failed</p>
           <p className="text-sm text-mid">
-            {currentCheck?.failureReason ?? "We couldn't complete this check."}
+            {completedCheck?.failureReason ?? "We couldn't complete this check."}
           </p>
           <button
-            onClick={handleCheckAnother}
+            onClick={handleDismissCompleted}
             className="rounded-lg border border-white/6 px-5 py-2.5 text-sm text-dim transition-colors hover:text-hi"
           >
             Check another car
           </button>
         </div>
-      ) : null}
+      )}
+
+      <AnalysisComposer
+        onSubmitSuccess={handleSubmitSuccess}
+        onImagePreview={setLightboxUrl}
+        disabled={isProcessing || initializing}
+      />
 
       {lightboxUrl && (
         <ImageLightbox url={lightboxUrl} onClose={() => setLightboxUrl(null)} />
