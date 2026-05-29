@@ -3,46 +3,112 @@ using AutoVerdict.Application.AI;
 using AutoVerdict.Application.Storage;
 using AutoVerdict.Contracts.Listing;
 using AutoVerdict.Contracts.Messages;
+using AutoVerdict.Infrastructure.AI;
 using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Parsing;
+using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.ProcessingService.Pipeline;
 
 public sealed class CarCheckAnalysisPipeline(
-    IAiAnalysisProvider aiProvider,
     IDocumentStorageClient storage,
     OtomotoListingParser listingParser,
     DomainRateLimiter rateLimiter,
+    FactExtractionStage factExtractionStage,
+    RiskAnalysisStage riskAnalysisStage,
+    ReportGenerationStage reportGenerationStage,
+    ReportValidator reportValidator,
+    ReportRepairStage reportRepairStage,
+    AiStageRunner stageRunner,
+    IOptions<AiPipelineOptions> aiPipelineOptions,
     ILogger<CarCheckAnalysisPipeline> logger)
 {
     private const string AnalysisFileName = "ai-analysis-result.md";
+    private readonly AiPipelineOptions _aiPipelineOptions = aiPipelineOptions.Value;
 
     public async Task<string> ExecuteAsync(
         CarCheckRequestedMessage message,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Running AI analysis for check {CheckId}.", message.CheckId);
+        logger.LogInformation("Running staged AI analysis for check {CheckId}.", message.CheckId);
 
         var userImages = await DownloadUserImagesAsync(message.UserImageKeys, cancellationToken);
         var (screenshotBytes, crawledListing) = await CrawlListingAsync(message, cancellationToken);
-
-        var request = new AiAnalysisRequest(
+        var evidence = new EvidenceBundle(
             message.CheckId,
             message.Description,
             message.ListingUrl,
-            userImages,
-            screenshotBytes,
-            "image/png",
-            crawledListing);
+            crawledListing,
+            userImages ?? [],
+            screenshotBytes is { Length: > 0 }
+                ? new UserImageContent(screenshotBytes, "image/png")
+                : null);
 
-        var result = await aiProvider.AnalyzeAsync(request, cancellationToken);
+        var budget = new AiBudgetTracker(_aiPipelineOptions.HardBudgetEur);
+        var facts = await factExtractionStage.ExecuteAsync(evidence, budget, cancellationToken);
+        var risks = await riskAnalysisStage.ExecuteAsync(evidence, facts, budget, cancellationToken);
+
+        var useOpusForReport = ShouldUseOpusForReport(risks, budget);
+        var report = await reportGenerationStage.ExecuteAsync(
+            evidence,
+            facts,
+            risks,
+            budget,
+            useOpusForReport,
+            cancellationToken);
+
+        var validation = reportValidator.Validate(report.Markdown);
+        var finalMarkdown = report.Markdown;
+        if (!validation.IsValid)
+        {
+            logger.LogWarning(
+                "Report validation failed for check {CheckId}: {Errors}. Attempting repair.",
+                message.CheckId,
+                string.Join("; ", validation.Errors));
+
+            finalMarkdown = await reportRepairStage.ExecuteAsync(
+                message.CheckId,
+                report.Markdown,
+                validation,
+                budget,
+                cancellationToken);
+
+            validation = reportValidator.Validate(finalMarkdown);
+            if (!validation.IsValid)
+                throw new InvalidOperationException(
+                    "AI report failed validation after repair: " + string.Join("; ", validation.Errors));
+        }
 
         logger.LogInformation(
-            "AI analysis complete for check {CheckId}: provider={Provider}, model={Model}, tokens={Input}+{Output}.",
-            message.CheckId, result.ProviderName, result.ModelName,
-            result.InputTokens, result.OutputTokens);
+            "Staged AI analysis complete for check {CheckId}; estimated AI spend is {CostEur} EUR.",
+            message.CheckId,
+            budget.SpentEur);
 
-        return await SaveAnalysisAsync(message.CheckId, result.MarkdownText, cancellationToken);
+        return await SaveAnalysisAsync(message.CheckId, finalMarkdown, cancellationToken);
+    }
+
+    private bool ShouldUseOpusForReport(RiskAnalysisResult risks, AiBudgetTracker budget)
+    {
+        var opusStage = _aiPipelineOptions.GetStage("OpusReview", "claude-opus-4-1", 8000);
+        if (!opusStage.Enabled || !risks.NeedsEscalation)
+            return false;
+
+        var estimatedCost = stageRunner.EstimateMaxCostEur(opusStage.Model, 6000, opusStage.MaxTokens);
+        if (budget.CanSpend(estimatedCost))
+        {
+            logger.LogInformation(
+                "Escalating report generation to Opus-compatible model {Model}: {Reason}",
+                opusStage.Model,
+                risks.EscalationReason);
+            return true;
+        }
+
+        logger.LogInformation(
+            "Skipping Opus escalation for budget reasons. Estimated next stage cost {EstimatedCost}; spent {Spent}; hard budget {Budget}.",
+            estimatedCost,
+            budget.SpentEur,
+            budget.HardBudgetEur);
+        return false;
     }
 
     private async Task<(byte[]? ScreenshotBytes, CarListingSnapshot? Listing)> CrawlListingAsync(

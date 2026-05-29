@@ -15,6 +15,13 @@ builder.Services.Configure<PlaywrightParserOptions>(
     builder.Configuration.GetSection(PlaywrightParserOptions.SectionName));
 builder.Services.AddSingleton<DomainRateLimiter>();
 builder.Services.AddSingleton<OtomotoListingParser>();
+builder.Services.AddSingleton<AiStageRunner>();
+builder.Services.AddSingleton<EvidenceFormatter>();
+builder.Services.AddSingleton<FactExtractionStage>();
+builder.Services.AddSingleton<RiskAnalysisStage>();
+builder.Services.AddSingleton<ReportGenerationStage>();
+builder.Services.AddSingleton<ReportValidator>();
+builder.Services.AddSingleton<ReportRepairStage>();
 builder.Services.AddSingleton<CarCheckAnalysisPipeline>();
 builder.Services.AddHostedService<CarCheckConsumer>();
 

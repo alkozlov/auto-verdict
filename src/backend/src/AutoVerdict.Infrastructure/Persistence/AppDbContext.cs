@@ -14,6 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
     public DbSet<CrawlerJob> CrawlerJobs => Set<CrawlerJob>();
     public DbSet<PaymentOrder> PaymentOrders => Set<PaymentOrder>();
+    public DbSet<AiRun> AiRuns => Set<AiRun>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

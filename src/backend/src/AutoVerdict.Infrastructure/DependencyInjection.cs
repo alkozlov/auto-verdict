@@ -45,6 +45,45 @@ public static class DependencyInjection
             if (configuration["CLAUDE_MODEL"] is { Length: > 0 } model)
                 opts.Model = model;
         });
+        var configuredClaudeModel =
+            configuration["CLAUDE_MODEL"]
+            ?? configuration["Claude:Model"]
+            ?? "claude-haiku-4-5";
+
+        services.Configure<AiPipelineOptions>(opts =>
+        {
+            configuration.GetSection(AiPipelineOptions.SectionName).Bind(opts);
+            if (configuration["AI_DEFAULT_BUDGET_EUR"] is { Length: > 0 } defaultBudget
+                && decimal.TryParse(defaultBudget, out var parsedDefaultBudget))
+                opts.DefaultBudgetEur = parsedDefaultBudget;
+            if (configuration["AI_HARD_BUDGET_EUR"] is { Length: > 0 } hardBudget
+                && decimal.TryParse(hardBudget, out var parsedHardBudget))
+                opts.HardBudgetEur = parsedHardBudget;
+
+            EnsureStage(opts, "FactExtraction", configuration["AI_FACT_EXTRACTION_MODEL"] ?? configuredClaudeModel, 2500, true);
+            EnsureStage(opts, "RiskAnalysis", configuration["AI_RISK_ANALYSIS_MODEL"] ?? configuredClaudeModel, 5000, true);
+            EnsureStage(opts, "ReportGeneration", configuration["AI_REPORT_GENERATION_MODEL"] ?? configuredClaudeModel, 8000, true);
+            EnsureStage(opts, "ReportRepair", configuration["AI_REPORT_REPAIR_MODEL"] ?? configuredClaudeModel, 8000, true);
+            EnsureStage(opts, "OpusReview", configuration["AI_OPUS_REVIEW_MODEL"] ?? "claude-opus-4-1", 3000, false);
+
+            OverrideStageModel(opts, "FactExtraction", configuration["AI_FACT_EXTRACTION_MODEL"]);
+            OverrideStageModel(opts, "RiskAnalysis", configuration["AI_RISK_ANALYSIS_MODEL"]);
+            OverrideStageModel(opts, "ReportGeneration", configuration["AI_REPORT_GENERATION_MODEL"]);
+            OverrideStageModel(opts, "ReportRepair", configuration["AI_REPORT_REPAIR_MODEL"]);
+            OverrideStageModel(opts, "OpusReview", configuration["AI_OPUS_REVIEW_MODEL"]);
+            if (configuration["AI_OPUS_REVIEW_ENABLED"] is { Length: > 0 } opusEnabled
+                && bool.TryParse(opusEnabled, out var parsedOpusEnabled)
+                && opts.Stages.TryGetValue("OpusReview", out var opusStage))
+                opusStage.Enabled = parsedOpusEnabled;
+        });
+        services.Configure<AiPricingOptions>(opts =>
+        {
+            configuration.GetSection(AiPricingOptions.SectionName).Bind(opts);
+            if (configuration["AI_USD_TO_EUR_RATE"] is { Length: > 0 } rate
+                && decimal.TryParse(rate, out var parsedRate))
+                opts.UsdToEurRate = parsedRate;
+        });
+        services.AddSingleton<IAiClient, ClaudeAiClient>();
         services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
 
         services.Configure<S3Options>(opts =>
@@ -156,5 +195,36 @@ public static class DependencyInjection
 
         return connectionString;
     }
-}
 
+    private static void EnsureStage(
+        AiPipelineOptions options,
+        string name,
+        string model,
+        int maxTokens,
+        bool enabled)
+    {
+        if (!options.Stages.TryGetValue(name, out var stage))
+        {
+            options.Stages[name] = new AiStageOptions
+            {
+                Model = model,
+                MaxTokens = maxTokens,
+                Enabled = enabled,
+            };
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(stage.Model))
+            stage.Model = model;
+        if (stage.MaxTokens <= 0)
+            stage.MaxTokens = maxTokens;
+    }
+
+    private static void OverrideStageModel(AiPipelineOptions options, string name, string? model)
+    {
+        if (string.IsNullOrWhiteSpace(model))
+            return;
+        if (options.Stages.TryGetValue(name, out var stage))
+            stage.Model = model;
+    }
+}
