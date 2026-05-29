@@ -13,6 +13,7 @@ public sealed partial class ReportGenerationStage(
 {
     private const string StageName = "ReportGeneration";
     private const string PromptVersion = "report-generation.v1";
+    private const int MinReportMaxTokens = 12_000;
 
     private readonly AiPipelineOptions _options = options.Value;
 
@@ -26,8 +27,9 @@ public sealed partial class ReportGenerationStage(
         CancellationToken cancellationToken)
     {
         var stage = useOpus
-            ? _options.GetStage("OpusReview", "claude-opus-4-1", 8000)
-            : _options.GetStage(StageName, "claude-sonnet-4-6", 8000);
+            ? _options.GetStage("OpusReview", "claude-opus-4-1", MinReportMaxTokens)
+            : _options.GetStage(StageName, "claude-sonnet-4-6", MinReportMaxTokens);
+        var maxTokens = Math.Max(stage.MaxTokens, MinReportMaxTokens);
 
         var response = await runner.RunAsync(
             new AiTextRequest(
@@ -47,7 +49,8 @@ public sealed partial class ReportGenerationStage(
                         - Translate all headings, verdict labels, prose, checklist items, tables, notes, and disclaimer into {reportLanguage.EnglishName}.
                         - Preserve brand names, URLs, VINs, model names, and technical identifiers exactly.
 
-                        Required exact section order:
+                        Required exact section order.
+                        These heading lines are mandatory. Keep each heading exactly as written, including the markdown level.
 
                         {string.Join("\n", reportLanguage.RequiredHeadings)}
 
@@ -76,6 +79,7 @@ public sealed partial class ReportGenerationStage(
                         - If userQuestions is empty, state that no explicit buyer questions were found and that the report focuses on listing risks, missing information, seller questions, and inspection points.
                         - Do not invent user questions. Mark unrelated questions as out of scope.
                         - Under Key Risks, include Top decision points with 3-5 numbered points and a compact Risk overview table.
+                        - Keep the required risk section headings exactly as listed above; do not rename them, merge them, or change their markdown level.
                         - Technical Risks, Listing Risks, and Deal Risks must use markdown tables with columns: Risk, Severity, Evidence, Why it matters, How to verify.
                         - If a risk category has no meaningful risks, write one short cautious sentence instead of forcing a fake risk.
                         - Missing Information must use a markdown table with columns: Missing item, Why it matters, Priority.
@@ -102,7 +106,7 @@ public sealed partial class ReportGenerationStage(
                         {formatter.BuildEvidenceText(evidence)}
                         """),
                 ],
-                stage.MaxTokens),
+                maxTokens),
             budget,
             escalationReason: useOpus ? risks.EscalationReason : null,
             cancellationToken: cancellationToken);

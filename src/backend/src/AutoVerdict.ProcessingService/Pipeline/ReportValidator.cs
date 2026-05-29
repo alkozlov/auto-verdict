@@ -14,9 +14,10 @@ public sealed partial class ReportValidator
         if (string.IsNullOrWhiteSpace(markdown) || markdown.Length < 800)
             errors.Add("Report is empty or too short.");
 
+        var reportHeadings = ExtractMarkdownHeadings(markdown);
         foreach (var heading in reportLanguage.RequiredHeadings)
         {
-            if (!markdown.Contains(heading, StringComparison.Ordinal))
+            if (!ContainsRequiredHeading(reportHeadings, heading))
                 errors.Add($"Missing required heading: {heading}");
         }
 
@@ -52,6 +53,23 @@ public sealed partial class ReportValidator
     private static bool ContainsAny(string markdown, IEnumerable<string> needles) =>
         needles.Any(needle => markdown.Contains(needle, StringComparison.OrdinalIgnoreCase));
 
+    private static IReadOnlySet<string> ExtractMarkdownHeadings(string markdown)
+    {
+        var headings = new HashSet<string>(StringComparer.Ordinal);
+        foreach (Match match in MarkdownHeadingRegex().Matches(markdown))
+            headings.Add(NormalizeHeadingText(match.Groups["text"].Value));
+        return headings;
+    }
+
+    private static bool ContainsRequiredHeading(IReadOnlySet<string> reportHeadings, string requiredHeading) =>
+        reportHeadings.Contains(NormalizeHeadingText(requiredHeading));
+
+    private static string NormalizeHeadingText(string heading) =>
+        HeadingPrefixRegex()
+            .Replace(heading.Trim(), "")
+            .Trim()
+            .TrimEnd(':');
+
     private static IEnumerable<string> YourQuestionsAnsweredHeadings(ReportLanguage reportLanguage) =>
         reportLanguage.Locale switch
         {
@@ -74,6 +92,12 @@ public sealed partial class ReportValidator
 
     [GeneratedRegex(@"- \[[ xX]\]")]
     private static partial Regex CheckboxRegex();
+
+    [GeneratedRegex(@"(?m)^\s{0,3}#{1,6}\s+(?<text>.+?)\s*$")]
+    private static partial Regex MarkdownHeadingRegex();
+
+    [GeneratedRegex(@"^#{1,6}\s+")]
+    private static partial Regex HeadingPrefixRegex();
 
     private static void AddUnsafeLanguageFindings(
         string markdown,
