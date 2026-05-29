@@ -2,11 +2,11 @@ export const DEFAULT_LOCALE = "en";
 export const LOCALE_STORAGE_KEY = "auto-verdict.locale";
 
 export const LANGUAGES = [
-  { code: "en", shortLabel: "EN", label: "English", flag: "🇬🇧" },
-  { code: "pl", shortLabel: "PL", label: "Polski", flag: "🇵🇱" },
-  { code: "de", shortLabel: "DE", label: "Deutsch", flag: "🇩🇪" },
-  { code: "uk", shortLabel: "UK", label: "Українська", flag: "🇺🇦" },
-  { code: "fr", shortLabel: "FR", label: "Français", flag: "🇫🇷" },
+  { code: "en", shortLabel: "EN", label: "English" },
+  { code: "pl", shortLabel: "PL", label: "Polski" },
+  { code: "de", shortLabel: "DE", label: "Deutsch" },
+  { code: "uk", shortLabel: "UK", label: "Українська" },
+  { code: "fr", shortLabel: "FR", label: "Français" },
 ] as const;
 
 export type Locale = (typeof LANGUAGES)[number]["code"];
