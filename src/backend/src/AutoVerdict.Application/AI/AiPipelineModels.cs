@@ -6,6 +6,8 @@ public sealed record EvidenceBundle(
     Guid CheckId,
     string UserDescriptionMarkdown,
     string? ListingUrl,
+    string CrawlStatus,
+    string? CrawlError,
     CarListingSnapshot? CrawledListing,
     IReadOnlyList<UserImageContent> UserImages,
     UserImageContent? ListingScreenshot);

@@ -19,6 +19,16 @@ public sealed class EvidenceFormatter
         if (!string.IsNullOrWhiteSpace(evidence.ListingUrl))
             sb.AppendLine($"Listing URL: {evidence.ListingUrl}");
 
+        sb.AppendLine($"Crawler status: {evidence.CrawlStatus}");
+        if (!string.IsNullOrWhiteSpace(evidence.CrawlError))
+            sb.AppendLine($"Crawler note: {evidence.CrawlError}");
+
+        if (evidence.CrawledListing is null)
+        {
+            sb.AppendLine(
+                "Crawler data is unavailable. Do not infer vehicle facts from the URL alone; rely on user-provided text and images.");
+        }
+
         if (evidence.CrawledListing is not null)
         {
             sb.AppendLine();
@@ -26,7 +36,7 @@ public sealed class EvidenceFormatter
         }
 
         if (evidence.UserImages.Count > 0)
-            sb.AppendLine($"User attached images: {evidence.UserImages.Count}");
+            sb.AppendLine($"User attached images/screenshots: {evidence.UserImages.Count}");
 
         if (evidence.ListingScreenshot is not null)
             sb.AppendLine("Listing screenshot: available");

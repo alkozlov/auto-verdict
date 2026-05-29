@@ -11,6 +11,7 @@ public sealed class FactExtractionStage(
 {
     private const string StageName = "FactExtraction";
     private const string PromptVersion = "fact-extraction.v1";
+    private const int MaxUserImagesForFactExtraction = 5;
 
     private readonly AiPipelineOptions _options = options.Value;
 
@@ -55,6 +56,9 @@ public sealed class FactExtractionStage(
                 - Do not invent facts.
                 - Use null when unknown.
                 - Preserve useful raw listing attributes.
+                - Inspect attached user screenshots/images for visible VIN, mileage, price, year, make, model, seller, and location.
+                - If a VIN is visible in an image, extract it exactly and set vinPresent=true.
+                - If crawler status is Failed, BlockedOrCaptcha, UnsupportedUrl, or NotProvided, rely on user text and images instead of the URL.
                 - Distinguish known facts from assumptions in evidenceNotes.
                 - confidence must reflect how complete and consistent the evidence is.
 
@@ -62,6 +66,11 @@ public sealed class FactExtractionStage(
                 {{formatter.BuildEvidenceText(evidence)}}
                 """),
         };
+
+        foreach (var image in evidence.UserImages.Take(MaxUserImagesForFactExtraction))
+        {
+            messages.Add(new AiImageContent(image.Bytes, image.ContentType));
+        }
 
         if (evidence.CrawledListing is null && evidence.ListingScreenshot is not null)
         {

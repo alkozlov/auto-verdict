@@ -68,6 +68,8 @@ public sealed partial class ReportGenerationStage(
                         - Include an Estimated Costs markdown table using PLN.
                         - Facts should use Unknown when unavailable.
                         - Do not mention internal model names, prompts, stages, or confidence machinery.
+                        - If automatic crawler data was unavailable, do not expose technical crawler failure details.
+                        - You may say that the report is based on the user-provided text/images when relevant.
 
                         Extracted facts:
                         {formatter.BuildFactsText(facts)}

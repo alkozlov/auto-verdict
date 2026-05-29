@@ -54,6 +54,8 @@ public sealed class RiskAnalysisStage(
                         - Be cautious and practical.
                         - Do not accuse the seller of fraud.
                         - Do not claim certainty without evidence.
+                        - If crawler data is unavailable, explicitly treat user text/images as the available evidence.
+                        - Do not infer listing facts from the URL alone.
                         - Model-specific risks must be verification points, not definitive defects.
                         - Include only useful questions and checklist items.
                         - Use PLN assumptions for costs.

@@ -33,15 +33,17 @@ public sealed class CarCheckAnalysisPipeline(
         logger.LogInformation("Running staged AI analysis for check {CheckId}.", message.CheckId);
 
         var userImages = await DownloadUserImagesAsync(message.UserImageKeys, cancellationToken);
-        var (screenshotBytes, crawledListing) = await CrawlListingAsync(message, cancellationToken);
+        var crawlResult = await CrawlListingAsync(message, cancellationToken);
         var evidence = new EvidenceBundle(
             message.CheckId,
             message.Description,
             message.ListingUrl,
-            crawledListing,
+            crawlResult.Status,
+            crawlResult.Error,
+            crawlResult.Listing,
             userImages ?? [],
-            screenshotBytes is { Length: > 0 }
-                ? new UserImageContent(screenshotBytes, "image/png")
+            crawlResult.ScreenshotBytes is { Length: > 0 }
+                ? new UserImageContent(crawlResult.ScreenshotBytes, "image/png")
                 : null);
 
         var budget = new AiBudgetTracker(_aiPipelineOptions.HardBudgetEur);
@@ -111,12 +113,15 @@ public sealed class CarCheckAnalysisPipeline(
         return false;
     }
 
-    private async Task<(byte[]? ScreenshotBytes, CarListingSnapshot? Listing)> CrawlListingAsync(
+    private async Task<CrawlPipelineResult> CrawlListingAsync(
         CarCheckRequestedMessage message,
         CancellationToken cancellationToken)
     {
-        if (message.ListingUrl is null || !OtomotoListingParser.IsSupported(message.ListingUrl))
-            return (null, null);
+        if (message.ListingUrl is null)
+            return new CrawlPipelineResult("NotProvided", null, null, null);
+
+        if (!OtomotoListingParser.IsSupported(message.ListingUrl))
+            return new CrawlPipelineResult("UnsupportedUrl", "Listing URL is not supported by the crawler.", null, null);
 
         var domain = new Uri(message.ListingUrl).Host;
         var rateLimitAcquired = false;
@@ -140,7 +145,12 @@ public sealed class CarCheckAnalysisPipeline(
             else
                 logger.LogInformation("Listing crawled successfully for check {CheckId}.", message.CheckId);
 
-            return (parseResult.ScreenshotBytes, parseResult.Listing);
+            var status = parseResult.DetectedBlockOrCaptcha ? "BlockedOrCaptcha" : "Succeeded";
+            var error = parseResult.DetectedBlockOrCaptcha
+                ? "Crawler detected a block or CAPTCHA page."
+                : null;
+
+            return new CrawlPipelineResult(status, error, parseResult.ScreenshotBytes, parseResult.Listing);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -149,7 +159,7 @@ public sealed class CarCheckAnalysisPipeline(
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Listing crawl failed for check {CheckId}; proceeding without crawled data.", message.CheckId);
-            return (null, null);
+            return new CrawlPipelineResult("Failed", ex.Message, null, null);
         }
         finally
         {
@@ -157,6 +167,12 @@ public sealed class CarCheckAnalysisPipeline(
                 rateLimiter.Release(domain);
         }
     }
+
+    private sealed record CrawlPipelineResult(
+        string Status,
+        string? Error,
+        byte[]? ScreenshotBytes,
+        CarListingSnapshot? Listing);
 
     private async Task<string> SaveAnalysisAsync(Guid checkId, string markdown, CancellationToken cancellationToken)
     {
