@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { LANGUAGES, type Locale } from "@/i18n/languages";
@@ -53,23 +52,18 @@ export function LanguageSwitcher({ className }: Props) {
         aria-label={t("language.switcher")}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex h-9 items-center gap-1.5 rounded-md border border-white/10 bg-surface px-2.5 text-xs font-semibold text-mid transition-colors hover:border-white/16 hover:text-hi"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-surface text-mid transition-colors hover:border-white/16 hover:text-hi"
       >
         <span aria-hidden="true" className="text-sm leading-none">
           {currentLanguage.flag}
         </span>
-        <span>{currentLanguage.shortLabel}</span>
-        <ChevronDown
-          className={cn("h-3.5 w-3.5 text-dim transition-transform", open && "rotate-180")}
-          aria-hidden="true"
-        />
       </button>
 
       {open && (
         <div
           role="menu"
           aria-label={t("language.label")}
-          className="absolute right-0 top-11 z-50 w-44 overflow-hidden rounded-lg border border-white/10 bg-[#0E1116] py-1 shadow-2xl"
+          className="absolute right-0 top-11 z-50 grid grid-cols-5 gap-1 rounded-lg border border-white/10 bg-[#0E1116] p-1 shadow-2xl"
         >
           {LANGUAGES.map((language) => {
             const selected = language.code === currentLanguage.code;
@@ -79,18 +73,15 @@ export function LanguageSwitcher({ className }: Props) {
                 type="button"
                 role="menuitemradio"
                 aria-checked={selected}
+                aria-label={language.label}
                 onClick={() => selectLanguage(language.code)}
                 className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors",
+                  "flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors",
                   selected ? "bg-white/[0.06] text-hi" : "text-mid hover:bg-white/[0.04] hover:text-hi"
                 )}
               >
                 <span aria-hidden="true" className="text-base leading-none">
                   {language.flag}
-                </span>
-                <span className="flex-1">{language.label}</span>
-                <span className="text-[11px] font-semibold text-dim">
-                  {language.shortLabel}
                 </span>
               </button>
             );
