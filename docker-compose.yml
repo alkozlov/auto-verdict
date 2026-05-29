@@ -56,6 +56,17 @@ services:
       S3_BUCKET: ${S3_BUCKET:-auto-verdict-local}
       CLAUDE_API_KEY: ${CLAUDE_API_KEY:-}
       CLAUDE_MODEL: ${CLAUDE_MODEL:-}
+      AI_DEFAULT_BUDGET_EUR: ${AI_DEFAULT_BUDGET_EUR:-0.70}
+      AI_HARD_BUDGET_EUR: ${AI_HARD_BUDGET_EUR:-2.00}
+      AI_USD_TO_EUR_RATE: ${AI_USD_TO_EUR_RATE:-0.92}
+      AI_FACT_EXTRACTION_MODEL: ${AI_FACT_EXTRACTION_MODEL:-claude-haiku-4-5}
+      AI_RISK_ANALYSIS_MODEL: ${AI_RISK_ANALYSIS_MODEL:-claude-haiku-4-5}
+      AI_REPORT_GENERATION_MODEL: ${AI_REPORT_GENERATION_MODEL:-claude-haiku-4-5}
+      AI_REPORT_REPAIR_MODEL: ${AI_REPORT_REPAIR_MODEL:-claude-haiku-4-5}
+      AI_OPUS_REVIEW_MODEL: ${AI_OPUS_REVIEW_MODEL:-claude-opus-4-1}
+      AI_OPUS_REVIEW_ENABLED: ${AI_OPUS_REVIEW_ENABLED:-false}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       PLAYWRIGHT_HEADLESS: ${PLAYWRIGHT_HEADLESS:-}
       PLAYWRIGHT_DEVTOOLS: ${PLAYWRIGHT_DEVTOOLS:-false}
       PLAYWRIGHT_SLOW_MO_MS: ${PLAYWRIGHT_SLOW_MO_MS:-0}
@@ -70,6 +81,8 @@ services:
         condition: service_completed_successfully
       seaweedfs-setup:
         condition: service_completed_successfully
+      otel-collector:
+        condition: service_started
 
   caddy:
     image: caddy:2-alpine
@@ -155,9 +168,49 @@ services:
       seaweedfs:
         condition: service_healthy
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.118.0
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
+    volumes:
+      - ./infra/otel-collector/config.yml:/etc/otelcol-contrib/config.yml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
+
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   nats_data:
   seaweedfs_data:
   caddy-data:
   caddy-config:
+  prometheus_data:
+  grafana_data:
