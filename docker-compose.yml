@@ -176,18 +176,16 @@ services:
     ports:
       - "4317:4317"
       - "4318:4318"
-      - "9464:9464"
 
-  prometheus:
-    image: prom/prometheus:v3.0.1
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:v1.107.0
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
+      - "-storageDataPath=/victoria-metrics-data"
+      - "-retentionPeriod=30d"
     volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
+      - victoria_metrics_data:/victoria-metrics-data
     ports:
-      - "9090:9090"
+      - "8428:8428"
     depends_on:
       - otel-collector
 
@@ -204,7 +202,7 @@ services:
     ports:
       - "3001:3000"
     depends_on:
-      - prometheus
+      - victoria-metrics
 
 volumes:
   postgres_data:
@@ -212,5 +210,5 @@ volumes:
   seaweedfs_data:
   caddy-data:
   caddy-config:
-  prometheus_data:
+  victoria_metrics_data:
   grafana_data:

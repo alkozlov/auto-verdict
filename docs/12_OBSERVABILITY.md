@@ -6,16 +6,16 @@ AutoVerdict uses OpenTelemetry for application metrics and a local Grafana stack
 
 Docker Compose starts:
 
-- `otel-collector` — receives OTLP metrics from services.
-- `prometheus` — scrapes metrics exposed by the collector.
-- `grafana` — visualizes Prometheus data.
+- `otel-collector` — receives OTLP metrics from services and writes them to VictoriaMetrics.
+- `victoria-metrics` — stores time-series metrics with a Prometheus-compatible API.
+- `grafana` — visualizes VictoriaMetrics data.
 
 Local endpoints:
 
 ```txt
 OpenTelemetry OTLP gRPC: http://localhost:4317
 OpenTelemetry OTLP HTTP: http://localhost:4318
-Prometheus:              http://localhost:9090
+VictoriaMetrics:         http://localhost:8428
 Grafana:                 http://localhost:3001
 ```
 
@@ -26,7 +26,7 @@ GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=admin
 ```
 
-The default Prometheus datasource and `AI Token Usage` dashboard are provisioned automatically.
+The default VictoriaMetrics datasource uses Grafana's Prometheus datasource type and the `AI Token Usage` dashboard is provisioned automatically.
 
 ## ProcessingService AI Metrics
 

@@ -57,8 +57,8 @@ The report includes:
 - `postgres` — shared relational database.
 - `nats` — message bus with JetStream persistence.
 - `seaweedfs` — S3-compatible object storage.
-- `otel-collector` — OpenTelemetry metrics receiver and Prometheus bridge.
-- `prometheus` — local metrics time-series store.
+- `otel-collector` — OpenTelemetry metrics receiver and VictoriaMetrics writer.
+- `victoria-metrics` — local metrics time-series store.
 - `grafana` — local metrics dashboards.
 - `nginx` — production reverse proxy.
 - `docker-compose` — single local and production orchestration entry point.

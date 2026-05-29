@@ -136,7 +136,7 @@ nats
 seaweedfs
 nginx
 otel-collector
-prometheus
+victoria-metrics
 grafana
 ```
 
@@ -160,8 +160,8 @@ API:      http://localhost:5000
 NATS:     localhost:4222
 SeaweedFS S3: http://localhost:8333
 Postgres: localhost:5432
-Prometheus: http://localhost:9090
-Grafana:    http://localhost:3001
+VictoriaMetrics: http://localhost:8428
+Grafana:         http://localhost:3001
 ```
 
 Actual ports may be adjusted.

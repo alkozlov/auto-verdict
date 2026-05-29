@@ -11,7 +11,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "VictoriaMetrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -50,7 +50,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "VictoriaMetrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -89,7 +89,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "VictoriaMetrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -128,7 +128,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "VictoriaMetrics"
       },
       "fieldConfig": {
         "defaults": {
