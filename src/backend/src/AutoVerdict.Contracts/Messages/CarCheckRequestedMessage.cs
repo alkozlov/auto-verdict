@@ -6,4 +6,5 @@ public sealed record CarCheckRequestedMessage(
     string Description,
     string? ListingUrl,
     DateTimeOffset RequestedAt,
+    string ReportLocale = "en",
     string[] UserImageKeys = default!);

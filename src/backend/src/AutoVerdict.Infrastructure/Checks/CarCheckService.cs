@@ -3,6 +3,7 @@ using AutoVerdict.Application.Checks;
 using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Contracts.Messages;
+using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +18,11 @@ public sealed class CarCheckService(AppDbContext db, IOptions<WhitelistOptions> 
         Guid checkId,
         string description,
         string? listingUrl,
+        string reportLocale,
         string[] userImageKeys,
         CancellationToken cancellationToken = default)
     {
+        var language = ReportLanguage.Resolve(reportLocale);
         await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
 
         var userEmail = await db.Users
@@ -57,7 +60,7 @@ public sealed class CarCheckService(AppDbContext db, IOptions<WhitelistOptions> 
             Id = Guid.NewGuid(),
             Subject = NatsSubjects.CarCheckRequested,
             Payload = JsonSerializer.Serialize(new CarCheckRequestedMessage(
-                checkId, userId, description, listingUrl, now, userImageKeys)),
+                checkId, userId, description, listingUrl, now, language.Locale, userImageKeys)),
             CreatedAt = now,
         });
 

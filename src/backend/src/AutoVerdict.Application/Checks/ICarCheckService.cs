@@ -9,6 +9,7 @@ public interface ICarCheckService
         Guid checkId,
         string description,
         string? listingUrl,
+        string reportLocale,
         string[] userImageKeys,
         CancellationToken cancellationToken = default);
 }

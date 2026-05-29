@@ -1,4 +1,5 @@
 import { getToken } from "./auth";
+import { i18n } from "@/i18n";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
@@ -61,6 +62,7 @@ export const api = {
       const token = getToken();
       const form = new FormData();
       form.append("description", params.description);
+      form.append("reportLocale", i18n.language);
       if (params.link) form.append("link", params.link);
       params.images?.forEach((img, i) => form.append(`image${i}`, img));
       const headers: Record<string, string> = {};
