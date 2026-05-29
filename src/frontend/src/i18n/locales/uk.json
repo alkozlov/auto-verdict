@@ -96,5 +96,352 @@
       "terms": "Умови",
       "contact": "Контакти"
     }
+  },
+  "public": {
+    "nav": {
+      "label": "Public navigation",
+      "how": "How it works",
+      "sample": "Sample report",
+      "pricing": "Pricing"
+    },
+    "footer": {
+      "label": "Footer navigation",
+      "description": "AI-assisted used-car listing risk reports for private buyers across Europe."
+    },
+    "cta": {
+      "analyze": "Analyze a listing",
+      "sample": "See sample report"
+    },
+    "meta": {
+      "home": {
+        "title": "AutoVerdict - AI Used-Car Listing Analysis Before You Buy",
+        "description": "Paste a used-car listing, seller messages, VIN, notes, or photos. AutoVerdict gives you a structured AI risk report with red flags, missing information, seller questions, inspection points, and a clear next step.",
+        "ogTitle": "Check a used-car listing before you contact the seller",
+        "ogDescription": "AutoVerdict helps private buyers screen used-car listings, spot risks, and prepare seller questions before inspection."
+      },
+      "how": {
+        "title": "How AutoVerdict Works",
+        "description": "Learn how AutoVerdict turns used-car listings, seller messages, notes, VIN details, and photos into structured AI risk reports."
+      },
+      "sample": {
+        "title": "Sample Used-Car AI Risk Report - AutoVerdict",
+        "description": "See an example AutoVerdict report with risk signals, missing information, seller questions, inspection checklist, and recommendation."
+      },
+      "pricing": {
+        "title": "AutoVerdict Pricing - Used-Car AI Risk Reports",
+        "description": "Simple credit-based pricing for AutoVerdict used-car listing analysis. Buy one check or a discounted package to compare multiple cars before inspection."
+      },
+      "privacy": {
+        "title": "Privacy Policy - AutoVerdict",
+        "description": "Learn how AutoVerdict handles account data, submitted vehicle information, uploaded images, AI processing, payments, and reports."
+      },
+      "terms": {
+        "title": "Terms of Use - AutoVerdict",
+        "description": "Read the AutoVerdict terms of use, including product limitations, AI report disclaimer, credit rules, and user responsibilities."
+      },
+      "contact": {
+        "title": "Contact AutoVerdict",
+        "description": "Contact AutoVerdict for questions about used-car listing analysis, reports, payments, or product support."
+      }
+    },
+    "hero": {
+      "eyebrow": "Built for private used-car buyers across Europe",
+      "title": "Check a used-car listing before you contact the seller.",
+      "body": "Paste a marketplace listing, seller messages, VIN, vehicle notes, or photos. AutoVerdict gives you a structured AI risk report with red flags, missing information, seller questions, inspection points, and a clear next step.",
+      "trust": "AI-assisted preliminary screening. Not a replacement for professional inspection."
+    },
+    "trust": {
+      "structured": "Structured risk report",
+      "questions": "Seller questions included",
+      "checklist": "Inspection checklist included",
+      "buyers": "Built for private buyers"
+    },
+    "inputsTitle": "Use whatever information you already have.",
+    "inputsLead": "AutoVerdict can work with a full listing or partial information. The report clearly shows what is known and what still needs verification.",
+    "inputs": {
+      "listing": {
+        "title": "Marketplace listing",
+        "body": "Paste a used-car listing URL or copied ad text from the marketplace you are browsing."
+      },
+      "messages": {
+        "title": "Seller messages",
+        "body": "Add claims about service history, accident history, ownership, import status, or recent repairs."
+      },
+      "details": {
+        "title": "Vehicle details",
+        "body": "Add VIN, registration details, mileage, price, first registration date, or vehicle history notes."
+      },
+      "photos": {
+        "title": "Photos and screenshots",
+        "body": "Upload listing screenshots, exterior photos, interior photos, dashboard photos, or document screenshots."
+      }
+    },
+    "checksTitle": "What AutoVerdict checks before you spend time on a car.",
+    "checksLead": "The report focuses on practical buying risks: missing documents, unclear claims, suspicious wording, ownership signals, model-specific areas to verify, and questions to ask before inspection.",
+    "checks": {
+      "missing": {
+        "title": "Missing information",
+        "body": "Highlights missing VIN, service records, ownership details, accident history, import status, or unclear seller claims."
+      },
+      "claims": {
+        "title": "Risky claims",
+        "body": "Flags unsupported statements such as accident-free, full service history, first owner, or urgent sale wording."
+      },
+      "costs": {
+        "title": "Cost signals",
+        "body": "Points out areas that may create first-year ownership costs and should be checked before inspection."
+      },
+      "questions": {
+        "title": "Seller questions",
+        "body": "Turns risk signals into practical questions you can send before calling or travelling."
+      },
+      "checklist": {
+        "title": "Inspection checklist",
+        "body": "Gives concrete items to verify if the car reaches viewing or mechanic inspection stage."
+      },
+      "recommendation": {
+        "title": "Clear next step",
+        "body": "Summarizes whether to proceed, request more information, inspect carefully, or avoid the listing."
+      }
+    },
+    "reportPreview": {
+      "eyebrow": "Example risk report",
+      "title": "Structured report preview",
+      "risk": "Medium risk",
+      "vehicle": "2021 Volvo XC60 - 84,000 km - Diesel",
+      "concerns": "Main concerns",
+      "items": {
+        "service": "Service history is incomplete",
+        "import": "Import history needs clarification",
+        "claim": "Accident-free claim is not supported by documents"
+      },
+      "nextLabel": "Recommended next step",
+      "next": "Ask for VIN, service invoices, accident history, and ownership documents before arranging inspection.",
+      "disclaimer": "AI-assisted screening, not a professional inspection."
+    },
+    "samplePreviewTitle": "See what the report looks like.",
+    "samplePreviewLead": "AutoVerdict returns a structured decision report, not a generic chat transcript.",
+    "stepsTitle": "How it works",
+    "stepsLead": "A simple flow for turning messy listing information into a practical buyer checklist.",
+    "steps": {
+      "submit": {
+        "title": "Submit what you know",
+        "body": "Paste listing text, seller messages, vehicle notes, VIN, or photos."
+      },
+      "analyze": {
+        "title": "AutoVerdict screens risks",
+        "body": "The AI pipeline extracts facts, identifies missing data, and organizes practical risk signals."
+      },
+      "act": {
+        "title": "Decide the next step",
+        "body": "Use seller questions, inspection points, and recommendation to decide whether the car is worth your time."
+      }
+    },
+    "chatbotTitle": "Why not just use a generic chatbot?",
+    "chatbotLead": "AutoVerdict is designed around the used-car buying workflow.",
+    "chatbot": {
+      "genericTitle": "Generic chatbot",
+      "genericBody": "You must design the prompt, structure the answer, remember safety limits, and convert output into questions yourself.",
+      "autoTitle": "AutoVerdict",
+      "autoBody": "The product produces a repeatable report with risk categories, missing information, seller questions, checklist, and cautious recommendation."
+    },
+    "pricingTitle": "Simple pricing before registration.",
+    "pricingLead": "Credits are not a subscription. Buy checks when you need them and use them for completed reports.",
+    "pricing": {
+      "better": "Better value",
+      "one": {
+        "title": "1 check",
+        "body": "For one car you want to verify before taking the next step.",
+        "cta": "Start with 1 check"
+      },
+      "three": {
+        "title": "3 checks",
+        "body": "For comparing several cars and choosing which ones are worth inspection.",
+        "cta": "Get 3 checks"
+      },
+      "includes": {
+        "report": "Structured AI risk report",
+        "risk": "Risk level and confidence",
+        "missing": "Missing information",
+        "questions": "Seller questions",
+        "checklist": "Inspection checklist"
+      }
+    },
+    "safetyTitle": "A screening tool, not a guarantee.",
+    "safetyLead": "AutoVerdict does not replace professional vehicle inspection, official history reports, mechanic diagnostics, legal verification, or independent expert evaluation.",
+    "seoTitle": "Used-car listing analysis for cautious buyers.",
+    "seoLead": "Use AutoVerdict before contacting the seller, booking inspection, or travelling to view a car. The report helps you spot red flags, request evidence, and compare listings more calmly.",
+    "faq": {
+      "replaceInspection": {
+        "q": "Does AutoVerdict replace inspection?",
+        "a": "No. It is preliminary AI-assisted screening that helps you prepare before professional inspection."
+      },
+      "marketplaces": {
+        "q": "Does it work only with one marketplace?",
+        "a": "No. You can paste listing text, seller messages, notes, VIN details, or photos. Automatic URL extraction may be limited by marketplace support."
+      },
+      "credits": {
+        "q": "How do credits work?",
+        "a": "One completed report uses one credit. Credits are stored in your account and are not a subscription."
+      },
+      "chatbot": {
+        "q": "How is this different from a chatbot?",
+        "a": "AutoVerdict structures the workflow around used-car risk screening, seller questions, inspection points, and a recommendation."
+      }
+    },
+    "finalCta": {
+      "title": "Found a car you like? Check it before you call.",
+      "body": "Spend a few minutes screening the listing before you spend hours messaging, travelling, or booking inspection."
+    },
+    "howPage": {
+      "title": "From listing details to a structured buyer report.",
+      "lead": "AutoVerdict organizes the information you already have into facts, risks, missing details, seller questions, inspection points, and a practical next step.",
+      "outputTitle": "What you receive",
+      "outputLead": "A structured markdown report with clear sections, risk labels, evidence notes, checklist items, and a cautious recommendation."
+    },
+    "samplePage": {
+      "title": "Sample AutoVerdict report",
+      "lead": "This example uses realistic but generic vehicle information. It is not about a real seller or real VIN.",
+      "confidence": "Medium confidence",
+      "sections": {
+        "vehicle": {
+          "title": "Vehicle summary",
+          "body": "2021 Volvo XC60, diesel, 84,000 km. Listing information is partial and needs document verification."
+        },
+        "riskSignals": {
+          "title": "Risk signals",
+          "body": "- Service history is incomplete\n- Import history requires clarification\n- Accident-free claim is not backed by documents"
+        },
+        "missing": {
+          "title": "Missing information",
+          "body": "Request VIN, service invoices, accident-history evidence, ownership documents, and recent diagnostic records."
+        },
+        "questions": {
+          "title": "Questions for the seller",
+          "body": "Can you send the VIN? Do you have service invoices? Was the car imported? Has any bodywork been repaired?"
+        },
+        "checklist": {
+          "title": "Inspection checklist",
+          "body": "[ ] Verify VIN and documents\n[ ] Check mileage consistency\n[ ] Inspect paint thickness\n[ ] Test cold start and transmission\n[ ] Compare claims with invoices"
+        },
+        "recommendation": {
+          "title": "Recommendation",
+          "body": "Request more information before arranging a paid inspection or long trip. If documents are provided and the seller accepts independent inspection, the listing may still be worth checking."
+        },
+        "disclaimer": {
+          "title": "Disclaimer",
+          "body": "This report is AI-assisted preliminary screening based only on submitted information. It does not replace professional inspection or official history verification."
+        }
+      }
+    },
+    "pricingPage": {
+      "title": "Simple pricing for used-car checks.",
+      "lead": "Use credits to generate structured AI risk reports before contacting sellers, booking inspections, or travelling to view a car.",
+      "creditsTitle": "How credits work",
+      "creditsBody": "One completed report uses one credit. Credits are stored in your account and can be used when you submit a car for analysis. Credits are not a subscription."
+    },
+    "legal": {
+      "updated": "Last updated: May 29, 2026"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": {
+        "who": {
+          "title": "Who we are",
+          "body": "AutoVerdict provides AI-assisted used-car listing risk reports for private buyers."
+        },
+        "data": {
+          "title": "What data we collect",
+          "body": "We may collect account data, submitted vehicle information, uploaded files, payment events, and generated reports."
+        },
+        "use": {
+          "title": "How we use your data",
+          "body": "We use data to authenticate users, process checks, generate reports, manage credits, and provide support."
+        },
+        "ai": {
+          "title": "AI processing notice",
+          "body": "Information submitted for analysis may be sent to the configured AI provider to generate the report."
+        },
+        "files": {
+          "title": "Uploaded files and vehicle information",
+          "body": "Uploaded images and reports are not public by default. Avoid submitting unnecessary personal or sensitive information."
+        },
+        "payments": {
+          "title": "Payments",
+          "body": "Payment processing may be handled by external payment providers according to their own terms."
+        },
+        "auth": {
+          "title": "Authentication",
+          "body": "Authentication data is used to identify your account and protect access to your reports."
+        },
+        "retention": {
+          "title": "Data retention",
+          "body": "Data may be retained while your account is active and as needed for product operation or legal obligations."
+        },
+        "deletion": {
+          "title": "Data deletion requests",
+          "body": "You can contact support to request deletion of account data where applicable."
+        },
+        "security": {
+          "title": "Security",
+          "body": "We use reasonable technical measures for an MVP, but do not claim compliance certifications."
+        },
+        "contact": {
+          "title": "Contact",
+          "body": "Contact support@example.com for privacy questions. This is a temporary placeholder address."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "sections": {
+        "description": {
+          "title": "Product description",
+          "body": "AutoVerdict provides AI-assisted preliminary screening reports for used-car purchase decisions."
+        },
+        "disclaimer": {
+          "title": "AI-assisted screening disclaimer",
+          "body": "AutoVerdict does not replace professional vehicle inspection, official vehicle history reports, mechanic diagnostics, legal verification, or independent expert evaluation."
+        },
+        "guarantee": {
+          "title": "No guarantee of vehicle condition",
+          "body": "Reports may contain errors or miss information. They are not guarantees that a vehicle is safe or suitable."
+        },
+        "responsibility": {
+          "title": "User responsibility",
+          "body": "You remain responsible for purchase decisions and should verify all important claims independently."
+        },
+        "credits": {
+          "title": "Credits and payments",
+          "body": "One completed analysis uses one credit. Credits are used for report generation and are not exchanged for cash unless required by law or payment-provider rules."
+        },
+        "refund": {
+          "title": "Refund and technical failure handling",
+          "body": "If a technical error prevents report generation, the credit is not consumed or can be restored according to product rules."
+        },
+        "acceptable": {
+          "title": "Acceptable use",
+          "body": "Do not submit illegal, harmful, unrelated, or unnecessary sensitive information."
+        },
+        "account": {
+          "title": "Account access",
+          "body": "You are responsible for keeping access to your account secure."
+        },
+        "liability": {
+          "title": "Limitation of liability",
+          "body": "The service is provided as an MVP decision-support tool and liability is limited to the extent permitted by law."
+        },
+        "contact": {
+          "title": "Contact",
+          "body": "Contact support@example.com for terms questions. This is a temporary placeholder address."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact AutoVerdict",
+      "lead": "Have a question about a report, payment, or the product? Send us a message.",
+      "emailLabel": "Email",
+      "placeholder": "Placeholder support address until the final support mailbox is configured. Response time target: 1-2 business days."
+    }
   }
 }
