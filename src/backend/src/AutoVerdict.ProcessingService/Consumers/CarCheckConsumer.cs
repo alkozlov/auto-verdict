@@ -16,7 +16,7 @@ namespace AutoVerdict.ProcessingService.Consumers;
 
 public sealed class CarCheckConsumer(
     IOptions<NatsOptions> natsOptions,
-    CarCheckAnalysisPipeline pipeline,
+    ICarCheckPipeline pipeline,
     IServiceScopeFactory scopeFactory,
     ILogger<CarCheckConsumer> logger) : BackgroundService
 {

@@ -100,6 +100,17 @@ body {
   background: #1a2433;
 }
 
+/* ── Progress bar animation ─────────────────────────────────────── */
+
+@keyframes progress-slide {
+  0% { transform: translateX(-200%); }
+  100% { transform: translateX(350%); }
+}
+
+.animate-progress-slide {
+  animation: progress-slide 1.8s ease-in-out infinite;
+}
+
 /* ── Panel entrance animation ───────────────────────────────────── */
 
 @keyframes panel-in {

@@ -22,7 +22,7 @@ public sealed class CarCheckAnalysisPipeline(
     ReportRepairStage reportRepairStage,
     AiStageRunner stageRunner,
     IOptions<AiPipelineOptions> aiPipelineOptions,
-    ILogger<CarCheckAnalysisPipeline> logger)
+    ILogger<CarCheckAnalysisPipeline> logger) : ICarCheckPipeline
 {
     private const string AnalysisFileName = "ai-analysis-result.md";
     private readonly AiPipelineOptions _aiPipelineOptions = aiPipelineOptions.Value;

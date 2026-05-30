@@ -27,6 +27,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddHealthChecks();
 builder.Services.AddAntiforgery();
+builder.Services.ConfigureHttpJsonOptions(opts =>
+    opts.SerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddOutboxPublisher();
 
@@ -199,6 +202,7 @@ app.MapPost("/api/checks", async (
     HttpContext ctx,
     ICarCheckService checkService,
     IDocumentStorageClient storage,
+    AppDbContext db,
     CancellationToken ct) =>
 {
     var userId = GetUserId(ctx);
@@ -225,6 +229,13 @@ app.MapPost("/api/checks", async (
     if (!ReportLanguage.IsSupported(reportLocale))
         return Results.BadRequest("Unsupported report locale. Supported values: en, pl, de, uk, fr.");
     reportLocale = ReportLanguage.Resolve(reportLocale).Locale;
+
+    // Enforce one-active-check-per-user before doing any further work
+    var hasActiveCheck = await db.CarChecks
+        .AnyAsync(c => c.UserId == userId.Value &&
+                       (c.Status == CarCheckStatus.Pending || c.Status == CarCheckStatus.Processing), ct);
+    if (hasActiveCheck)
+        return Results.Conflict("You already have an analysis in progress. Wait for it to complete before starting a new one.");
 
     // Optional images — up to 5, each ≤ 2560 KB
     var imageFiles = form.Files
