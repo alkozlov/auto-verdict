@@ -1,18 +1,19 @@
 services:
   api:
+    image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-api:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   processing-service:
+    image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-processing-service:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
   frontend:
+    image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-frontend:${IMAGE_TAG}
     restart: unless-stopped
-    environment:
-      NODE_ENV: production
 
   postgres:
     restart: unless-stopped
@@ -22,8 +23,3 @@ services:
 
   seaweedfs:
     restart: unless-stopped
-
-  nginx:
-    restart: unless-stopped
-    ports:
-      - "80:80"

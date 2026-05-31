@@ -11,12 +11,8 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.Configure<ProcessingOptions>(
-    builder.Configuration.GetSection(ProcessingOptions.SectionName));
 
-var testMode = builder.Configuration
-    .GetSection(ProcessingOptions.SectionName)
-    .GetValue<bool>(nameof(ProcessingOptions.TestMode));
+var testMode = string.Equals(builder.Configuration["TEST_MODE"], "true", StringComparison.OrdinalIgnoreCase);
 
 if (testMode)
 {
