@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { TestModeBanner } from "@/components/TestModeBanner";
 import { getToken } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ export function PublicLayout({ children }: Props) {
 
   return (
     <div className="min-h-screen bg-[#070A0F] text-[#F8FAFC]">
+      <TestModeBanner />
       <header className="sticky top-0 z-40 border-b border-slate-400/10 bg-[#070A0F]/80 backdrop-blur-[14px]">
         <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 lg:px-8">
           <Link to="/" className="text-lg font-extrabold text-white">

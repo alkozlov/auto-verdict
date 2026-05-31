@@ -8,6 +8,7 @@ import { api, type MeResponse } from "@/lib/api";
 import { GarageContext } from "@/lib/garage-context";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileNav } from "@/components/MobileNav";
+import { TestModeBanner } from "@/components/TestModeBanner";
 
 export default function GarageLayout() {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ export default function GarageLayout() {
 
   return (
     <GarageContext.Provider value={{ me, refreshMe }}>
+      <TestModeBanner />
       <div className="flex min-h-screen bg-page">
         <Sidebar me={me} />
         <div className="flex flex-col flex-1 min-w-0">

@@ -65,6 +65,8 @@ builder.Services.AddAuthentication(opts =>
 
 builder.Services.AddAuthorization();
 
+var testMode = string.Equals(builder.Configuration["TEST_MODE"], "true", StringComparison.OrdinalIgnoreCase);
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -80,6 +82,33 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+if (testMode)
+{
+    app.Use(async (ctx, next) =>
+    {
+        if (ctx.User.Identity?.IsAuthenticated == true)
+        {
+            var email = ctx.User.FindFirst("email")?.Value
+                     ?? ctx.User.FindFirst(ClaimTypes.Email)?.Value
+                     ?? "";
+            var whitelist = ctx.RequestServices.GetRequiredService<IOptions<WhitelistOptions>>().Value;
+            if (!whitelist.Contains(email))
+            {
+                ctx.Response.StatusCode = 403;
+                ctx.Response.ContentType = "application/problem+json";
+                await ctx.Response.WriteAsJsonAsync(new
+                {
+                    title = "Access restricted",
+                    detail = "The application is running in test mode. Your account is not permitted.",
+                    status = 403,
+                });
+                return;
+            }
+        }
+        await next(ctx);
+    });
+}
 
 app.MapGet("/", () => Results.Ok(new { service = "AutoVerdict.Api", status = "ok" }));
 app.MapHealthChecks("/health");
