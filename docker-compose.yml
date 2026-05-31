@@ -21,6 +21,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       DATABASE_URL: ${DATABASE_URL:-Host=postgres;Port=5432;Database=autoverdict;Username=autoverdict;Password=autoverdict}
       NATS_URL: ${NATS_URL:-nats://nats:4222}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://seaweedfs:8333}
