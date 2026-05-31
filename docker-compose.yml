@@ -6,9 +6,13 @@ services:
       context: ./src/frontend
       args:
         VITE_TEST_MODE: ${TEST_MODE:-false}
+    container_name: auto-verdict-frontend
     depends_on:
       api:
         condition: service_started
+    networks:
+      - default
+      - caddy-gateway
 
   api:
     build:
@@ -41,6 +45,9 @@ services:
         condition: service_completed_successfully
       seaweedfs-setup:
         condition: service_completed_successfully
+    networks:
+      - default
+      - caddy-gateway
 
   processing-service:
     build:
@@ -87,23 +94,6 @@ services:
         condition: service_completed_successfully
       otel-collector:
         condition: service_started
-
-  caddy:
-    image: caddy:2-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    environment:
-      DOMAIN: ${DOMAIN:-localhost}
-      CADDY_EMAIL: ${CADDY_EMAIL:-}
-    depends_on:
-      - frontend
-    restart: unless-stopped
 
   postgres:
     image: postgres:17-alpine
@@ -212,7 +202,10 @@ volumes:
   postgres_data:
   nats_data:
   seaweedfs_data:
-  caddy-data:
-  caddy-config:
   victoria_metrics_data:
   grafana_data:
+
+networks:
+  caddy-gateway:
+    external: true
+    name: caddy-gateway
