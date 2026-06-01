@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Car, FileText, Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { removeToken } from "@/lib/auth";
@@ -11,8 +11,8 @@ import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const NAV = [
-  { labelKey: "nav.checkCar", href: "/garage/check" },
-  { labelKey: "nav.myReports", href: "/garage/reports" },
+  { labelKey: "nav.checkCar", href: "/garage/check", icon: Car },
+  { labelKey: "nav.myReports", href: "/garage/reports", icon: FileText },
 ];
 
 interface Props {
@@ -101,18 +101,19 @@ export function MobileNav({ me }: Props) {
         </div>
 
         <nav className="flex-1 space-y-0.5" aria-label={t("nav.garageNavigation")}>
-          {NAV.map(({ labelKey, href }) => {
+          {NAV.map(({ labelKey, href, icon: Icon }) => {
             const active = pathname.startsWith(href);
             return (
               <Link
                 key={href}
                 to={href}
                 className={cn(
-                  "flex items-center h-[42px] rounded-xl px-3 text-sm font-medium transition-colors",
+                  "flex items-center gap-2.5 h-[42px] rounded-xl px-3 text-sm font-medium transition-colors",
                   active ? "bg-surface-raised text-hi" : "text-mid hover:bg-white/[0.04] hover:text-hi"
                 )}
                 aria-current={active ? "page" : undefined}
               >
+                <Icon className="h-4 w-4 shrink-0" />
                 {t(labelKey)}
               </Link>
             );

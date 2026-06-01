@@ -3,26 +3,22 @@
 import { useEffect, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   hasLink: boolean;
   hasPhotos: boolean;
 }
 
-function buildSteps(hasLink: boolean, hasPhotos: boolean): string[] {
-  return [
-    "Reading your notes",
-    hasLink
-      ? "Checking Otomoto listing data"
-      : "Using your provided text and questions",
-    hasPhotos ? "Reviewing photos" : "Continuing without photos",
-    "Detecting missing information",
-    "Generating recommendation",
-  ];
-}
-
 export function ProcessingPanel({ hasLink, hasPhotos }: Props) {
-  const steps = buildSteps(hasLink, hasPhotos);
+  const { t } = useTranslation();
+  const steps = [
+    t("garage.processing.readingNotes"),
+    hasLink ? t("garage.processing.checkingOtomoto") : t("garage.processing.usingText"),
+    hasPhotos ? t("garage.processing.reviewingPhotos") : t("garage.processing.continuingWithoutPhotos"),
+    t("garage.processing.detectingMissing"),
+    t("garage.processing.generatingRecommendation"),
+  ];
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -35,11 +31,11 @@ export function ProcessingPanel({ hasLink, hasPhotos }: Props) {
     <div
       className="animate-panel-in rounded-lg border border-white/6 bg-surface p-5 space-y-4"
       aria-live="polite"
-      aria-label="Analysis in progress"
+      aria-label={t("garage.processing.ariaLabel")}
     >
       <div className="flex items-center gap-2">
         <Loader2 className="h-4 w-4 shrink-0 animate-spin text-brand" />
-        <p className="text-sm font-medium text-hi">Analyzing your car details…</p>
+        <p className="text-sm font-medium text-hi">{t("garage.processing.title")}</p>
       </div>
       <ol className="space-y-2.5">
         {steps.map((step, i) => {

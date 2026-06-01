@@ -322,154 +322,154 @@
       "free": "Почніть з 1 безкоштовного аналізу. Картка не потрібна."
     },
     "howPage": {
-      "title": "From listing details to a structured buyer report.",
-      "lead": "AutoVerdict organizes the information you already have into facts, risks, missing details, seller questions, inspection points, and a practical next step.",
-      "outputTitle": "What you receive",
-      "outputLead": "A structured markdown report with clear sections, risk labels, evidence notes, checklist items, and a cautious recommendation."
+      "title": "Від деталей оголошення до структурованого звіту покупця.",
+      "lead": "AutoVerdict організовує наявну інформацію в факти, ризики, прогалини, питання до продавця, пункти огляду та практичний наступний крок.",
+      "outputTitle": "Що ви отримуєте",
+      "outputLead": "Структурований markdown-звіт із чіткими розділами, позначками ризику, доказовими нотатками, пунктами чеклисту та обережною рекомендацією."
     },
     "samplePage": {
-      "title": "Sample AutoVerdict report",
-      "lead": "This example uses realistic but generic vehicle information. It is not about a real seller or real VIN.",
-      "confidence": "Medium confidence",
+      "title": "Зразок звіту AutoVerdict",
+      "lead": "Цей приклад використовує реалістичні, але загальні дані автомобіля. Він не стосується реального продавця або реального VIN.",
+      "confidence": "Середня впевненість",
       "sections": {
         "vehicle": {
-          "title": "Vehicle summary",
-          "body": "2021 Volvo XC60, diesel, 84,000 km. Listing information is partial and needs document verification."
+          "title": "Резюме автомобіля",
+          "body": "2021 Volvo XC60, дизель, 84 000 км. Інформація з оголошення є неповною і потребує перевірки документів."
         },
         "riskSignals": {
-          "title": "Risk signals",
-          "body": "- Service history is incomplete\n- Import history requires clarification\n- Accident-free claim is not backed by documents"
+          "title": "Сигнали ризику",
+          "body": "- Сервісна історія є неповною\n- Імпортна історія потребує уточнення\n- Заява про відсутність аварій не підтверджена документами"
         },
         "missing": {
-          "title": "Missing information",
-          "body": "Request VIN, service invoices, accident-history evidence, ownership documents, and recent diagnostic records."
+          "title": "Відсутня інформація",
+          "body": "Запросити VIN, сервісні рахунки, докази аварійної історії, документи власності та останні діагностичні записи."
         },
         "questions": {
-          "title": "Questions for the seller",
-          "body": "Can you send the VIN? Do you have service invoices? Was the car imported? Has any bodywork been repaired?"
+          "title": "Питання до продавця",
+          "body": "Чи можете надіслати VIN? Чи є у вас сервісні рахунки? Автомобіль був імпортований? Чи виконувався кузовний ремонт?"
         },
         "checklist": {
-          "title": "Inspection checklist",
-          "body": "[ ] Verify VIN and documents\n[ ] Check mileage consistency\n[ ] Inspect paint thickness\n[ ] Test cold start and transmission\n[ ] Compare claims with invoices"
+          "title": "Чеклист огляду",
+          "body": "[ ] Перевірте VIN та документи\n[ ] Перевірте відповідність пробігу\n[ ] Виміряйте товщину лакофарбового покриття\n[ ] Протестуйте холодний запуск і трансмісію\n[ ] Порівняйте заяви з рахунками"
         },
         "recommendation": {
-          "title": "Recommendation",
-          "body": "Request more information before arranging a paid inspection or long trip. If documents are provided and the seller accepts independent inspection, the listing may still be worth checking."
+          "title": "Рекомендація",
+          "body": "Запросіть більше інформації перед організацією платного огляду або довгою поїздкою. Якщо документи надані і продавець погоджується на незалежний огляд, оголошення може бути варте перевірки."
         },
         "disclaimer": {
-          "title": "Disclaimer",
-          "body": "This report is AI-assisted preliminary screening based only on submitted information. It does not replace professional inspection or official history verification."
+          "title": "Застереження",
+          "body": "Цей звіт є попередньою перевіркою за допомогою ШІ, яка ґрунтується лише на наданій інформації. Він не замінює професійний огляд або офіційну перевірку історії авто."
         }
       }
     },
     "pricingPage": {
-      "title": "Simple pricing for used-car checks.",
-      "lead": "Use credits to generate structured AI risk reports before contacting sellers, booking inspections, or travelling to view a car.",
-      "creditsTitle": "How credits work",
-      "creditsBody": "One completed report uses one credit. Credits are stored in your account and can be used when you submit a car for analysis. Credits are not a subscription."
+      "title": "Проста тарифікація для перевірок вживаних авто.",
+      "lead": "Використовуйте кредити для генерування структурованих AI-звітів про ризики перед контактом з продавцями, бронюванням оглядів або поїздкою.",
+      "creditsTitle": "Як працюють кредити",
+      "creditsBody": "Один завершений звіт використовує один кредит. Кредити зберігаються на вашому обліковому записі та можуть використовуватися під час подачі авто на аналіз. Кредити не є підпискою."
     },
     "legal": {
-      "updated": "Last updated: May 29, 2026"
+      "updated": "Останнє оновлення: 29 травня 2026"
     },
     "privacy": {
-      "title": "Privacy Policy",
+      "title": "Політика конфіденційності",
       "sections": {
         "who": {
-          "title": "Who we are",
-          "body": "AutoVerdict provides AI-assisted used-car listing risk reports for private buyers."
+          "title": "Хто ми",
+          "body": "AutoVerdict надає AI-підтримувані звіти про ризики оголошень вживаних авто для приватних покупців."
         },
         "data": {
-          "title": "What data we collect",
-          "body": "We may collect account data, submitted vehicle information, uploaded files, payment events, and generated reports."
+          "title": "Які дані ми збираємо",
+          "body": "Ми можемо збирати дані облікового запису, надану інформацію про транспортний засіб, завантажені файли, платіжні події та згенеровані звіти."
         },
         "use": {
-          "title": "How we use your data",
-          "body": "We use data to authenticate users, process checks, generate reports, manage credits, and provide support."
+          "title": "Як ми використовуємо ваші дані",
+          "body": "Ми використовуємо дані для автентифікації користувачів, обробки перевірок, генерування звітів, управління кредитами та надання підтримки."
         },
         "ai": {
-          "title": "AI processing notice",
-          "body": "Information submitted for analysis may be sent to the configured AI provider to generate the report."
+          "title": "Повідомлення про обробку AI",
+          "body": "Інформація, надана для аналізу, може бути надіслана налаштованому постачальнику AI для генерування звіту."
         },
         "files": {
-          "title": "Uploaded files and vehicle information",
-          "body": "Uploaded images and reports are not public by default. Avoid submitting unnecessary personal or sensitive information."
+          "title": "Завантажені файли та інформація про транспортний засіб",
+          "body": "Завантажені зображення та звіти не є публічними за замовчуванням. Уникайте надання зайвої особистої або конфіденційної інформації."
         },
         "payments": {
-          "title": "Payments",
-          "body": "Payment processing may be handled by external payment providers according to their own terms."
+          "title": "Платежі",
+          "body": "Обробка платежів може здійснюватися зовнішніми платіжними провайдерами відповідно до їхніх власних умов."
         },
         "auth": {
-          "title": "Authentication",
-          "body": "Authentication data is used to identify your account and protect access to your reports."
+          "title": "Автентифікація",
+          "body": "Дані автентифікації використовуються для ідентифікації вашого облікового запису та захисту доступу до ваших звітів."
         },
         "retention": {
-          "title": "Data retention",
-          "body": "Data may be retained while your account is active and as needed for product operation or legal obligations."
+          "title": "Зберігання даних",
+          "body": "Дані можуть зберігатися протягом активності вашого облікового запису та відповідно до вимог роботи продукту або юридичних зобов'язань."
         },
         "deletion": {
-          "title": "Data deletion requests",
-          "body": "You can contact support to request deletion of account data where applicable."
+          "title": "Запити на видалення даних",
+          "body": "Ви можете звернутися до підтримки для запиту видалення даних облікового запису, де це застосовно."
         },
         "security": {
-          "title": "Security",
-          "body": "We use reasonable technical measures for an MVP, but do not claim compliance certifications."
+          "title": "Безпека",
+          "body": "Ми використовуємо розумні технічні заходи для MVP, але не претендуємо на сертифікати відповідності."
         },
         "contact": {
-          "title": "Contact",
-          "body": "Contact support@example.com for privacy questions. This is a temporary placeholder address."
+          "title": "Контакт",
+          "body": "Зверніться до support@example.com з питаннями конфіденційності. Це тимчасова адреса-замінник."
         }
       }
     },
     "terms": {
-      "title": "Terms of Use",
+      "title": "Умови використання",
       "sections": {
         "description": {
-          "title": "Product description",
-          "body": "AutoVerdict provides AI-assisted preliminary screening reports for used-car purchase decisions."
+          "title": "Опис продукту",
+          "body": "AutoVerdict надає попередні звіти-скринінги з підтримкою AI для рішень про купівлю вживаних авто."
         },
         "disclaimer": {
-          "title": "AI-assisted screening disclaimer",
-          "body": "AutoVerdict does not replace professional vehicle inspection, official vehicle history reports, mechanic diagnostics, legal verification, or independent expert evaluation."
+          "title": "Застереження щодо AI-скринінгу",
+          "body": "AutoVerdict не замінює професійний огляд транспортного засобу, офіційні звіти про історію авто, діагностику механіка, юридичну перевірку або незалежну експертну оцінку."
         },
         "guarantee": {
-          "title": "No guarantee of vehicle condition",
-          "body": "Reports may contain errors or miss information. They are not guarantees that a vehicle is safe or suitable."
+          "title": "Відсутність гарантії стану авто",
+          "body": "Звіти можуть містити помилки або пропускати інформацію. Вони не є гарантією того, що транспортний засіб є безпечним або відповідним."
         },
         "responsibility": {
-          "title": "User responsibility",
-          "body": "You remain responsible for purchase decisions and should verify all important claims independently."
+          "title": "Відповідальність користувача",
+          "body": "Ви несете відповідальність за рішення про купівлю і повинні самостійно перевіряти всі важливі заяви."
         },
         "credits": {
-          "title": "Credits and payments",
-          "body": "One completed analysis uses one credit. Credits are used for report generation and are not exchanged for cash unless required by law or payment-provider rules."
+          "title": "Кредити та платежі",
+          "body": "Один завершений аналіз використовує один кредит. Кредити використовуються для генерування звітів і не обмінюються на готівку, якщо це не вимагається законом або правилами платіжного провайдера."
         },
         "refund": {
-          "title": "Refund and technical failure handling",
-          "body": "If a technical error prevents report generation, the credit is not consumed or can be restored according to product rules."
+          "title": "Повернення коштів та обробка технічних збоїв",
+          "body": "Якщо технічна помилка перешкоджає генеруванню звіту, кредит не витрачається або може бути відновлений відповідно до правил продукту."
         },
         "acceptable": {
-          "title": "Acceptable use",
-          "body": "Do not submit illegal, harmful, unrelated, or unnecessary sensitive information."
+          "title": "Допустиме використання",
+          "body": "Не надсилайте незаконну, шкідливу, не пов'язану або непотрібну конфіденційну інформацію."
         },
         "account": {
-          "title": "Account access",
-          "body": "You are responsible for keeping access to your account secure."
+          "title": "Доступ до облікового запису",
+          "body": "Ви несете відповідальність за безпеку доступу до вашого облікового запису."
         },
         "liability": {
-          "title": "Limitation of liability",
-          "body": "The service is provided as an MVP decision-support tool and liability is limited to the extent permitted by law."
+          "title": "Обмеження відповідальності",
+          "body": "Сервіс надається як інструмент підтримки рішень MVP, і відповідальність обмежена в межах, дозволених законом."
         },
         "contact": {
-          "title": "Contact",
-          "body": "Contact support@example.com for terms questions. This is a temporary placeholder address."
+          "title": "Контакт",
+          "body": "Зверніться до support@example.com з питаннями щодо умов. Це тимчасова адреса-замінник."
         }
       }
     },
     "contact": {
-      "title": "Contact AutoVerdict",
-      "lead": "Have a question about a report, payment, or the product? Send us a message.",
-      "emailLabel": "Email",
-      "placeholder": "Placeholder support address until the final support mailbox is configured. Response time target: 1-2 business days."
+      "title": "Контакт AutoVerdict",
+      "lead": "Є питання щодо звіту, платежу або продукту? Напишіть нам.",
+      "emailLabel": "Електронна пошта",
+      "placeholder": "Тимчасова адреса підтримки до налаштування основної скриньки. Цільовий час відповіді: 1–2 робочі дні."
     },
     "reportIncludes": {
       "title": "Що ви отримуєте у звіті",
@@ -510,6 +510,76 @@
           "body": "Продовжити, продовжити обережно, попросити більше інформації або уникати."
         }
       }
+    }
+  },
+  "garage": {
+    "composer": {
+      "placeholder": "Вставте текст оголошення, повідомлення продавця, VIN, занепокоєння, нотатки огляду або задайте AutoVerdict конкретні питання.\n\nПриклад:\n\n«Я розглядаю цю Toyota Corolla з Otomoto. Що мені слід перевірити перед контактом з продавцем?»",
+      "cardTitle": "Скажіть AutoVerdict, що аналізувати",
+      "cardBody": "Вставте текст оголошення, повідомлення продавця, VIN, нотатки огляду або задайте конкретні питання. Додайте посилання на оголошення або фото, якщо є.",
+      "errorValidUrl": "Введіть дійсну URL-адресу.",
+      "errorOtomotoOnly": "Наразі AutoVerdict може завантажувати лише оголошення з Otomoto.pl. Текст з інших сайтів можна вставити вручну в основне поле.",
+      "errorDescriptionRequired": "Додайте принаймні короткий опис, питання або скопійований текст оголошення перед аналізом.",
+      "errorAnalysisInProgress": "Аналіз вже виконується. Будь ласка, зачекайте його завершення.",
+      "errorGeneric": "Щось пішло не так.",
+      "errorPhotoType": "Фото мають бути у форматі JPEG, PNG або WEBP.",
+      "errorPhotoSize": "Кожне фото не повинно перевищувати 2,5 МБ.",
+      "photosMaxAdded": "Додано 5 фото",
+      "addPhotos": "Додати фото",
+      "addPhotosCount": "Додати фото ({{count}}/{{max}})",
+      "changeLink": "Змінити посилання",
+      "addOtomotoLink": "Додати посилання з Otomoto",
+      "linkAdded": "Посилання з Otomoto додано",
+      "linkPlaceholder": "Вставте URL оголошення",
+      "addLink": "Додати посилання",
+      "cancel": "Скасувати",
+      "submitAnalyze": "Аналізувати з AI",
+      "submitInProgress": "Аналіз виконується…",
+      "submitSubmitting": "Надсилання…"
+    },
+    "processing": {
+      "title": "Аналізую деталі вашого авто…",
+      "ariaLabel": "Аналіз виконується",
+      "readingNotes": "Читаю ваші нотатки",
+      "checkingOtomoto": "Перевіряю дані оголошення Otomoto",
+      "usingText": "Використовую наданий текст і питання",
+      "reviewingPhotos": "Переглядаю фото",
+      "continuingWithoutPhotos": "Продовжую без фото",
+      "detectingMissing": "Виявляю відсутню інформацію",
+      "generatingRecommendation": "Генерую рекомендацію"
+    },
+    "report": {
+      "loading": "Завантаження…",
+      "fallbackTitle": "Аналіз оголошення",
+      "viewListing": "Переглянути оголошення",
+      "collapse": "Згорнути",
+      "collapseAriaLabel": "Згорнути звіт",
+      "analysisInProgress": "аналіз виконується",
+      "analysisFailed": "Аналіз не вдався",
+      "disclaimer": "AutoVerdict надає лише попередній AI-скринінг. Він не замінює професійний огляд, перевірку історії авто, юридичний контроль або незалежну експертизу.",
+      "verdictBuy": "Купити",
+      "verdictCaution": "Купувати обережно",
+      "verdictAvoid": "Уникати"
+    },
+    "reports": {
+      "title": "Мої звіти",
+      "lead": "Переглядайте попередні аналізи авто та відкривайте завершені звіти.",
+      "checkAnother": "Перевірити інше авто"
+    },
+    "history": {
+      "sectionTitle": "Останні аналізи",
+      "empty": "Аналізів ще немає.",
+      "emptyHint": "Завершені перевірки з'являться тут.",
+      "created": "Створено {{date}}",
+      "preparingReport": "AutoVerdict готує звіт покупця.",
+      "processing": "Обробляється…",
+      "reportReady": "Звіт готовий. Відкрийте memo покупця для вердикту, ризиків, питань до продавця, чеклисту та орієнтовних витрат.",
+      "analysisFailed": "Аналіз не міг бути завершений.",
+      "view": "Переглянути",
+      "previous": "Назад",
+      "next": "Далі",
+      "page": "Сторінка {{page}}",
+      "pageLast": "Сторінка {{page}} (остання)"
     }
   }
 }

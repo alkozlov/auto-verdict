@@ -320,154 +320,154 @@
       "free": "Commencez avec 1 analyse gratuite. Aucune carte requise."
     },
     "howPage": {
-      "title": "From listing details to a structured buyer report.",
-      "lead": "AutoVerdict organizes the information you already have into facts, risks, missing details, seller questions, inspection points, and a practical next step.",
-      "outputTitle": "What you receive",
-      "outputLead": "A structured markdown report with clear sections, risk labels, evidence notes, checklist items, and a cautious recommendation."
+      "title": "Des détails d'annonce à un rapport acheteur structuré.",
+      "lead": "AutoVerdict organise les informations disponibles en faits, risques, manques, questions vendeur, points d'inspection et une prochaine étape pratique.",
+      "outputTitle": "Ce que vous recevez",
+      "outputLead": "Un rapport markdown structuré avec des sections claires, des étiquettes de risque, des notes de preuves, des éléments de checklist et une recommandation prudente."
     },
     "samplePage": {
-      "title": "Sample AutoVerdict report",
-      "lead": "This example uses realistic but generic vehicle information. It is not about a real seller or real VIN.",
-      "confidence": "Medium confidence",
+      "title": "Exemple de rapport AutoVerdict",
+      "lead": "Cet exemple utilise des informations véhicule réalistes mais génériques. Il ne concerne pas un vrai vendeur ou un vrai VIN.",
+      "confidence": "Confiance moyenne",
       "sections": {
         "vehicle": {
-          "title": "Vehicle summary",
-          "body": "2021 Volvo XC60, diesel, 84,000 km. Listing information is partial and needs document verification."
+          "title": "Résumé du véhicule",
+          "body": "2021 Volvo XC60, diesel, 84 000 km. Les informations de l'annonce sont partielles et nécessitent une vérification des documents."
         },
         "riskSignals": {
-          "title": "Risk signals",
-          "body": "- Service history is incomplete\n- Import history requires clarification\n- Accident-free claim is not backed by documents"
+          "title": "Signaux de risque",
+          "body": "- L'historique d'entretien est incomplet\n- L'historique d'importation nécessite des éclaircissements\n- La déclaration sans accident n'est pas étayée par des documents"
         },
         "missing": {
-          "title": "Missing information",
-          "body": "Request VIN, service invoices, accident-history evidence, ownership documents, and recent diagnostic records."
+          "title": "Informations manquantes",
+          "body": "Demander le VIN, les factures d'entretien, les preuves d'historique d'accident, les documents de propriété et les derniers enregistrements de diagnostic."
         },
         "questions": {
-          "title": "Questions for the seller",
-          "body": "Can you send the VIN? Do you have service invoices? Was the car imported? Has any bodywork been repaired?"
+          "title": "Questions pour le vendeur",
+          "body": "Pouvez-vous envoyer le VIN ? Avez-vous des factures d'entretien ? La voiture a-t-elle été importée ? Des réparations de carrosserie ont-elles été effectuées ?"
         },
         "checklist": {
-          "title": "Inspection checklist",
-          "body": "[ ] Verify VIN and documents\n[ ] Check mileage consistency\n[ ] Inspect paint thickness\n[ ] Test cold start and transmission\n[ ] Compare claims with invoices"
+          "title": "Checklist d'inspection",
+          "body": "[ ] Vérifier le VIN et les documents\n[ ] Vérifier la cohérence du kilométrage\n[ ] Inspecter l'épaisseur de peinture\n[ ] Tester le démarrage à froid et la transmission\n[ ] Comparer les déclarations avec les factures"
         },
         "recommendation": {
-          "title": "Recommendation",
-          "body": "Request more information before arranging a paid inspection or long trip. If documents are provided and the seller accepts independent inspection, the listing may still be worth checking."
+          "title": "Recommandation",
+          "body": "Demander plus d'informations avant d'organiser une inspection payante ou un long trajet. Si les documents sont fournis et que le vendeur accepte une inspection indépendante, l'annonce peut encore valoir le déplacement."
         },
         "disclaimer": {
-          "title": "Disclaimer",
-          "body": "This report is AI-assisted preliminary screening based only on submitted information. It does not replace professional inspection or official history verification."
+          "title": "Avertissement",
+          "body": "Ce rapport est un pré-screening assisté par IA basé uniquement sur les informations soumises. Il ne remplace pas l'inspection professionnelle ou la vérification officielle de l'historique."
         }
       }
     },
     "pricingPage": {
-      "title": "Simple pricing for used-car checks.",
-      "lead": "Use credits to generate structured AI risk reports before contacting sellers, booking inspections, or travelling to view a car.",
-      "creditsTitle": "How credits work",
-      "creditsBody": "One completed report uses one credit. Credits are stored in your account and can be used when you submit a car for analysis. Credits are not a subscription."
+      "title": "Tarification simple pour les vérifications de voitures d'occasion.",
+      "lead": "Utilisez des crédits pour générer des rapports AI structurés sur les risques avant de contacter les vendeurs, réserver des inspections ou vous déplacer.",
+      "creditsTitle": "Comment fonctionnent les crédits",
+      "creditsBody": "Un rapport complet utilise un crédit. Les crédits sont stockés dans votre compte et peuvent être utilisés lors de la soumission d'une voiture à analyser. Les crédits ne sont pas un abonnement."
     },
     "legal": {
-      "updated": "Last updated: May 29, 2026"
+      "updated": "Dernière mise à jour : 29 mai 2026"
     },
     "privacy": {
-      "title": "Privacy Policy",
+      "title": "Politique de confidentialité",
       "sections": {
         "who": {
-          "title": "Who we are",
-          "body": "AutoVerdict provides AI-assisted used-car listing risk reports for private buyers."
+          "title": "Qui nous sommes",
+          "body": "AutoVerdict fournit des rapports de risque d'annonces de voitures d'occasion assistés par IA pour les acheteurs particuliers."
         },
         "data": {
-          "title": "What data we collect",
-          "body": "We may collect account data, submitted vehicle information, uploaded files, payment events, and generated reports."
+          "title": "Quelles données nous collectons",
+          "body": "Nous pouvons collecter des données de compte, des informations véhicule soumises, des fichiers téléchargés, des événements de paiement et des rapports générés."
         },
         "use": {
-          "title": "How we use your data",
-          "body": "We use data to authenticate users, process checks, generate reports, manage credits, and provide support."
+          "title": "Comment nous utilisons vos données",
+          "body": "Nous utilisons les données pour authentifier les utilisateurs, traiter les vérifications, générer des rapports, gérer les crédits et fournir du support."
         },
         "ai": {
-          "title": "AI processing notice",
-          "body": "Information submitted for analysis may be sent to the configured AI provider to generate the report."
+          "title": "Avis sur le traitement IA",
+          "body": "Les informations soumises pour analyse peuvent être envoyées au fournisseur IA configuré pour générer le rapport."
         },
         "files": {
-          "title": "Uploaded files and vehicle information",
-          "body": "Uploaded images and reports are not public by default. Avoid submitting unnecessary personal or sensitive information."
+          "title": "Fichiers téléchargés et informations véhicule",
+          "body": "Les images téléchargées et les rapports ne sont pas publics par défaut. Évitez de soumettre des informations personnelles ou sensibles inutiles."
         },
         "payments": {
-          "title": "Payments",
-          "body": "Payment processing may be handled by external payment providers according to their own terms."
+          "title": "Paiements",
+          "body": "Le traitement des paiements peut être géré par des prestataires de paiement externes selon leurs propres conditions."
         },
         "auth": {
-          "title": "Authentication",
-          "body": "Authentication data is used to identify your account and protect access to your reports."
+          "title": "Authentification",
+          "body": "Les données d'authentification servent à identifier votre compte et protéger l'accès à vos rapports."
         },
         "retention": {
-          "title": "Data retention",
-          "body": "Data may be retained while your account is active and as needed for product operation or legal obligations."
+          "title": "Conservation des données",
+          "body": "Les données peuvent être conservées tant que votre compte est actif et selon les besoins du fonctionnement du produit ou des obligations légales."
         },
         "deletion": {
-          "title": "Data deletion requests",
-          "body": "You can contact support to request deletion of account data where applicable."
+          "title": "Demandes de suppression de données",
+          "body": "Vous pouvez contacter le support pour demander la suppression des données de compte, le cas échéant."
         },
         "security": {
-          "title": "Security",
-          "body": "We use reasonable technical measures for an MVP, but do not claim compliance certifications."
+          "title": "Sécurité",
+          "body": "Nous utilisons des mesures techniques raisonnables pour un MVP, mais ne revendiquons pas de certifications de conformité."
         },
         "contact": {
           "title": "Contact",
-          "body": "Contact support@example.com for privacy questions. This is a temporary placeholder address."
+          "body": "Contactez support@example.com pour les questions de confidentialité. Il s'agit d'une adresse provisoire."
         }
       }
     },
     "terms": {
-      "title": "Terms of Use",
+      "title": "Conditions d'utilisation",
       "sections": {
         "description": {
-          "title": "Product description",
-          "body": "AutoVerdict provides AI-assisted preliminary screening reports for used-car purchase decisions."
+          "title": "Description du produit",
+          "body": "AutoVerdict fournit des rapports de pré-screening assistés par IA pour les décisions d'achat de voitures d'occasion."
         },
         "disclaimer": {
-          "title": "AI-assisted screening disclaimer",
-          "body": "AutoVerdict does not replace professional vehicle inspection, official vehicle history reports, mechanic diagnostics, legal verification, or independent expert evaluation."
+          "title": "Avertissement sur le screening assisté par IA",
+          "body": "AutoVerdict ne remplace pas l'inspection professionnelle du véhicule, les rapports officiels d'historique, les diagnostics de mécanicien, la vérification légale ou l'évaluation d'expert indépendant."
         },
         "guarantee": {
-          "title": "No guarantee of vehicle condition",
-          "body": "Reports may contain errors or miss information. They are not guarantees that a vehicle is safe or suitable."
+          "title": "Aucune garantie sur l'état du véhicule",
+          "body": "Les rapports peuvent contenir des erreurs ou omettre des informations. Ils ne garantissent pas qu'un véhicule est sûr ou approprié."
         },
         "responsibility": {
-          "title": "User responsibility",
-          "body": "You remain responsible for purchase decisions and should verify all important claims independently."
+          "title": "Responsabilité de l'utilisateur",
+          "body": "Vous restez responsable des décisions d'achat et devez vérifier indépendamment toutes les affirmations importantes."
         },
         "credits": {
-          "title": "Credits and payments",
-          "body": "One completed analysis uses one credit. Credits are used for report generation and are not exchanged for cash unless required by law or payment-provider rules."
+          "title": "Crédits et paiements",
+          "body": "Une analyse complète utilise un crédit. Les crédits sont utilisés pour la génération de rapports et ne sont pas échangés contre des espèces, sauf si la loi ou les règles du prestataire de paiement l'exigent."
         },
         "refund": {
-          "title": "Refund and technical failure handling",
-          "body": "If a technical error prevents report generation, the credit is not consumed or can be restored according to product rules."
+          "title": "Remboursement et gestion des défaillances techniques",
+          "body": "Si une erreur technique empêche la génération du rapport, le crédit n'est pas consommé ou peut être restauré selon les règles du produit."
         },
         "acceptable": {
-          "title": "Acceptable use",
-          "body": "Do not submit illegal, harmful, unrelated, or unnecessary sensitive information."
+          "title": "Utilisation acceptable",
+          "body": "Ne soumettez pas d'informations illégales, nuisibles, non pertinentes ou inutilement sensibles."
         },
         "account": {
-          "title": "Account access",
-          "body": "You are responsible for keeping access to your account secure."
+          "title": "Accès au compte",
+          "body": "Vous êtes responsable de la sécurité de l'accès à votre compte."
         },
         "liability": {
-          "title": "Limitation of liability",
-          "body": "The service is provided as an MVP decision-support tool and liability is limited to the extent permitted by law."
+          "title": "Limitation de responsabilité",
+          "body": "Le service est fourni comme outil d'aide à la décision MVP et la responsabilité est limitée dans la mesure permise par la loi."
         },
         "contact": {
           "title": "Contact",
-          "body": "Contact support@example.com for terms questions. This is a temporary placeholder address."
+          "body": "Contactez support@example.com pour les questions sur les conditions. Il s'agit d'une adresse provisoire."
         }
       }
     },
     "contact": {
-      "title": "Contact AutoVerdict",
-      "lead": "Have a question about a report, payment, or the product? Send us a message.",
-      "emailLabel": "Email",
-      "placeholder": "Placeholder support address until the final support mailbox is configured. Response time target: 1-2 business days."
+      "title": "Contacter AutoVerdict",
+      "lead": "Vous avez une question sur un rapport, un paiement ou le produit ? Envoyez-nous un message.",
+      "emailLabel": "E-mail",
+      "placeholder": "Adresse de support provisoire jusqu'à la configuration de la boîte de support finale. Délai de réponse cible : 1-2 jours ouvrables."
     },
     "reportIncludes": {
       "title": "Ce que vous obtenez dans le rapport",
@@ -508,6 +508,76 @@
           "body": "Continuer, continuer avec prudence, demander plus d’informations ou éviter."
         }
       }
+    }
+  },
+  "garage": {
+    "composer": {
+      "placeholder": "Collez le texte de l’annonce, les messages du vendeur, le VIN, vos préoccupations, notes d’inspection ou posez des questions spécifiques à AutoVerdict.\n\nExemple :\n\n« J’envisage cette Toyota Corolla sur Otomoto. Que dois-je vérifier avant de contacter le vendeur ? »",
+      "cardTitle": "Dites à AutoVerdict quoi analyser",
+      "cardBody": "Collez le texte de l’annonce, les messages du vendeur, le VIN, les notes d’inspection ou posez des questions précises. Ajoutez un lien vers l’annonce ou des photos si vous en avez.",
+      "errorValidUrl": "Entrez une URL valide.",
+      "errorOtomotoOnly": "Pour l’instant, AutoVerdict ne peut explorer que les annonces Otomoto.pl. Vous pouvez toujours coller le texte d’autres sites dans le champ principal.",
+      "errorDescriptionRequired": "Ajoutez au moins une courte description, une question ou le texte de l’annonce avant d’analyser.",
+      "errorAnalysisInProgress": "Une analyse est déjà en cours. Veuillez attendre qu’elle soit terminée.",
+      "errorGeneric": "Quelque chose a mal tourné.",
+      "errorPhotoType": "Les photos doivent être en format JPEG, PNG ou WEBP.",
+      "errorPhotoSize": "Chaque photo doit faire 2,5 Mo maximum.",
+      "photosMaxAdded": "5 photos ajoutées",
+      "addPhotos": "Ajouter des photos",
+      "addPhotosCount": "Ajouter des photos ({{count}}/{{max}})",
+      "changeLink": "Changer le lien",
+      "addOtomotoLink": "Ajouter un lien Otomoto",
+      "linkAdded": "Lien Otomoto ajouté",
+      "linkPlaceholder": "Collez l’URL de l’annonce",
+      "addLink": "Ajouter le lien",
+      "cancel": "Annuler",
+      "submitAnalyze": "Analyser avec l’IA",
+      "submitInProgress": "Analyse en cours…",
+      "submitSubmitting": "Envoi en cours…"
+    },
+    "processing": {
+      "title": "Analyse des détails de votre voiture…",
+      "ariaLabel": "Analyse en cours",
+      "readingNotes": "Lecture de vos notes",
+      "checkingOtomoto": "Vérification des données de l’annonce Otomoto",
+      "usingText": "Utilisation du texte et des questions fournis",
+      "reviewingPhotos": "Examen des photos",
+      "continuingWithoutPhotos": "Continuation sans photos",
+      "detectingMissing": "Détection des informations manquantes",
+      "generatingRecommendation": "Génération de la recommandation"
+    },
+    "report": {
+      "loading": "Chargement…",
+      "fallbackTitle": "Analyse d’annonce",
+      "viewListing": "Voir l’annonce",
+      "collapse": "Réduire",
+      "collapseAriaLabel": "Réduire le rapport",
+      "analysisInProgress": "analyse en cours",
+      "analysisFailed": "Analyse échouée",
+      "disclaimer": "AutoVerdict fournit uniquement un pré-screening assisté par IA. Il ne remplace pas l’inspection professionnelle, la vérification de l’historique, les contrôles légaux ou l’expertise indépendante.",
+      "verdictBuy": "Acheter",
+      "verdictCaution": "Acheter avec prudence",
+      "verdictAvoid": "Éviter"
+    },
+    "reports": {
+      "title": "Mes rapports",
+      "lead": "Consultez vos analyses de voitures précédentes et ouvrez les rapports complétés.",
+      "checkAnother": "Vérifier une autre voiture"
+    },
+    "history": {
+      "sectionTitle": "Analyses récentes",
+      "empty": "Aucune analyse pour l’instant.",
+      "emptyHint": "Vos vérifications terminées apparaîtront ici.",
+      "created": "Créé le {{date}}",
+      "preparingReport": "AutoVerdict prépare le rapport acheteur.",
+      "processing": "En cours…",
+      "reportReady": "Rapport prêt. Ouvrez le mémo acheteur pour le verdict, les risques, les questions vendeur, la checklist et les coûts estimés.",
+      "analysisFailed": "L’analyse n’a pas pu être complétée.",
+      "view": "Voir",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {{page}}",
+      "pageLast": "Page {{page}} (dernière)"
     }
   }
 }

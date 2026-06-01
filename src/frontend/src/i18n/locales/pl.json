@@ -360,6 +360,226 @@
           "body": "Kontynuuj, kontynuuj ostrożnie, poproś o więcej informacji albo odpuść."
         }
       }
+    },
+    "howPage": {
+      "title": "Od szczegółów ogłoszenia do uporządkowanego raportu kupującego.",
+      "lead": "AutoVerdict porządkuje posiadane informacje w fakty, ryzyka, braki, pytania do sprzedawcy, punkty kontroli i praktyczny następny krok.",
+      "outputTitle": "Co otrzymujesz",
+      "outputLead": "Uporządkowany raport markdown z wyraźnymi sekcjami, oznaczeniami ryzyka, notatkami dowodowymi, elementami checklisty i ostrożną rekomendacją."
+    },
+    "samplePage": {
+      "title": "Przykładowy raport AutoVerdict",
+      "lead": "Przykład używa realistycznych, ale ogólnych danych pojazdu. Nie dotyczy prawdziwego sprzedawcy ani prawdziwego VIN.",
+      "confidence": "Średnia pewność",
+      "sections": {
+        "vehicle": {
+          "title": "Podsumowanie pojazdu",
+          "body": "2021 Volvo XC60, diesel, 84 000 km. Informacje z ogłoszenia są niepełne i wymagają weryfikacji dokumentów."
+        },
+        "riskSignals": {
+          "title": "Sygnały ryzyka",
+          "body": "- Historia serwisowa jest niepełna\n- Historia importu wymaga wyjaśnienia\n- Deklaracja bezwypadkowości nie jest poparta dokumentami"
+        },
+        "missing": {
+          "title": "Brakujące informacje",
+          "body": "Poproś o VIN, faktury serwisowe, dowody historii szkód, dokumenty własności i ostatnie zapisy diagnostyczne."
+        },
+        "questions": {
+          "title": "Pytania do sprzedawcy",
+          "body": "Czy może pan przesłać VIN? Czy ma pan faktury serwisowe? Czy auto było importowane? Czy naprawiana była jakaś blacha?"
+        },
+        "checklist": {
+          "title": "Lista kontrolna oględzin",
+          "body": "[ ] Zweryfikuj VIN i dokumenty\n[ ] Sprawdź spójność przebiegu\n[ ] Zbadaj grubość lakieru\n[ ] Przetestuj zimny start i skrzynię biegów\n[ ] Porównaj deklaracje z fakturami"
+        },
+        "recommendation": {
+          "title": "Rekomendacja",
+          "body": "Poproś o więcej informacji przed umówieniem płatnych oględzin lub długą podróżą. Jeśli dokumenty zostaną dostarczone i sprzedawca zaakceptuje niezależne oględziny, ogłoszenie może nadal być warte sprawdzenia."
+        },
+        "disclaimer": {
+          "title": "Zastrzeżenie",
+          "body": "Ten raport to wstępna analiza wspierana przez AI, oparta wyłącznie na przesłanych informacjach. Nie zastępuje profesjonalnych oględzin ani oficjalnej weryfikacji historii pojazdu."
+        }
+      }
+    },
+    "pricingPage": {
+      "title": "Prosty cennik dla checków aut używanych.",
+      "lead": "Używaj kredytów do generowania uporządkowanych raportów ryzyka AI przed kontaktem ze sprzedawcą, rezerwacją oględzin lub podróżą.",
+      "creditsTitle": "Jak działają kredyty",
+      "creditsBody": "Jeden ukończony raport zużywa jeden kredyt. Kredyty są zapisane na koncie i można ich używać przy przesyłaniu auta do analizy. Kredyty nie są abonamentem."
+    },
+    "legal": {
+      "updated": "Ostatnia aktualizacja: 29 maja 2026"
+    },
+    "privacy": {
+      "title": "Polityka prywatności",
+      "sections": {
+        "who": {
+          "title": "Kim jesteśmy",
+          "body": "AutoVerdict dostarcza raporty ryzyka ogłoszeń aut używanych wspierane przez AI dla prywatnych kupujących."
+        },
+        "data": {
+          "title": "Jakie dane zbieramy",
+          "body": "Możemy zbierać dane konta, przesłane informacje o pojeździe, przesłane pliki, zdarzenia płatności i wygenerowane raporty."
+        },
+        "use": {
+          "title": "Jak wykorzystujemy Twoje dane",
+          "body": "Używamy danych do uwierzytelniania użytkowników, przetwarzania checków, generowania raportów, zarządzania kredytami i udzielania wsparcia."
+        },
+        "ai": {
+          "title": "Informacja o przetwarzaniu AI",
+          "body": "Informacje przesłane do analizy mogą być wysyłane do skonfigurowanego dostawcy AI w celu wygenerowania raportu."
+        },
+        "files": {
+          "title": "Przesłane pliki i informacje o pojeździe",
+          "body": "Przesłane zdjęcia i raporty nie są domyślnie publiczne. Unikaj przesyłania zbędnych danych osobowych lub wrażliwych informacji."
+        },
+        "payments": {
+          "title": "Płatności",
+          "body": "Przetwarzanie płatności może być obsługiwane przez zewnętrznych dostawców płatności zgodnie z ich własnymi warunkami."
+        },
+        "auth": {
+          "title": "Uwierzytelnianie",
+          "body": "Dane uwierzytelniające służą do identyfikacji konta i ochrony dostępu do raportów."
+        },
+        "retention": {
+          "title": "Przechowywanie danych",
+          "body": "Dane mogą być przechowywane przez czas aktywności konta oraz zgodnie z wymaganiami działania produktu lub obowiązkami prawnymi."
+        },
+        "deletion": {
+          "title": "Wnioski o usunięcie danych",
+          "body": "Możesz skontaktować się z pomocą techniczną, aby poprosić o usunięcie danych konta, jeśli ma to zastosowanie."
+        },
+        "security": {
+          "title": "Bezpieczeństwo",
+          "body": "Stosujemy rozsądne środki techniczne dla MVP, ale nie posiadamy certyfikatów zgodności."
+        },
+        "contact": {
+          "title": "Kontakt",
+          "body": "Skontaktuj się z support@example.com w sprawie pytań dotyczących prywatności. To tymczasowy adres zastępczy."
+        }
+      }
+    },
+    "terms": {
+      "title": "Warunki korzystania",
+      "sections": {
+        "description": {
+          "title": "Opis produktu",
+          "body": "AutoVerdict dostarcza wstępne raporty przesiewowe wspierane przez AI dla decyzji zakupowych dotyczących aut używanych."
+        },
+        "disclaimer": {
+          "title": "Zastrzeżenie dotyczące analizy AI",
+          "body": "AutoVerdict nie zastępuje profesjonalnych oględzin pojazdu, oficjalnych raportów historii pojazdu, diagnostyki mechanicznej, weryfikacji prawnej ani niezależnej ekspertyzy."
+        },
+        "guarantee": {
+          "title": "Brak gwarancji stanu pojazdu",
+          "body": "Raporty mogą zawierać błędy lub pomijać informacje. Nie stanowią gwarancji, że pojazd jest bezpieczny lub odpowiedni."
+        },
+        "responsibility": {
+          "title": "Odpowiedzialność użytkownika",
+          "body": "Pozostajesz odpowiedzialny za decyzje zakupowe i powinieneś samodzielnie weryfikować wszystkie istotne deklaracje."
+        },
+        "credits": {
+          "title": "Kredyty i płatności",
+          "body": "Jedna ukończona analiza zużywa jeden kredyt. Kredyty są używane do generowania raportów i nie są wymieniane na gotówkę, chyba że wymaga tego prawo lub zasady dostawcy płatności."
+        },
+        "refund": {
+          "title": "Obsługa zwrotów i awarii technicznych",
+          "body": "Jeśli błąd techniczny uniemożliwia wygenerowanie raportu, kredyt nie jest pobierany lub może zostać przywrócony zgodnie z zasadami produktu."
+        },
+        "acceptable": {
+          "title": "Dozwolone użytkowanie",
+          "body": "Nie przesyłaj nielegalnych, szkodliwych, niezwiązanych ani niepotrzebnie wrażliwych informacji."
+        },
+        "account": {
+          "title": "Dostęp do konta",
+          "body": "Jesteś odpowiedzialny za bezpieczeństwo dostępu do swojego konta."
+        },
+        "liability": {
+          "title": "Ograniczenie odpowiedzialności",
+          "body": "Usługa jest świadczona jako narzędzie wspierające decyzje na etapie MVP, a odpowiedzialność jest ograniczona w zakresie dozwolonym przez prawo."
+        },
+        "contact": {
+          "title": "Kontakt",
+          "body": "Skontaktuj się z support@example.com w sprawie pytań dotyczących warunków. To tymczasowy adres zastępczy."
+        }
+      }
+    },
+    "contact": {
+      "title": "Kontakt z AutoVerdict",
+      "lead": "Masz pytanie dotyczące raportu, płatności lub produktu? Napisz do nas.",
+      "emailLabel": "E-mail",
+      "placeholder": "Tymczasowy adres pomocy technicznej do czasu skonfigurowania docelowej skrzynki. Docelowy czas odpowiedzi: 1–2 dni robocze."
+    }
+  },
+  "garage": {
+    "composer": {
+      "placeholder": "Wklej treść ogłoszenia, wiadomości sprzedawcy, VIN, uwagi, notatki z oględzin lub zadaj AutoVerdict konkretne pytania.\n\nPrzykład:\n\n„Rozważam zakup tej Toyoty Corolli z Otomoto. Co powinienem sprawdzić przed kontaktem ze sprzedawcą?”",
+      "cardTitle": "Powiedz AutoVerdict, co analizować",
+      "cardBody": "Wklej treść ogłoszenia, wiadomości sprzedawcy, VIN, notatki z oględzin lub zadaj konkretne pytania. Dodaj link do ogłoszenia lub zdjęcia, jeśli je masz.",
+      "errorValidUrl": "Podaj poprawny adres URL.",
+      "errorOtomotoOnly": "Na razie AutoVerdict może pobierać tylko ogłoszenia z Otomoto.pl. Treść z innych serwisów możesz wkleić ręcznie w główne pole.",
+      "errorDescriptionRequired": "Dodaj przynajmniej krótki opis, pytanie lub skopiowaną treść ogłoszenia przed analizą.",
+      "errorAnalysisInProgress": "Analiza jest już w toku. Poczekaj na jej zakończenie.",
+      "errorGeneric": "Coś poszło nie tak.",
+      "errorPhotoType": "Zdjęcia muszą być w formacie JPEG, PNG lub WEBP.",
+      "errorPhotoSize": "Każde zdjęcie nie może przekraczać 2,5 MB.",
+      "photosMaxAdded": "Dodano 5 zdjęć",
+      "addPhotos": "Dodaj zdjęcia",
+      "addPhotosCount": "Dodaj zdjęcia ({{count}}/{{max}})",
+      "changeLink": "Zmień link",
+      "addOtomotoLink": "Dodaj link z Otomoto",
+      "linkAdded": "Dodano link z Otomoto",
+      "linkPlaceholder": "Wklej URL ogłoszenia",
+      "addLink": "Dodaj link",
+      "cancel": "Anuluj",
+      "submitAnalyze": "Analizuj z AI",
+      "submitInProgress": "Analiza w toku…",
+      "submitSubmitting": "Wysyłanie…"
+    },
+    "processing": {
+      "title": "Analizuję szczegóły Twojego auta…",
+      "ariaLabel": "Analiza w toku",
+      "readingNotes": "Czytam Twoje notatki",
+      "checkingOtomoto": "Sprawdzam dane ogłoszenia Otomoto",
+      "usingText": "Używam dostarczonego tekstu i pytań",
+      "reviewingPhotos": "Przeglądam zdjęcia",
+      "continuingWithoutPhotos": "Kontynuuję bez zdjęć",
+      "detectingMissing": "Wykrywam brakujące informacje",
+      "generatingRecommendation": "Generuję rekomendację"
+    },
+    "report": {
+      "loading": "Ładowanie…",
+      "fallbackTitle": "Analiza ogłoszenia",
+      "viewListing": "Zobacz ogłoszenie",
+      "collapse": "Zwiń",
+      "collapseAriaLabel": "Zwiń raport",
+      "analysisInProgress": "analiza w toku",
+      "analysisFailed": "Analiza nie powiodła się",
+      "disclaimer": "AutoVerdict zapewnia jedynie wstępną analizę wspieraną przez AI. Nie zastępuje profesjonalnych oględzin, weryfikacji historii pojazdu, kontroli prawnej ani niezależnej ekspertyzy.",
+      "verdictBuy": "Kup",
+      "verdictCaution": "Kupuj ostrożnie",
+      "verdictAvoid": "Unikaj"
+    },
+    "reports": {
+      "title": "Moje raporty",
+      "lead": "Przeglądaj poprzednie analizy aut i otwieraj ukończone raporty.",
+      "checkAnother": "Sprawdź kolejne auto"
+    },
+    "history": {
+      "sectionTitle": "Ostatnie analizy",
+      "empty": "Brak analiz.",
+      "emptyHint": "Ukończone checki pojawią się tutaj.",
+      "created": "Utworzono {{date}}",
+      "preparingReport": "AutoVerdict przygotowuje raport kupującego.",
+      "processing": "Przetwarzanie…",
+      "reportReady": "Raport gotowy. Otwórz memo kupującego, aby zobaczyć werdykt, ryzyka, pytania do sprzedawcy, checklistę i szacowane koszty.",
+      "analysisFailed": "Analiza nie mogła zostać ukończona.",
+      "view": "Wyświetl",
+      "previous": "Poprzednia",
+      "next": "Następna",
+      "page": "Strona {{page}}",
+      "pageLast": "Strona {{page}} (ostatnia)"
     }
   }
 }

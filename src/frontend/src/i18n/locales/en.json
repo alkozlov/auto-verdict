@@ -509,5 +509,75 @@
         }
       }
     }
+  },
+  "garage": {
+    "composer": {
+      "placeholder": "Paste listing text, seller messages, VIN, concerns, inspection notes, or ask AutoVerdict specific questions.\n\nExample:\n\n\"I'm considering this Toyota Corolla from Otomoto. What should I verify before contacting the seller?\"",
+      "cardTitle": "Tell AutoVerdict what to analyze",
+      "cardBody": "Paste the listing text, seller messages, VIN, inspection notes, or ask specific questions. Add a listing link or photos if you have them.",
+      "errorValidUrl": "Enter a valid URL.",
+      "errorOtomotoOnly": "For now, AutoVerdict can only crawl Otomoto.pl listings. You can still paste text from other sites into the main field.",
+      "errorDescriptionRequired": "Add at least a short description, question, or copied listing text before analyzing.",
+      "errorAnalysisInProgress": "An analysis is already in progress. Please wait for it to complete.",
+      "errorGeneric": "Something went wrong.",
+      "errorPhotoType": "Photos must be JPEG, PNG, or WEBP.",
+      "errorPhotoSize": "Each photo must be 2.5 MB or smaller.",
+      "photosMaxAdded": "5 photos added",
+      "addPhotos": "Add photos",
+      "addPhotosCount": "Add photos ({{count}}/{{max}})",
+      "changeLink": "Change link",
+      "addOtomotoLink": "Add Otomoto link",
+      "linkAdded": "Otomoto link added",
+      "linkPlaceholder": "Paste listing URL",
+      "addLink": "Add link",
+      "cancel": "Cancel",
+      "submitAnalyze": "Analyze with AI",
+      "submitInProgress": "Analysis in progress…",
+      "submitSubmitting": "Submitting…"
+    },
+    "processing": {
+      "title": "Analyzing your car details…",
+      "ariaLabel": "Analysis in progress",
+      "readingNotes": "Reading your notes",
+      "checkingOtomoto": "Checking Otomoto listing data",
+      "usingText": "Using your provided text and questions",
+      "reviewingPhotos": "Reviewing photos",
+      "continuingWithoutPhotos": "Continuing without photos",
+      "detectingMissing": "Detecting missing information",
+      "generatingRecommendation": "Generating recommendation"
+    },
+    "report": {
+      "loading": "Loading…",
+      "fallbackTitle": "Listing analysis",
+      "viewListing": "View listing",
+      "collapse": "Collapse",
+      "collapseAriaLabel": "Collapse report",
+      "analysisInProgress": "analysis in progress",
+      "analysisFailed": "Analysis failed",
+      "disclaimer": "AutoVerdict provides AI-assisted preliminary screening only. It does not replace professional inspection, vehicle history verification, legal checks, or independent expert advice.",
+      "verdictBuy": "Buy",
+      "verdictCaution": "Buy with caution",
+      "verdictAvoid": "Avoid"
+    },
+    "reports": {
+      "title": "My reports",
+      "lead": "Review your previous car analyses and open completed reports.",
+      "checkAnother": "Check another car"
+    },
+    "history": {
+      "sectionTitle": "Recent analyses",
+      "empty": "No analyses yet.",
+      "emptyHint": "Your completed checks will appear here.",
+      "created": "Created {{date}}",
+      "preparingReport": "AutoVerdict is preparing the buyer report.",
+      "processing": "Processing…",
+      "reportReady": "Report ready. Open the buyer memo for verdict, risks, seller questions, checklist, and estimated costs.",
+      "analysisFailed": "The analysis could not be completed.",
+      "view": "View",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}}",
+      "pageLast": "Page {{page}} (last)"
+    }
   }
 }

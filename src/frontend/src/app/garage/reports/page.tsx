@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { AnalysisHistory } from "@/components/AnalysisHistory";
 
 const PAGE_SIZE = 10;
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [checks, setChecks] = useState<CarCheckResponse[]>([]);
   const [page, setPage] = useState(1);
@@ -48,16 +50,14 @@ export default function ReportsPage() {
     <div className="mx-auto max-w-[760px] space-y-8">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-[650] text-hi">My reports</h1>
-          <p className="mt-1.5 text-sm text-dim">
-            Review your previous car analyses and open completed reports.
-          </p>
+          <h1 className="text-[22px] font-[650] text-hi">{t("garage.reports.title")}</h1>
+          <p className="mt-1.5 text-sm text-dim">{t("garage.reports.lead")}</p>
         </div>
         <Link
           to="/garage/check"
           className="shrink-0 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-page transition-all hover:brightness-105"
         >
-          Check another car
+          {t("garage.reports.checkAnother")}
         </Link>
       </div>
 
