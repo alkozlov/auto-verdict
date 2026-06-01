@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, ClipboardCheck, FileText, HelpCircle, ImagePlus, Link2, MessageSquare, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { api, type CreditPackage } from "@/lib/api";
 
 export function RiskBadge({ label, tone = "medium" }: { label: string; tone?: "low" | "medium" | "high" | "unknown" | "brand" }) {
   const toneClass = {
@@ -109,12 +111,26 @@ export function HowSteps() {
   );
 }
 
+const CARD_MAP = [
+  { apiKey: "credits_1", tKey: "one", featured: false },
+  { apiKey: "credits_3", tKey: "three", featured: true },
+] as const;
+
+function formatPrice(pkg: CreditPackage): string {
+  if (pkg.price == null || pkg.currency == null) return "—";
+  return new Intl.NumberFormat("en", { style: "currency", currency: pkg.currency }).format(pkg.price / 100);
+}
+
 export function PricingCards() {
   const { t } = useTranslation();
-  const cards = [
-    { key: "one", price: "20 PLN", checks: "1" },
-    { key: "three", price: "40 PLN", checks: "3", featured: true },
-  ] as const;
+  const [packages, setPackages] = useState<CreditPackage[]>([]);
+
+  useEffect(() => {
+    api.payments.getPackages().then(setPackages).catch(() => {});
+  }, []);
+
+  const byKey = Object.fromEntries(packages.map((p) => [p.key, p]));
+
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-[#7C9CFF]/30 bg-[#7C9CFF]/10 p-5 md:flex md:items-center md:justify-between md:gap-6">
@@ -125,14 +141,18 @@ export function PricingCards() {
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 md:mt-0">{t("public.pricing.freeBody")}</p>
       </div>
       <div className="grid gap-5 md:grid-cols-2">
-      {cards.map((card) => (
-        <div key={card.key} className={cn("rounded-2xl border bg-[#101827] p-6 shadow-xl shadow-black/15", card.featured ? "border-[#7C9CFF]/45" : "border-slate-400/14")}>
+      {CARD_MAP.map((card) => {
+        const pkg = byKey[card.apiKey];
+        return (
+        <div key={card.tKey} className={cn("rounded-2xl border bg-[#101827] p-6 shadow-xl shadow-black/15", card.featured ? "border-[#7C9CFF]/45" : "border-slate-400/14")}>
           <div className="flex items-center justify-between gap-4">
-            <h3 className="text-xl font-bold text-white">{t(`public.pricing.${card.key}.title`)}</h3>
+            <h3 className="text-xl font-bold text-white">{t(`public.pricing.${card.tKey}.title`)}</h3>
             {card.featured && <RiskBadge label={t("public.pricing.better")} tone="brand" />}
           </div>
-          <p className="mt-4 text-4xl font-extrabold text-white">{card.price}</p>
-          <p className="mt-3 text-sm leading-6 text-slate-400">{t(`public.pricing.${card.key}.body`)}</p>
+          <p className="mt-4 text-4xl font-extrabold text-white">
+            {pkg ? formatPrice(pkg) : <span className="inline-block h-10 w-24 animate-pulse rounded-lg bg-slate-700" />}
+          </p>
+          <p className="mt-3 text-sm leading-6 text-slate-400">{t(`public.pricing.${card.tKey}.body`)}</p>
           <p className="mt-3 text-sm font-semibold text-slate-300">{t("public.pricing.creditRule")}</p>
           <ul className="mt-5 space-y-2">
             {["report", "risk", "missing", "questions", "checklist"].map((item) => (
@@ -143,10 +163,11 @@ export function PricingCards() {
             ))}
           </ul>
           <a href="/api/auth/google" className="av-btn-primary mt-6 w-full justify-center">
-            {t(`public.pricing.${card.key}.cta`)}
+            {t(`public.pricing.${card.tKey}.cta`)}
           </a>
         </div>
-      ))}
+        );
+      })}
       </div>
       <p className="text-xs leading-5 text-slate-500">{t("public.pricing.safetyNote")}</p>
     </div>

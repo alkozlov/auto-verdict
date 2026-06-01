@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { api, type CreditPackage } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function PurchaseCreditsModal({ onClose }: Props) {
+  const { t } = useTranslation();
   const [packages, setPackages] = useState<CreditPackage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export function PurchaseCreditsModal({ onClose }: Props) {
       const { checkoutUrl } = await api.payments.createCheckout(pkg.key);
       window.location.href = checkoutUrl;
     } catch {
-      setError("Failed to start checkout. Please try again.");
+      setError(t("credits.modal.checkoutError"));
       setLoading(false);
       setBuyingKey(null);
     }
@@ -51,14 +53,14 @@ export function PurchaseCreditsModal({ onClose }: Props) {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Top up credits"
+        aria-label={t("credits.modal.title")}
         className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/6 bg-[#0E1116] p-6 shadow-2xl"
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-[650] text-hi">Top up credits</h2>
+          <h2 className="text-base font-[650] text-hi">{t("credits.modal.title")}</h2>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("credits.modal.close")}
             className="flex h-7 w-7 items-center justify-center rounded-md text-dim hover:text-hi transition-colors"
           >
             <X className="h-4 w-4" />
@@ -66,7 +68,7 @@ export function PurchaseCreditsModal({ onClose }: Props) {
         </div>
 
         <p className="mb-5 text-sm text-dim">
-          Each credit lets you run one full car analysis. Credits never expire.
+          {t("credits.modal.description")}
         </p>
 
         <div className="grid grid-cols-2 gap-3">
@@ -92,17 +94,19 @@ export function PurchaseCreditsModal({ onClose }: Props) {
                   >
                     {isBest && (
                       <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-semibold text-page">
-                        Best value
+                        {t("credits.modal.bestValue")}
                       </span>
                     )}
                     <p className="text-[22px] font-[700] text-hi leading-none">
                       {pkg.credits}
                     </p>
                     <p className="mt-0.5 text-xs text-dim">
-                      {pkg.credits === 1 ? "check" : "checks"}
+                      {t("credits.modal.check", { count: pkg.credits })}
                     </p>
                     <p className="mt-3 text-sm font-semibold text-mid">
-                      {pkg.pricePln} PLN
+                      {pkg.price != null && pkg.currency != null
+                        ? new Intl.NumberFormat("en", { style: "currency", currency: pkg.currency }).format(pkg.price / 100)
+                        : "—"}
                     </p>
                     <button
                       onClick={() => handleBuy(pkg)}
@@ -115,7 +119,7 @@ export function PurchaseCreditsModal({ onClose }: Props) {
                         loading && "opacity-50 cursor-not-allowed"
                       )}
                     >
-                      {isBuying ? "Opening…" : "Buy"}
+                      {isBuying ? t("credits.modal.buying") : t("credits.modal.buy")}
                     </button>
                   </div>
                 );
@@ -127,7 +131,7 @@ export function PurchaseCreditsModal({ onClose }: Props) {
         )}
 
         <p className="mt-5 text-[11px] text-dim/60">
-          Secure checkout via Lemon Squeezy. Credits are added instantly after payment.
+          {t("credits.modal.secureNote")}
         </p>
       </div>
     </>

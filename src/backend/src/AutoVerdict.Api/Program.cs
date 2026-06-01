@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -378,14 +379,30 @@ app.MapGet("/api/checks/{id:guid}", async (
 
 // ── Payments ──────────────────────────────────────────────────────────────────
 
-app.MapGet("/api/payments/packages", () =>
-    Results.Ok(CreditPackage.All.Select(p => new
+app.MapGet("/api/payments/packages", async (
+    IPaymentService paymentService,
+    IMemoryCache cache,
+    CancellationToken ct) =>
+{
+    var prices = await cache.GetOrCreateAsync("ls:package-prices", async entry =>
     {
-        key = p.Key,
-        credits = p.Credits,
-        pricePln = p.PricePln,
-        label = p.Label,
-    })));
+        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+        return await paymentService.GetPackagePricesAsync(ct);
+    });
+
+    return Results.Ok(CreditPackage.All.Select(p =>
+    {
+        prices!.TryGetValue(p.Key, out var price);
+        return new
+        {
+            key = p.Key,
+            credits = p.Credits,
+            label = p.Label,
+            price = price?.AmountCents,
+            currency = price?.Currency,
+        };
+    }));
+});
 
 app.MapPost("/api/payments/checkout", async (
     HttpContext ctx,

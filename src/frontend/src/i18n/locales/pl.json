@@ -17,7 +17,21 @@
     "available_few": "{{count}} kredyty",
     "available_many": "{{count}} kredytów",
     "available_other": "{{count}} kredytu",
-    "topUp": "Doładuj"
+    "topUp": "Doładuj",
+    "modal": {
+      "title": "Doładuj kredyty",
+      "close": "Zamknij",
+      "description": "Każdy kredyt pozwala przeprowadzić pełną analizę auta. Kredyty nie wygasają.",
+      "check_one": "check",
+      "check_few": "checki",
+      "check_many": "checków",
+      "check_other": "checka",
+      "bestValue": "Najlepsza cena",
+      "buy": "Kup",
+      "buying": "Otwieranie…",
+      "checkoutError": "Nie udało się uruchomić płatności. Spróbuj ponownie.",
+      "secureNote": "Bezpieczna płatność przez Lemon Squeezy. Kredyty są dodawane natychmiast po zapłacie."
+    }
   },
   "language": {
     "label": "Język interfejsu",

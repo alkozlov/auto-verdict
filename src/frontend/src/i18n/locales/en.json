@@ -15,7 +15,19 @@
     "short": "{{count}}",
     "available_one": "{{count}} credit",
     "available_other": "{{count}} credits",
-    "topUp": "Top up"
+    "topUp": "Top up",
+    "modal": {
+      "title": "Top up credits",
+      "close": "Close",
+      "description": "Each credit lets you run one full car analysis. Credits never expire.",
+      "check_one": "check",
+      "check_other": "checks",
+      "bestValue": "Best value",
+      "buy": "Buy",
+      "buying": "Opening…",
+      "checkoutError": "Failed to start checkout. Please try again.",
+      "secureNote": "Secure checkout via Lemon Squeezy. Credits are added instantly after payment."
+    }
   },
   "language": {
     "label": "Interface language",

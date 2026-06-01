@@ -21,4 +21,14 @@ public sealed class MockPaymentService : IPaymentService
 
         return Task.FromResult(url);
     }
+
+    public Task<IReadOnlyDictionary<string, PackagePrice>> GetPackagePricesAsync(CancellationToken ct = default)
+    {
+        IReadOnlyDictionary<string, PackagePrice> prices = new Dictionary<string, PackagePrice>
+        {
+            ["credits_1"] = new(499, "EUR"),
+            ["credits_3"] = new(999, "EUR"),
+        };
+        return Task.FromResult(prices);
+    }
 }

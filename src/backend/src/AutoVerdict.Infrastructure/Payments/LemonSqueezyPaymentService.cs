@@ -27,6 +27,37 @@ public sealed class LemonSqueezyPaymentService(
         return string.Equals(computed, signature, StringComparison.OrdinalIgnoreCase);
     }
 
+    public async Task<IReadOnlyDictionary<string, PackagePrice>> GetPackagePricesAsync(CancellationToken ct = default)
+    {
+        var options = opts.Value;
+        using var client = httpFactory.CreateClient("lemonsqueezy");
+
+        // Currency is a store-level property, not per-variant.
+        var storeResponse = await client.GetAsync($"stores/{options.StoreId}", ct);
+        storeResponse.EnsureSuccessStatusCode();
+        var storeDoc = JsonDocument.Parse(await storeResponse.Content.ReadAsStringAsync(ct));
+        var currency = storeDoc.RootElement
+            .GetProperty("data")
+            .GetProperty("attributes")
+            .GetProperty("currency")
+            .GetString() ?? "EUR";
+
+        var result = new Dictionary<string, PackagePrice>();
+        foreach (var (packageKey, variantId) in options.PackageVariantIds)
+        {
+            var response = await client.GetAsync($"variants/{variantId}", ct);
+            response.EnsureSuccessStatusCode();
+
+            var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+            var attrs = doc.RootElement.GetProperty("data").GetProperty("attributes");
+            var amountCents = attrs.GetProperty("price").GetInt32();
+
+            result[packageKey] = new PackagePrice(amountCents, currency.ToUpperInvariant());
+        }
+
+        return result;
+    }
+
     public async Task<string> CreateCheckoutAsync(
         Guid userId,
         string email,

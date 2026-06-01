@@ -15,7 +15,19 @@
     "short": "{{count}}",
     "available_one": "{{count}} Credit",
     "available_other": "{{count}} Credits",
-    "topUp": "Aufladen"
+    "topUp": "Aufladen",
+    "modal": {
+      "title": "Credits aufladen",
+      "close": "Schließen",
+      "description": "Mit jedem Credit kannst du eine vollständige Fahrzeuganalyse durchführen. Credits verfallen nicht.",
+      "check_one": "Check",
+      "check_other": "Checks",
+      "bestValue": "Bestes Angebot",
+      "buy": "Kaufen",
+      "buying": "Wird geöffnet…",
+      "checkoutError": "Checkout konnte nicht gestartet werden. Bitte versuche es erneut.",
+      "secureNote": "Sichere Zahlung über Lemon Squeezy. Credits werden sofort nach der Zahlung gutgeschrieben."
+    }
   },
   "language": {
     "label": "Sprache der Oberfläche",

@@ -15,7 +15,19 @@
     "short": "{{count}}",
     "available_one": "{{count}} crédit",
     "available_other": "{{count}} crédits",
-    "topUp": "Recharger"
+    "topUp": "Recharger",
+    "modal": {
+      "title": "Recharger les crédits",
+      "close": "Fermer",
+      "description": "Chaque crédit vous permet de lancer une analyse complète d'une voiture. Les crédits n'expirent pas.",
+      "check_one": "analyse",
+      "check_other": "analyses",
+      "bestValue": "Meilleure valeur",
+      "buy": "Acheter",
+      "buying": "Ouverture…",
+      "checkoutError": "Impossible de démarrer le paiement. Veuillez réessayer.",
+      "secureNote": "Paiement sécurisé via Lemon Squeezy. Les crédits sont ajoutés instantanément après le paiement."
+    }
   },
   "language": {
     "label": "Langue de l'interface",

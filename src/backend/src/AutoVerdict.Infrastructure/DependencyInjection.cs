@@ -107,6 +107,7 @@ public static class DependencyInjection
                 opts.Emails = emails;
         });
 
+        services.AddMemoryCache();
         services.AddScoped<ICarCheckService, CarCheckService>();
         services.AddScoped<ICarCheckResultService, CarCheckResultService>();
 

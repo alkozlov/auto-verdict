@@ -43,8 +43,9 @@ export interface FileUploadResponse {
 export interface CreditPackage {
   key: string;
   credits: number;
-  pricePln: number;
   label: string;
+  price: number | null;
+  currency: string | null;
 }
 
 export const api = {
