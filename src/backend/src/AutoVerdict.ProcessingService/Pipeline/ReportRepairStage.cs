@@ -21,15 +21,17 @@ public sealed class ReportRepairStage(
         ReportValidationResult validation,
         ReportLanguage reportLanguage,
         AiBudgetTracker budget,
+        bool isFreeReview,
         CancellationToken cancellationToken)
     {
         var stage = _options.GetStage(StageName, "claude-haiku-4-5", MinRepairMaxTokens);
+        var model = isFreeReview ? "claude-haiku-4-5" : stage.Model;
         var maxTokens = Math.Max(stage.MaxTokens, MinRepairMaxTokens);
         var response = await runner.RunAsync(
             new AiTextRequest(
                 checkId,
                 StageName,
-                stage.Model,
+                model,
                 PromptVersion,
                 BuildSystemPrompt(),
                 [

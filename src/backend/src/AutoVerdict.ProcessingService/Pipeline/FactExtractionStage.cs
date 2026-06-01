@@ -18,9 +18,11 @@ public sealed class FactExtractionStage(
     public async Task<ExtractedVehicleFacts> ExecuteAsync(
         EvidenceBundle evidence,
         AiBudgetTracker budget,
+        bool isFreeReview,
         CancellationToken cancellationToken)
     {
         var stage = _options.GetStage(StageName, "claude-haiku-4-5", 2500);
+        var model = isFreeReview ? "claude-haiku-4-5" : stage.Model;
         var messages = new List<AiMessageContent>
         {
             new AiTextContent(
@@ -84,7 +86,7 @@ public sealed class FactExtractionStage(
             new AiTextRequest(
                 evidence.CheckId,
                 StageName,
-                stage.Model,
+                model,
                 PromptVersion,
                 BuildSystemPrompt(),
                 messages,

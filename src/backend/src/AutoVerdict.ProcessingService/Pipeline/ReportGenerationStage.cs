@@ -24,18 +24,20 @@ public sealed partial class ReportGenerationStage(
         ReportLanguage reportLanguage,
         AiBudgetTracker budget,
         bool useOpus,
+        bool isFreeReview,
         CancellationToken cancellationToken)
     {
         var stage = useOpus
-            ? _options.GetStage("OpusReview", "claude-opus-4-1", MinReportMaxTokens)
+            ? _options.GetStage("OpusReview", "claude-opus-4-7", MinReportMaxTokens)
             : _options.GetStage(StageName, "claude-sonnet-4-6", MinReportMaxTokens);
+        var model = isFreeReview ? "claude-haiku-4-5" : stage.Model;
         var maxTokens = Math.Max(stage.MaxTokens, MinReportMaxTokens);
 
         var response = await runner.RunAsync(
             new AiTextRequest(
                 evidence.CheckId,
                 useOpus ? "ReportGenerationOpus" : StageName,
-                stage.Model,
+                model,
                 PromptVersion,
                 BuildSystemPrompt(),
                 [

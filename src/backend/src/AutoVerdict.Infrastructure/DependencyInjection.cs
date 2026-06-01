@@ -64,7 +64,7 @@ public static class DependencyInjection
             EnsureStage(opts, "RiskAnalysis", configuration["AI_RISK_ANALYSIS_MODEL"] ?? configuredClaudeModel, 5000, true);
             EnsureStage(opts, "ReportGeneration", configuration["AI_REPORT_GENERATION_MODEL"] ?? configuredClaudeModel, 8000, true);
             EnsureStage(opts, "ReportRepair", configuration["AI_REPORT_REPAIR_MODEL"] ?? configuredClaudeModel, 8000, true);
-            EnsureStage(opts, "OpusReview", configuration["AI_OPUS_REVIEW_MODEL"] ?? "claude-opus-4-1", 3000, false);
+            EnsureStage(opts, "OpusReview", configuration["AI_OPUS_REVIEW_MODEL"] ?? "claude-opus-4-7", 5000, false);
 
             OverrideStageModel(opts, "FactExtraction", configuration["AI_FACT_EXTRACTION_MODEL"]);
             OverrideStageModel(opts, "RiskAnalysis", configuration["AI_RISK_ANALYSIS_MODEL"]);
