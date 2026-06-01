@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ImagePlus, Link2, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api, type CarCheckResponse } from "@/lib/api";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorView, placeholder as cmPlaceholder } from "@codemirror/view";
+import { useTranslation } from "react-i18next";
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_BYTES = 2560 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-const PLACEHOLDER =
-  "Paste listing text, seller messages, VIN, concerns, inspection notes, or ask AutoVerdict specific questions.\n\nExample:\n\n\"I'm considering this Toyota Corolla from Otomoto. What should I verify before contacting the seller?\"";
 
 const editorTheme = EditorView.theme(
   {
@@ -38,12 +36,6 @@ const editorTheme = EditorView.theme(
   { dark: true }
 );
 
-const editorExtensions = [
-  markdown(),
-  EditorView.lineWrapping,
-  cmPlaceholder(PLACEHOLDER),
-];
-
 interface Props {
   onSubmitSuccess: (check: CarCheckResponse) => void;
   onImagePreview: (url: string) => void;
@@ -67,26 +59,20 @@ function isOtomotoUrl(s: string): boolean {
   }
 }
 
-function formatLinkPreview(url: string): string {
-  try {
-    const u = new URL(url);
-    const path = u.pathname.length > 22 ? u.pathname.slice(0, 22) + "…" : u.pathname;
-    return `${u.hostname}${path}`;
-  } catch {
-    return url.slice(0, 40);
-  }
-}
-
 export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = false }: Props) {
+  const { t } = useTranslation();
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [link, setLink] = useState("");
-  const [linkDraft, setLinkDraft] = useState("");
-  const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const editorExtensions = useMemo(
+    () => [markdown(), EditorView.lineWrapping, cmPlaceholder(t("garage.composer.placeholder"))],
+    [t]
+  );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUrlsRef = useRef<string[]>([]);
@@ -135,11 +121,11 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     for (const f of Array.from(files)) {
       if (images.length + newFiles.length >= MAX_IMAGES) break;
       if (!ALLOWED_TYPES.includes(f.type)) {
-        errors.push(`"${f.name}": Photos must be JPEG, PNG, or WEBP.`);
+        errors.push(`"${f.name}": ${t("garage.composer.errorPhotoType")}`);
         continue;
       }
       if (f.size > MAX_IMAGE_BYTES) {
-        errors.push(`"${f.name}": Each photo must be 2.5 MB or smaller.`);
+        errors.push(`"${f.name}": ${t("garage.composer.errorPhotoSize")}`);
         continue;
       }
       newFiles.push(f);
@@ -156,28 +142,18 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     setImageUrls((prev) => prev.filter((_, j) => j !== i));
   }
 
-  function confirmLink() {
-    const v = linkDraft.trim();
-    if (!v) {
-      setLink("");
-      setShowLinkInput(false);
-      setLinkError(null);
-      return;
-    }
-    if (!isValidUrl(v)) {
-      setLinkError("Enter a valid URL.");
-      return;
-    }
-    if (!isOtomotoUrl(v)) {
-      setLinkError(
-        "For now, AutoVerdict can only crawl Otomoto.pl listings. You can still paste text from other sites into the main field."
-      );
-      return;
-    }
+  function handleLinkChange(v: string) {
     setLink(v);
-    setLinkDraft("");
-    setShowLinkInput(false);
-    setLinkError(null);
+    const trimmed = v.trim();
+    if (!trimmed) {
+      setLinkError(null);
+    } else if (!isValidUrl(trimmed)) {
+      setLinkError(t("garage.composer.errorValidUrl"));
+    } else if (!isOtomotoUrl(trimmed)) {
+      setLinkError(t("garage.composer.errorOtomotoOnly"));
+    } else {
+      setLinkError(null);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -186,11 +162,10 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     setFormError(null);
     const desc = description.trim();
     if (!desc) {
-      setFormError(
-        "Add at least a short description, question, or copied listing text before analyzing."
-      );
+      setFormError(t("garage.composer.errorDescriptionRequired"));
       return;
     }
+    if (linkError) return;
     setSubmitting(true);
     try {
       const check = await api.checks.create({
@@ -207,9 +182,9 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.startsWith("409:")) {
-        setFormError("An analysis is already in progress. Please wait for it to complete.");
+        setFormError(t("garage.composer.errorAnalysisInProgress"));
       } else {
-        setFormError(msg || "Something went wrong.");
+        setFormError(msg || t("garage.composer.errorGeneric"));
       }
     } finally {
       setSubmitting(false);
@@ -221,11 +196,10 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
       {/* Card header */}
       <div className="border-b border-white/6 px-7 py-5">
         <h2 className="text-[15px] font-[650] text-hi">
-          Tell AutoVerdict what to analyze
+          {t("garage.composer.cardTitle")}
         </h2>
         <p className="mt-3 text-sm text-dim leading-relaxed">
-          Paste the listing text, seller messages, VIN, inspection notes, or ask specific
-          questions. Add an Otomoto link or photos if you have them.
+          {t("garage.composer.cardBody")}
         </p>
       </div>
 
@@ -263,6 +237,24 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
           />
         </div>
 
+        {/* Link input */}
+        <div className="space-y-1.5">
+          <input
+            type="url"
+            value={link}
+            disabled={disabled}
+            onChange={(e) => handleLinkChange(e.target.value)}
+            placeholder={t("garage.composer.linkPlaceholder")}
+            className={cn(
+              "w-full rounded-md border bg-field px-3 py-2 text-sm text-hi placeholder:text-dim focus:outline-none transition-colors disabled:cursor-not-allowed",
+              linkError ? "border-warn focus:border-warn" : "border-white/6 focus:border-active"
+            )}
+          />
+          {linkError && (
+            <p className="text-xs text-warn leading-relaxed">{linkError}</p>
+          )}
+        </div>
+
         {/* Image thumbnails */}
         {imageUrls.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -294,72 +286,8 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
           </div>
         )}
 
-        {/* Link pill */}
-        {link && !showLinkInput && (
-          <div className="flex w-fit max-w-full items-center gap-2 rounded-md border border-white/6 bg-surface-raised px-3 py-1.5">
-            <Link2 className="h-3.5 w-3.5 shrink-0 text-dim" />
-            <span className="max-w-[300px] truncate text-xs text-mid">
-              Otomoto link added · {formatLinkPreview(link)}
-            </span>
-            <button
-              type="button"
-              onClick={() => setLink("")}
-              aria-label="Remove link"
-              className="shrink-0 text-dim transition-colors hover:text-bad"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        )}
-
-        {/* Link input */}
-        {showLinkInput && (
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <input
-                type="url"
-                value={linkDraft}
-                autoFocus
-                onChange={(e) => {
-                  setLinkDraft(e.target.value);
-                  setLinkError(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    confirmLink();
-                  }
-                }}
-                placeholder="Paste Otomoto listing URL"
-                className="flex-1 rounded-md border border-white/6 bg-field px-3 py-1.5 text-sm text-hi placeholder:text-dim focus:border-active focus:outline-none transition-colors"
-              />
-              <button
-                type="button"
-                onClick={confirmLink}
-                className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-page transition-all hover:brightness-105"
-              >
-                Add link
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLinkInput(false);
-                  setLinkDraft("");
-                  setLinkError(null);
-                }}
-                className="rounded-md border border-white/6 px-3 py-1.5 text-sm text-dim transition-colors hover:text-hi"
-              >
-                Cancel
-              </button>
-            </div>
-            {linkError && (
-              <p className="text-xs text-warn leading-relaxed">{linkError}</p>
-            )}
-          </div>
-        )}
-
-        {/* Attachment buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Photos button */}
+        <div>
           <input
             ref={fileInputRef}
             type="file"
@@ -373,7 +301,7 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
           />
           {images.length >= MAX_IMAGES ? (
             <span className="rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-xs text-off">
-              5 photos added
+              {t("garage.composer.photosMaxAdded")}
             </span>
           ) : (
             <button
@@ -384,22 +312,8 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
             >
               <ImagePlus className="h-3.5 w-3.5" />
               {images.length > 0
-                ? `Add photos (${images.length}/${MAX_IMAGES})`
-                : "Add photos"}
-            </button>
-          )}
-          {!showLinkInput && (
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => {
-                setLinkDraft(link);
-                setShowLinkInput(true);
-              }}
-              className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-white/12 bg-white/1 px-3 py-1.5 text-sm text-dim transition-colors hover:bg-white/3 hover:text-mid disabled:cursor-not-allowed"
-            >
-              <Link2 className="h-3.5 w-3.5" />
-              {link ? "Change link" : "Add Otomoto link"}
+                ? t("garage.composer.addPhotosCount", { count: images.length, max: MAX_IMAGES })
+                : t("garage.composer.addPhotos")}
             </button>
           )}
         </div>
@@ -420,7 +334,11 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
             "hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
           )}
         >
-          {submitting ? "Submitting…" : disabled ? "Analysis in progress…" : "Analyze with AI"}
+          {submitting
+            ? t("garage.composer.submitSubmitting")
+            : disabled
+              ? t("garage.composer.submitInProgress")
+              : t("garage.composer.submitAnalyze")}
         </button>
       </form>
     </div>

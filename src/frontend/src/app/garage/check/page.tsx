@@ -88,13 +88,6 @@ export default function CheckCarPage() {
     <div className="mx-auto max-w-[760px] space-y-8">
       {isProcessing && <ProcessingBar />}
 
-      <div>
-        <h1 className="text-[22px] font-[650] text-hi">Check car</h1>
-        <p className="mt-1.5 text-sm text-dim">
-          Paste everything you know about the car. AutoVerdict will turn it into a structured risk analysis.
-        </p>
-      </div>
-
       {paymentSuccess && (
         <div className="flex items-center gap-3 rounded-xl border border-ok/20 bg-ok-tint px-4 py-3">
           <CreditCard className="h-4 w-4 shrink-0 text-ok" />
