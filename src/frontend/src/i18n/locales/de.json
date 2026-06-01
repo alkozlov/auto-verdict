@@ -379,54 +379,54 @@
       "creditsBody": "Ein abgeschlossener Bericht verwendet einen Credit. Credits sind auf deinem Konto gespeichert und können genutzt werden, wenn du ein Auto zur Analyse einreichst. Credits sind kein Abonnement."
     },
     "legal": {
-      "updated": "Zuletzt aktualisiert: 29. Mai 2026"
+      "updated": "Zuletzt aktualisiert: 2. Juni 2026"
     },
     "privacy": {
       "title": "Datenschutzrichtlinie",
       "sections": {
         "who": {
           "title": "Wer wir sind",
-          "body": "AutoVerdict liefert KI-gestützte Gebrauchtwagen-Risikoberichte für Privatkäufer."
+          "body": "AutoVerdict (auto-verdict.app) ist ein KI-gestütztes Analyse-Tool, das Privatkäufer bei der Risikoeinschätzung von Gebrauchtwageninseraten unterstützt. Der Dienst wird als unabhängiges Produkt betrieben."
         },
         "data": {
           "title": "Welche Daten wir erheben",
-          "body": "Wir können Kontodaten, übermittelte Fahrzeuginformationen, hochgeladene Dateien, Zahlungsereignisse und generierte Berichte erheben."
+          "body": "Wir erfassen deine Google-E-Mail-Adresse und dein Profil bei der Anmeldung, eingereichte Fahrzeugbeschreibungen und Bilder, generierte Analyseberichte, Kreditguthaben und Zahlungsereignisse sowie grundlegende technische Logs."
         },
         "use": {
           "title": "Wie wir deine Daten nutzen",
-          "body": "Wir nutzen Daten zur Benutzerauthentifizierung, Checkverarbeitung, Berichtsgenerierung, Credit-Verwaltung und Support."
+          "body": "Deine Daten dienen der Kontoanmeldung, der Verarbeitung von Checks, der Berichtsgenerierung, der Credit-Verwaltung, der Support-Bearbeitung und dem korrekten Betrieb des Dienstes. Wir verkaufen deine Daten nicht."
         },
         "ai": {
           "title": "Hinweis zur KI-Verarbeitung",
-          "body": "Zur Analyse übermittelte Informationen können an den konfigurierten KI-Anbieter gesendet werden, um den Bericht zu erstellen."
+          "body": "Texte und Bilder, die du einreichst, werden zur Berichtserstellung an die Anthropic Claude AI API übertragen. Mit dem Einreichen eines Checks stimmst du dem zu. Die Datenschutzrichtlinie von Anthropic gilt für diese Verarbeitung."
         },
         "files": {
           "title": "Hochgeladene Dateien und Fahrzeuginformationen",
-          "body": "Hochgeladene Bilder und Berichte sind standardmäßig nicht öffentlich. Vermeide unnötige persönliche oder sensible Informationen."
+          "body": "Hochgeladene Bilder und generierte Berichte werden in privatem Objektspeicher abgelegt und sind nicht öffentlich zugänglich. Lade nur fahrzeugbezogene Bilder hoch. Vermeide das Einreichen von Dokumenten mit unnötigen persönlichen Daten wie Personalausweisnummern."
         },
         "payments": {
           "title": "Zahlungen",
-          "body": "Die Zahlungsabwicklung kann von externen Zahlungsdienstleistern gemäß ihren eigenen Bedingungen übernommen werden."
+          "body": "Kreditkäufe werden über Stripe abgewickelt. Stripe verarbeitet deine Zahlungskarteninformationen gemäß seiner eigenen Datenschutzrichtlinie. Wir erhalten nur Zahlungsbestätigungen zur Credit-Vergabe — wir speichern keine Kartendaten."
         },
         "auth": {
           "title": "Authentifizierung",
-          "body": "Authentifizierungsdaten dienen der Kontoidentifikation und dem Schutz des Zugriffs auf deine Berichte."
+          "body": "Die Anmeldung erfolgt über Google OAuth 2.0. Google teilt deine E-Mail-Adresse und ein Basisprofil mit uns. Wir speichern einen Sitzungstoken, um dich eingeloggt zu halten. Wir erhalten oder speichern dein Google-Passwort nicht."
         },
         "retention": {
           "title": "Datenspeicherung",
-          "body": "Daten können gespeichert werden, solange dein Konto aktiv ist und wie für den Produktbetrieb oder gesetzliche Pflichten erforderlich."
+          "body": "Kontodaten, Check-Verlauf und Berichte werden gespeichert, solange dein Konto aktiv ist. Zahlungs- und Audit-Logs können aufgrund gesetzlicher oder betrieblicher Anforderungen länger aufbewahrt werden."
         },
         "deletion": {
           "title": "Datenlöschanfragen",
-          "body": "Du kannst den Support kontaktieren, um die Löschung von Kontodaten zu beantragen, soweit anwendbar."
+          "body": "Um die Löschung deines Kontos und deiner Daten anzufordern, schreibe uns an support@auto-verdict.app. Wir bearbeiten Anfragen in angemessener Zeit unter Berücksichtigung gesetzlicher Aufbewahrungspflichten."
         },
         "security": {
           "title": "Sicherheit",
-          "body": "Wir verwenden angemessene technische Maßnahmen für ein MVP, erheben aber keine Compliance-Zertifizierungen."
+          "body": "Der Dienst verwendet HTTPS, tokenbasierte Authentifizierung und privaten Objektspeicher. Als MVP-Produkt setzen wir angemessene Sicherheitsmaßnahmen um, besitzen jedoch keine formalen Zertifizierungen wie ISO 27001 oder SOC 2."
         },
         "contact": {
           "title": "Kontakt",
-          "body": "Kontaktiere support@example.com bei Datenschutzfragen. Dies ist eine temporäre Platzhalteradresse."
+          "body": "Bei Datenschutzfragen oder Datenanfragen erreichst du uns unter support@auto-verdict.app."
         }
       }
     },
@@ -435,43 +435,43 @@
       "sections": {
         "description": {
           "title": "Produktbeschreibung",
-          "body": "AutoVerdict liefert KI-gestützte vorläufige Prüfberichte für Gebrauchtwagenkaufentscheidungen."
+          "body": "AutoVerdict erstellt KI-gestützte vorläufige Screeningberichte, die Privatkäufern bei der Bewertung von Gebrauchtwageninseraten helfen. Der Dienst analysiert von dir bereitgestellte Texte, Bilder und Anzeigendaten und erstellt einen strukturierten Risikobericht."
         },
         "disclaimer": {
           "title": "Haftungsausschluss KI-gestützte Vorprüfung",
-          "body": "AutoVerdict ersetzt keine professionelle Fahrzeuginspektion, offizielle Fahrzeughistorienberichte, Mechanikerdiagnose, rechtliche Überprüfung oder unabhängige Fachbegutachtung."
+          "body": "AutoVerdict ist ein Entscheidungsunterstützungswerkzeug und kein professioneller Dienst. Berichte ersetzen nicht die physische Fahrzeuginspektion, einen offiziellen Fahrzeughistorienbericht, eine Mechanikerdiagnose, die rechtliche Dokumentenprüfung oder eine unabhängige Fachbegutachtung. Überprüfe alle wichtigen Angaben vor einem Kauf."
         },
         "guarantee": {
           "title": "Keine Garantie für Fahrzeugzustand",
-          "body": "Berichte können Fehler enthalten oder Informationen übersehen. Sie sind keine Garantie, dass ein Fahrzeug sicher oder geeignet ist."
+          "body": "Berichte werden von einem KI-Modell erstellt und können Fehler, Auslassungen oder veraltete Informationen enthalten. Sie stellen keine Garantie, Gewährleistung oder Zertifizierung des Fahrzeugzustands, seiner Legalität oder Kaufeignung dar."
         },
         "responsibility": {
           "title": "Nutzerpflichten",
-          "body": "Du bleibst für Kaufentscheidungen verantwortlich und solltest alle wichtigen Angaben selbstständig prüfen."
+          "body": "Du trägst die alleinige Verantwortung für Kaufentscheidungen. AutoVerdict bietet nur eine vorläufige Analyse. Überprüfe alle wesentlichen Angaben selbstständig, hol dir eine Fachinspektion und sieh dir offizielle Dokumente an, bevor du vorgehst."
         },
         "credits": {
           "title": "Credits und Zahlungen",
-          "body": "Eine abgeschlossene Analyse verwendet einen Credit. Credits werden für die Berichtsgenerierung genutzt und nicht gegen Bargeld eingetauscht, es sei denn, Recht oder Zahlungsanbieterregeln verlangen dies."
+          "body": "Eine abgeschlossene Analyse verbraucht einen Credit. Credits werden über die Zahlungsseite der Website erworben und verfallen nicht. Credits werden nur dann erstattet, wenn dies durch geltendes Verbraucherschutzrecht oder Zahlungsanbieterregeln vorgeschrieben ist."
         },
         "refund": {
           "title": "Rückerstattung und technische Fehlerbehandlung",
-          "body": "Wenn ein technischer Fehler die Berichtsgenerierung verhindert, wird der Credit nicht verbraucht oder kann gemäß Produktregeln wiederhergestellt werden."
+          "body": "Wenn ein technischer Fehler auf unserer Seite nach Einreichen des Checks die Berichtserstellung verhindert, wird der verwendete Credit deinem Guthaben gutgeschrieben. Credits werden nicht für abgeschlossene Berichte erstattet, deren Ergebnisse dir nicht gefallen."
         },
         "acceptable": {
           "title": "Erlaubte Nutzung",
-          "body": "Übermittle keine illegalen, schädlichen, themenfremden oder unnötig sensiblen Informationen."
+          "body": "Reiche keine illegalen, betrügerischen oder schädlichen Inhalte ein und keine Inhalte, die nichts mit der Gebrauchtwagenkaufanalyse zu tun haben. Versuche nicht, den Dienst zu missbrauchen, zu dekompilieren oder zu überlasten. Verstöße können zur Kontosperrung führen."
         },
         "account": {
           "title": "Kontozugang",
-          "body": "Du bist für die Sicherheit deines Kontozugangs verantwortlich."
+          "body": "Du greifst über dein Google-Konto auf AutoVerdict zu. Du bist für die Sicherheit deines Google-Kontos verantwortlich. Teile deine Sitzung nicht mit anderen. Kontaktiere uns umgehend, wenn du unbefugten Zugriff auf dein Konto vermutest."
         },
         "liability": {
           "title": "Haftungsbeschränkung",
-          "body": "Der Dienst wird als MVP-Entscheidungsunterstützungswerkzeug bereitgestellt, und die Haftung ist im gesetzlich zulässigen Rahmen begrenzt."
+          "body": "AutoVerdict wird als MVP-Tool ohne Gewähr bereitgestellt. Im größtmöglichen gesetzlich zulässigen Umfang ist unsere Haftung für Verluste oder Schäden aus der Nutzung des Dienstes auf den für die unmittelbar betroffenen Credits gezahlten Betrag begrenzt."
         },
         "contact": {
           "title": "Kontakt",
-          "body": "Kontaktiere support@example.com bei Fragen zu den Nutzungsbedingungen. Dies ist eine temporäre Platzhalteradresse."
+          "body": "Bei Fragen zu diesen Nutzungsbedingungen erreichst du uns unter support@auto-verdict.app."
         }
       }
     },
@@ -528,7 +528,6 @@
       "cardTitle": "Sag AutoVerdict, was analysiert werden soll",
       "cardBody": "Füge Anzeigentext, Verkäufernachrichten, FIN, Inspektionsnotizen ein oder stelle konkrete Fragen. Füge einen Link zur Anzeige oder Fotos hinzu, wenn du sie hast.",
       "errorValidUrl": "Gib eine gültige URL ein.",
-      "errorOtomotoOnly": "AutoVerdict kann derzeit nur Otomoto.pl-Anzeigen abrufen. Text von anderen Seiten kannst du manuell in das Hauptfeld einfügen.",
       "errorDescriptionRequired": "Füge vor der Analyse mindestens eine kurze Beschreibung, eine Frage oder kopierten Anzeigentext hinzu.",
       "errorAnalysisInProgress": "Eine Analyse ist bereits im Gange. Bitte warte, bis sie abgeschlossen ist.",
       "errorGeneric": "Etwas ist schiefgelaufen.",
@@ -538,14 +537,15 @@
       "addPhotos": "Fotos hinzufügen",
       "addPhotosCount": "Fotos hinzufügen ({{count}}/{{max}})",
       "changeLink": "Link ändern",
-      "addOtomotoLink": "Otomoto-Link hinzufügen",
-      "linkAdded": "Otomoto-Link hinzugefügt",
+      "addOtomotoLink": "Inserat-Link hinzufügen",
+      "linkAdded": "Inserat-Link hinzugefügt",
       "linkPlaceholder": "Anzeigen-URL einfügen",
       "addLink": "Link hinzufügen",
       "cancel": "Abbrechen",
       "submitAnalyze": "Mit KI analysieren",
       "submitInProgress": "Analyse läuft…",
-      "submitSubmitting": "Wird gesendet…"
+      "submitSubmitting": "Wird gesendet…",
+      "checkingOtomoto": "Inseratsdaten werden geprüft"
     },
     "processing": {
       "title": "Fahrzeugdetails werden analysiert…",

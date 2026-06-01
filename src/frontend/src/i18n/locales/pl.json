@@ -423,54 +423,54 @@
       "creditsBody": "Jeden ukończony raport zużywa jeden kredyt. Kredyty są zapisane na koncie i można ich używać przy przesyłaniu auta do analizy. Kredyty nie są abonamentem."
     },
     "legal": {
-      "updated": "Ostatnia aktualizacja: 29 maja 2026"
+      "updated": "Ostatnia aktualizacja: 2 czerwca 2026"
     },
     "privacy": {
       "title": "Polityka prywatności",
       "sections": {
         "who": {
           "title": "Kim jesteśmy",
-          "body": "AutoVerdict dostarcza raporty ryzyka ogłoszeń aut używanych wspierane przez AI dla prywatnych kupujących."
+          "body": "AutoVerdict (auto-verdict.app) to narzędzie do wstępnej analizy ryzyka ogłoszeń aut używanych, wspierane przez AI, dla prywatnych kupujących. Usługa jest prowadzona jako niezależny produkt."
         },
         "data": {
           "title": "Jakie dane zbieramy",
-          "body": "Możemy zbierać dane konta, przesłane informacje o pojeździe, przesłane pliki, zdarzenia płatności i wygenerowane raporty."
+          "body": "Zbieramy adres e-mail i profil konta Google podczas logowania, opisy pojazdów i zdjęcia przesłane do analizy, wygenerowane raporty, saldo kredytów i zdarzenia płatności oraz podstawowe logi techniczne."
         },
         "use": {
           "title": "Jak wykorzystujemy Twoje dane",
-          "body": "Używamy danych do uwierzytelniania użytkowników, przetwarzania checków, generowania raportów, zarządzania kredytami i udzielania wsparcia."
+          "body": "Twoje dane służą do uwierzytelniania konta, przetwarzania checków, generowania raportów AI, zarządzania kredytami, obsługi zgłoszeń oraz utrzymania poprawnego działania usługi. Nie sprzedajemy Twoich danych."
         },
         "ai": {
           "title": "Informacja o przetwarzaniu AI",
-          "body": "Informacje przesłane do analizy mogą być wysyłane do skonfigurowanego dostawcy AI w celu wygenerowania raportu."
+          "body": "Opisy i zdjęcia, które przesyłasz, są wysyłane do API Anthropic Claude w celu wygenerowania raportu. Przesyłając check, wyrażasz na to zgodę. Polityka prywatności Anthropic ma zastosowanie do tego przetwarzania."
         },
         "files": {
           "title": "Przesłane pliki i informacje o pojeździe",
-          "body": "Przesłane zdjęcia i raporty nie są domyślnie publiczne. Unikaj przesyłania zbędnych danych osobowych lub wrażliwych informacji."
+          "body": "Przesłane zdjęcia i wygenerowane raporty są przechowywane w prywatnym magazynie obiektów i nie są publicznie dostępne. Przesyłaj wyłącznie zdjęcia związane z pojazdem. Unikaj przesyłania dokumentów zawierających zbędne dane osobowe, np. numer dowodu tożsamości."
         },
         "payments": {
           "title": "Płatności",
-          "body": "Przetwarzanie płatności może być obsługiwane przez zewnętrznych dostawców płatności zgodnie z ich własnymi warunkami."
+          "body": "Zakup kredytów jest obsługiwany przez Stripe. Stripe przetwarza dane karty płatniczej zgodnie ze swoją polityką prywatności. Otrzymujemy wyłącznie potwierdzenie płatności w celu przyznania kredytów — nie przechowujemy danych karty."
         },
         "auth": {
           "title": "Uwierzytelnianie",
-          "body": "Dane uwierzytelniające służą do identyfikacji konta i ochrony dostępu do raportów."
+          "body": "Logowanie odbywa się przez Google OAuth 2.0. Google udostępnia nam Twój adres e-mail i podstawowy profil. Przechowujemy token sesji do utrzymania logowania. Nie otrzymujemy ani nie przechowujemy Twojego hasła Google."
         },
         "retention": {
           "title": "Przechowywanie danych",
-          "body": "Dane mogą być przechowywane przez czas aktywności konta oraz zgodnie z wymaganiami działania produktu lub obowiązkami prawnymi."
+          "body": "Dane konta, historia checków i raporty są przechowywane przez czas aktywności konta. Logi płatności i audytowe mogą być przechowywane dłużej zgodnie z wymogami prawnymi lub operacyjnymi."
         },
         "deletion": {
           "title": "Wnioski o usunięcie danych",
-          "body": "Możesz skontaktować się z pomocą techniczną, aby poprosić o usunięcie danych konta, jeśli ma to zastosowanie."
+          "body": "Aby zażądać usunięcia konta i danych, napisz na support@auto-verdict.app. Wnioski realizujemy w rozsądnym czasie, z uwzględnieniem obowiązków prawnych dotyczących przechowywania danych."
         },
         "security": {
           "title": "Bezpieczeństwo",
-          "body": "Stosujemy rozsądne środki techniczne dla MVP, ale nie posiadamy certyfikatów zgodności."
+          "body": "Usługa korzysta z HTTPS, uwierzytelniania tokenowego i prywatnego magazynu obiektów. Jako produkt MVP stosujemy rozsądne środki bezpieczeństwa, lecz nie posiadamy formalnych certyfikatów takich jak ISO 27001 czy SOC 2."
         },
         "contact": {
           "title": "Kontakt",
-          "body": "Skontaktuj się z support@example.com w sprawie pytań dotyczących prywatności. To tymczasowy adres zastępczy."
+          "body": "W sprawie pytań dotyczących prywatności lub wniosków o dane skontaktuj się pod adresem support@auto-verdict.app."
         }
       }
     },
@@ -479,43 +479,43 @@
       "sections": {
         "description": {
           "title": "Opis produktu",
-          "body": "AutoVerdict dostarcza wstępne raporty przesiewowe wspierane przez AI dla decyzji zakupowych dotyczących aut używanych."
+          "body": "AutoVerdict dostarcza wstępne raporty przesiewowe wspierane przez AI, pomagające prywatnym kupującym oceniać ogłoszenia aut używanych. Usługa analizuje tekst, zdjęcia i dane ogłoszenia oraz generuje strukturyzowany raport ryzyka."
         },
         "disclaimer": {
           "title": "Zastrzeżenie dotyczące analizy AI",
-          "body": "AutoVerdict nie zastępuje profesjonalnych oględzin pojazdu, oficjalnych raportów historii pojazdu, diagnostyki mechanicznej, weryfikacji prawnej ani niezależnej ekspertyzy."
+          "body": "AutoVerdict jest narzędziem wspomagającym podejmowanie decyzji, nie zaś profesjonalną usługą. Raporty nie zastępują fizycznych oględzin pojazdu, oficjalnego raportu historii pojazdu, diagnostyki mechanicznej, weryfikacji dokumentów ani niezależnej ekspertyzy. Zawsze weryfikuj istotne informacje przed zakupem."
         },
         "guarantee": {
           "title": "Brak gwarancji stanu pojazdu",
-          "body": "Raporty mogą zawierać błędy lub pomijać informacje. Nie stanowią gwarancji, że pojazd jest bezpieczny lub odpowiedni."
+          "body": "Raporty są generowane przez model AI i mogą zawierać błędy, pominięcia lub nieaktualne informacje. Nie stanowią gwarancji, rękojmi ani certyfikatu stanu pojazdu, jego legalności ani przydatności do zakupu."
         },
         "responsibility": {
           "title": "Odpowiedzialność użytkownika",
-          "body": "Pozostajesz odpowiedzialny za decyzje zakupowe i powinieneś samodzielnie weryfikować wszystkie istotne deklaracje."
+          "body": "Wyłącznie Ty ponosisz odpowiedzialność za decyzje zakupowe. AutoVerdict dostarcza jedynie wstępną analizę. Samodzielnie weryfikuj wszystkie istotne informacje, zlecaj profesjonalne oględziny i sprawdzaj dokumenty przed zakupem."
         },
         "credits": {
           "title": "Kredyty i płatności",
-          "body": "Jedna ukończona analiza zużywa jeden kredyt. Kredyty są używane do generowania raportów i nie są wymieniane na gotówkę, chyba że wymaga tego prawo lub zasady dostawcy płatności."
+          "body": "Jedna ukończona analiza zużywa jeden kredyt. Kredyty są kupowane poprzez stronę płatności i nie tracą ważności. Kredyty nie podlegają zwrotowi w gotówce, chyba że wymagają tego przepisy prawa konsumenckiego lub zasady dostawcy płatności."
         },
         "refund": {
           "title": "Obsługa zwrotów i awarii technicznych",
-          "body": "Jeśli błąd techniczny uniemożliwia wygenerowanie raportu, kredyt nie jest pobierany lub może zostać przywrócony zgodnie z zasadami produktu."
+          "body": "Jeśli błąd techniczny po naszej stronie uniemożliwi wygenerowanie raportu po przesłaniu checka, zużyty kredyt zostanie przywrócony na Twoje konto. Kredyty nie są zwracane za ukończone raporty, z których jesteś niezadowolony."
         },
         "acceptable": {
           "title": "Dozwolone użytkowanie",
-          "body": "Nie przesyłaj nielegalnych, szkodliwych, niezwiązanych ani niepotrzebnie wrażliwych informacji."
+          "body": "Nie przesyłaj treści nielegalnych, fałszywych, szkodliwych ani niezwiązanych z analizą zakupu pojazdu. Nie próbuj nadużywać, dekompilować ani przeciążać usługi. Naruszenia mogą skutkować zawieszeniem konta."
         },
         "account": {
           "title": "Dostęp do konta",
-          "body": "Jesteś odpowiedzialny za bezpieczeństwo dostępu do swojego konta."
+          "body": "Dostęp do AutoVerdict odbywa się przez konto Google. Odpowiadasz za bezpieczeństwo swojego konta Google. Nie udostępniaj sesji innym. W przypadku podejrzenia nieautoryzowanego dostępu skontaktuj się z nami niezwłocznie."
         },
         "liability": {
           "title": "Ograniczenie odpowiedzialności",
-          "body": "Usługa jest świadczona jako narzędzie wspierające decyzje na etapie MVP, a odpowiedzialność jest ograniczona w zakresie dozwolonym przez prawo."
+          "body": "AutoVerdict jest udostępniany jako narzędzie MVP na zasadzie 'as-is'. W maksymalnym zakresie dozwolonym przez prawo, nasza odpowiedzialność za straty wynikające z korzystania z usługi jest ograniczona do kwoty zapłaconej za bezpośrednio zaangażowane kredyty."
         },
         "contact": {
           "title": "Kontakt",
-          "body": "Skontaktuj się z support@example.com w sprawie pytań dotyczących warunków. To tymczasowy adres zastępczy."
+          "body": "W sprawie pytań dotyczących warunków korzystania skontaktuj się pod adresem support@auto-verdict.app."
         }
       }
     },
@@ -532,7 +532,6 @@
       "cardTitle": "Powiedz AutoVerdict, co analizować",
       "cardBody": "Wklej treść ogłoszenia, wiadomości sprzedawcy, VIN, notatki z oględzin lub zadaj konkretne pytania. Dodaj link do ogłoszenia lub zdjęcia, jeśli je masz.",
       "errorValidUrl": "Podaj poprawny adres URL.",
-      "errorOtomotoOnly": "Na razie AutoVerdict może pobierać tylko ogłoszenia z Otomoto.pl. Treść z innych serwisów możesz wkleić ręcznie w główne pole.",
       "errorDescriptionRequired": "Dodaj przynajmniej krótki opis, pytanie lub skopiowaną treść ogłoszenia przed analizą.",
       "errorAnalysisInProgress": "Analiza jest już w toku. Poczekaj na jej zakończenie.",
       "errorGeneric": "Coś poszło nie tak.",
@@ -542,14 +541,15 @@
       "addPhotos": "Dodaj zdjęcia",
       "addPhotosCount": "Dodaj zdjęcia ({{count}}/{{max}})",
       "changeLink": "Zmień link",
-      "addOtomotoLink": "Dodaj link z Otomoto",
-      "linkAdded": "Dodano link z Otomoto",
+      "addOtomotoLink": "Dodaj link do ogłoszenia",
+      "linkAdded": "Dodano link do ogłoszenia",
       "linkPlaceholder": "Wklej URL ogłoszenia",
       "addLink": "Dodaj link",
       "cancel": "Anuluj",
       "submitAnalyze": "Analizuj z AI",
       "submitInProgress": "Analiza w toku…",
-      "submitSubmitting": "Wysyłanie…"
+      "submitSubmitting": "Wysyłanie…",
+      "checkingOtomoto": "Sprawdzam dane ogłoszenia"
     },
     "processing": {
       "title": "Analizuję szczegóły Twojego auta…",

@@ -51,13 +51,6 @@ function isValidUrl(s: string): boolean {
   }
 }
 
-function isOtomotoUrl(s: string): boolean {
-  try {
-    return new URL(s).hostname.toLowerCase().includes("otomoto");
-  } catch {
-    return false;
-  }
-}
 
 export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = false }: Props) {
   const { t } = useTranslation();
@@ -149,8 +142,6 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
       setLinkError(null);
     } else if (!isValidUrl(trimmed)) {
       setLinkError(t("garage.composer.errorValidUrl"));
-    } else if (!isOtomotoUrl(trimmed)) {
-      setLinkError(t("garage.composer.errorOtomotoOnly"));
     } else {
       setLinkError(null);
     }
