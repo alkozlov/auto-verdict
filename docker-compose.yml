@@ -192,6 +192,9 @@ services:
       - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3001:3000"
+    networks:
+      - default
+      - caddy-gateway
 
 volumes:
   postgres_data:
