@@ -73,6 +73,10 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
   const editorContainerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tdRef = useRef<any>(null);
+  // Always-current reference to addImages so the stable paste handler can call it
+  // without a stale closure over the `images` state.
+  const addImagesRef = useRef(addImages);
+  addImagesRef.current = addImages;
 
   useEffect(() => {
     return () => imageUrlsRef.current.forEach(URL.revokeObjectURL);
@@ -91,6 +95,25 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     const container = editorContainerRef.current;
     if (!container) return;
     function handlePaste(e: ClipboardEvent) {
+      // Intercept image files from the clipboard (screenshots, copied images).
+      // We attach them as file uploads instead of letting them land as text.
+      const items = e.clipboardData?.items;
+      if (items) {
+        const imageFiles: File[] = [];
+        for (const item of Array.from(items)) {
+          if (item.kind === "file" && item.type.startsWith("image/")) {
+            const file = item.getAsFile();
+            if (file) imageFiles.push(file);
+          }
+        }
+        if (imageFiles.length > 0) {
+          e.preventDefault();
+          addImagesRef.current(imageFiles);
+          return;
+        }
+      }
+
+      // Fall through: convert pasted HTML to markdown.
       const html = e.clipboardData?.getData("text/html");
       if (!html || !tdRef.current) return;
       e.preventDefault();
@@ -106,7 +129,7 @@ export function AnalysisComposer({ onSubmitSuccess, onImagePreview, disabled = f
     return () => container.removeEventListener("paste", handlePaste, true);
   }, []);
 
-  function addImages(files: FileList | null) {
+  function addImages(files: FileList | File[] | null) {
     if (!files) return;
     const errors: string[] = [];
     const newFiles: File[] = [];

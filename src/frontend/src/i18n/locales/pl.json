@@ -22,10 +22,10 @@
       "title": "Doładuj kredyty",
       "close": "Zamknij",
       "description": "Każdy kredyt pozwala przeprowadzić pełną analizę auta. Kredyty nie wygasają.",
-      "check_one": "check",
-      "check_few": "checki",
-      "check_many": "checków",
-      "check_other": "checka",
+      "check_one": "kontrola",
+      "check_few": "kontrole",
+      "check_many": "kontroli",
+      "check_other": "kontroli",
       "bestValue": "Najlepsza cena",
       "buy": "Kup",
       "buying": "Otwieranie…",
@@ -145,7 +145,7 @@
       },
       "pricing": {
         "title": "Cennik AutoVerdict - raporty ryzyka AI aut używanych",
-        "description": "Prosty cennik kredytowy dla analizy ogłoszeń aut używanych AutoVerdict. Kup jeden check albo pakiet do porównania kilku aut przed oględzinami."
+        "description": "Prosty cennik kredytowy dla analizy ogłoszeń aut używanych AutoVerdict. Kup jedną kontrolę albo pakiet do porównania kilku aut przed oględzinami."
       },
       "privacy": {
         "title": "Polityka prywatności - AutoVerdict",
@@ -266,18 +266,18 @@
       "autoBody": "Produkt tworzy powtarzalny raport z kategoriami ryzyka, brakującymi informacjami, pytaniami, checklistą i ostrożną rekomendacją."
     },
     "pricingTitle": "Prosty cennik. Bez abonamentu.",
-    "pricingLead": "Kupuj checki tylko wtedy, gdy ich potrzebujesz. Jeden ukończony raport zużywa jeden kredyt. Kredyty nie są abonamentem i nie ma opłaty miesięcznej.",
+    "pricingLead": "Kupuj kontrole tylko wtedy, gdy ich potrzebujesz. Jeden ukończony raport zużywa jeden kredyt. Kredyty nie są abonamentem i nie ma opłaty miesięcznej.",
     "pricing": {
       "better": "Lepsza cena",
       "one": {
-        "title": "1 check",
+        "title": "1 kontrola",
         "body": "Dla jednego dodatkowego auta, które chcesz sprawdzić przed kolejnym krokiem.",
-        "cta": "Zacznij od 1 checka"
+        "cta": "Zacznij od 1 kontroli"
       },
       "three": {
-        "title": "3 checki",
+        "title": "3 kontrole",
         "body": "Do porównania kilku aut po darmowej pierwszej analizie. Lepsza cena przy porównywaniu wielu aut.",
-        "cta": "Kup 3 checki"
+        "cta": "Kup 3 kontrole"
       },
       "includes": {
         "report": "Uporządkowany raport ryzyka AI",
@@ -290,7 +290,7 @@
       "freeTitle": "Pierwsza analiza w zestawie",
       "freeBody": "Nowi użytkownicy otrzymują 1 darmową analizę po zalogowaniu. Karta nie jest wymagana.",
       "creditRule": "Jeden ukończony raport zużywa jeden kredyt.",
-      "safetyNote": "Kredyty są przeznaczone na ukończone raporty. Błąd techniczny nie powinien kosztować dodatkowego checka."
+      "safetyNote": "Kredyty są przeznaczone na ukończone raporty. Błąd techniczny nie powinien kosztować dodatkowej kontroli."
     },
     "safetyTitle": "Narzędzie przesiewowe, nie gwarancja.",
     "safetyLead": "AutoVerdict nie zastępuje profesjonalnych oględzin, oficjalnych raportów historii pojazdu, diagnostyki mechanika, weryfikacji prawnej ani niezależnej ekspertyzy.",
@@ -417,7 +417,7 @@
       }
     },
     "pricingPage": {
-      "title": "Prosty cennik dla checków aut używanych.",
+      "title": "Prosty cennik umożliwiający sprawdzenie samochodów używanych.",
       "lead": "Używaj kredytów do generowania uporządkowanych raportów ryzyka AI przed kontaktem ze sprzedawcą, rezerwacją oględzin lub podróżą.",
       "creditsTitle": "Jak działają kredyty",
       "creditsBody": "Jeden ukończony raport zużywa jeden kredyt. Kredyty są zapisane na koncie i można ich używać przy przesyłaniu auta do analizy. Kredyty nie są abonamentem."
@@ -438,11 +438,11 @@
         },
         "use": {
           "title": "Jak wykorzystujemy Twoje dane",
-          "body": "Twoje dane służą do uwierzytelniania konta, przetwarzania checków, generowania raportów AI, zarządzania kredytami, obsługi zgłoszeń oraz utrzymania poprawnego działania usługi. Nie sprzedajemy Twoich danych."
+          "body": "Twoje dane służą do uwierzytelniania konta, przetwarzania kontroli, generowania raportów AI, zarządzania kredytami, obsługi zgłoszeń oraz utrzymania poprawnego działania usługi. Nie sprzedajemy Twoich danych."
         },
         "ai": {
           "title": "Informacja o przetwarzaniu AI",
-          "body": "Opisy i zdjęcia, które przesyłasz, są wysyłane do API Anthropic Claude w celu wygenerowania raportu. Przesyłając check, wyrażasz na to zgodę. Polityka prywatności Anthropic ma zastosowanie do tego przetwarzania."
+          "body": "Opisy i zdjęcia, które przesyłasz, są wysyłane do API Anthropic Claude w celu wygenerowania raportu. Przesyłając kontrolę, wyrażasz na to zgodę. Polityka prywatności Anthropic ma zastosowanie do tego przetwarzania."
         },
         "files": {
           "title": "Przesłane pliki i informacje o pojeździe",
@@ -458,7 +458,7 @@
         },
         "retention": {
           "title": "Przechowywanie danych",
-          "body": "Dane konta, historia checków i raporty są przechowywane przez czas aktywności konta. Logi płatności i audytowe mogą być przechowywane dłużej zgodnie z wymogami prawnymi lub operacyjnymi."
+          "body": "Dane konta, historia kontroli i raporty są przechowywane przez czas aktywności konta. Logi płatności i audytowe mogą być przechowywane dłużej zgodnie z wymogami prawnymi lub operacyjnymi."
         },
         "deletion": {
           "title": "Wnioski o usunięcie danych",
@@ -499,7 +499,7 @@
         },
         "refund": {
           "title": "Obsługa zwrotów i awarii technicznych",
-          "body": "Jeśli błąd techniczny po naszej stronie uniemożliwi wygenerowanie raportu po przesłaniu checka, zużyty kredyt zostanie przywrócony na Twoje konto. Kredyty nie są zwracane za ukończone raporty, z których jesteś niezadowolony."
+          "body": "Jeśli błąd techniczny po naszej stronie uniemożliwi wygenerowanie raportu po przesłaniu kontroli, zużyty kredyt zostanie przywrócony na Twoje konto. Kredyty nie są zwracane za ukończone raporty, z których jesteś niezadowolony."
         },
         "acceptable": {
           "title": "Dozwolone użytkowanie",
@@ -583,7 +583,7 @@
     "history": {
       "sectionTitle": "Ostatnie analizy",
       "empty": "Brak analiz.",
-      "emptyHint": "Ukończone checki pojawią się tutaj.",
+      "emptyHint": "Ukończone kontrole pojawią się tutaj.",
       "created": "Utworzono {{date}}",
       "preparingReport": "AutoVerdict przygotowuje raport kupującego.",
       "processing": "Przetwarzanie…",
