@@ -18,14 +18,16 @@ public sealed class RiskAnalysisStage(
         EvidenceBundle evidence,
         ExtractedVehicleFacts facts,
         AiBudgetTracker budget,
+        bool isFreeReview,
         CancellationToken cancellationToken)
     {
         var stage = _options.GetStage(StageName, "claude-sonnet-4-6", 5000);
+        var model = isFreeReview ? "claude-haiku-4-5" : stage.Model;
         var response = await runner.RunAsync(
             new AiTextRequest(
                 evidence.CheckId,
                 StageName,
-                stage.Model,
+                model,
                 PromptVersion,
                 BuildSystemPrompt(),
                 [

@@ -10,7 +10,6 @@ public sealed class AiStageRunner(
     IAiClient aiClient,
     IServiceScopeFactory scopeFactory,
     IOptions<AiPricingOptions> pricingOptions,
-    AiPipelineMetrics metrics,
     ILogger<AiStageRunner> logger)
 {
     private readonly AiPricingOptions _pricingOptions = pricingOptions.Value;
@@ -28,7 +27,6 @@ public sealed class AiStageRunner(
             var response = await aiClient.CreateTextAsync(request, cancellationToken);
             var estimatedCost = EstimateCostEur(response.Model, response.InputTokens, response.OutputTokens);
             budget.Add(estimatedCost);
-            metrics.RecordSuccess(request, response, estimatedCost);
 
             await RecordRunAsync(
                 request,
@@ -49,8 +47,6 @@ public sealed class AiStageRunner(
         }
         catch (Exception ex)
         {
-            metrics.RecordFailure(request, DateTimeOffset.UtcNow - startedAt);
-
             await RecordFailedRunAsync(
                 request,
                 ex,

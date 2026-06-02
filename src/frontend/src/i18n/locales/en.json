@@ -379,54 +379,54 @@
       "creditsBody": "One completed report uses one credit. Credits are stored in your account and can be used when you submit a car for analysis. Credits are not a subscription."
     },
     "legal": {
-      "updated": "Last updated: May 29, 2026"
+      "updated": "Last updated: June 2, 2026"
     },
     "privacy": {
       "title": "Privacy Policy",
       "sections": {
         "who": {
           "title": "Who we are",
-          "body": "AutoVerdict provides AI-assisted used-car listing risk reports for private buyers."
+          "body": "AutoVerdict (auto-verdict.app) is an AI-assisted used-car screening tool for private buyers. The service is operated as an independent product."
         },
         "data": {
           "title": "What data we collect",
-          "body": "We may collect account data, submitted vehicle information, uploaded files, payment events, and generated reports."
+          "body": "We collect your Google account email and profile on sign-in, vehicle descriptions and images you submit, generated analysis reports, credit balance and payment records, and basic technical logs."
         },
         "use": {
           "title": "How we use your data",
-          "body": "We use data to authenticate users, process checks, generate reports, manage credits, and provide support."
+          "body": "We use your data to authenticate your account, process car checks, generate AI reports, manage credits, handle support requests, and keep the service running correctly. We do not sell your data."
         },
         "ai": {
           "title": "AI processing notice",
-          "body": "Information submitted for analysis may be sent to the configured AI provider to generate the report."
+          "body": "Text and images you submit are sent to the Anthropic Claude AI API to generate your report. By submitting a check you consent to this. Anthropic's privacy policy applies to that processing."
         },
         "files": {
           "title": "Uploaded files and vehicle information",
-          "body": "Uploaded images and reports are not public by default. Avoid submitting unnecessary personal or sensitive information."
+          "body": "Uploaded images and generated reports are stored in private object storage and are not publicly accessible. Only upload vehicle-related images. Avoid submitting documents with unnecessary personal data such as national ID numbers."
         },
         "payments": {
           "title": "Payments",
-          "body": "Payment processing may be handled by external payment providers according to their own terms."
+          "body": "Credit purchases are processed by Stripe. Stripe handles your payment card data under their own privacy policy. We receive only payment confirmation events to grant credits — we do not store card details."
         },
         "auth": {
           "title": "Authentication",
-          "body": "Authentication data is used to identify your account and protect access to your reports."
+          "body": "Sign-in uses Google OAuth 2.0. Google shares your email and basic profile. We store a session token to keep you signed in. We do not receive or store your Google password."
         },
         "retention": {
           "title": "Data retention",
-          "body": "Data may be retained while your account is active and as needed for product operation or legal obligations."
+          "body": "Account data, check history, and reports are kept while your account is active. Payment and audit logs may be kept longer as required by law or operational needs."
         },
         "deletion": {
           "title": "Data deletion requests",
-          "body": "You can contact support to request deletion of account data where applicable."
+          "body": "To request deletion of your account and data, email us at support@auto-verdict.app. We will action requests within a reasonable time, subject to any legal retention obligations."
         },
         "security": {
           "title": "Security",
-          "body": "We use reasonable technical measures for an MVP, but do not claim compliance certifications."
+          "body": "The service uses HTTPS, token-based authentication, and private object storage. As an MVP we apply reasonable security measures but do not hold formal certifications such as ISO 27001 or SOC 2."
         },
         "contact": {
           "title": "Contact",
-          "body": "Contact support@example.com for privacy questions. This is a temporary placeholder address."
+          "body": "For privacy questions or data requests, contact us at support@auto-verdict.app."
         }
       }
     },
@@ -435,43 +435,43 @@
       "sections": {
         "description": {
           "title": "Product description",
-          "body": "AutoVerdict provides AI-assisted preliminary screening reports for used-car purchase decisions."
+          "body": "AutoVerdict provides AI-assisted preliminary screening reports to help private buyers evaluate used-car listings. The service analyses text, images, and listing data you provide and produces a structured risk report."
         },
         "disclaimer": {
           "title": "AI-assisted screening disclaimer",
-          "body": "AutoVerdict does not replace professional vehicle inspection, official vehicle history reports, mechanic diagnostics, legal verification, or independent expert evaluation."
+          "body": "AutoVerdict is a decision-support tool, not a professional service. Reports do not replace a physical vehicle inspection, official vehicle history report, mechanic diagnostics, legal document verification, or independent expert evaluation. Always verify important claims before any purchase."
         },
         "guarantee": {
           "title": "No guarantee of vehicle condition",
-          "body": "Reports may contain errors or miss information. They are not guarantees that a vehicle is safe or suitable."
+          "body": "Reports are generated by an AI model and may contain errors, omissions, or outdated information. They are not a guarantee, warranty, or certification of any vehicle's condition, legality, or suitability for purchase."
         },
         "responsibility": {
           "title": "User responsibility",
-          "body": "You remain responsible for purchase decisions and should verify all important claims independently."
+          "body": "You are solely responsible for purchase decisions. AutoVerdict provides preliminary analysis only. Verify all material claims independently, obtain a professional inspection, and review official documents before proceeding."
         },
         "credits": {
           "title": "Credits and payments",
-          "body": "One completed analysis uses one credit. Credits are used for report generation and are not exchanged for cash unless required by law or payment-provider rules."
+          "body": "One completed analysis consumes one credit. Credits are purchased through the payment page on the site and do not expire. Credits are not refundable for cash except as required by applicable consumer protection law or payment-provider rules."
         },
         "refund": {
           "title": "Refund and technical failure handling",
-          "body": "If a technical error prevents report generation, the credit is not consumed or can be restored according to product rules."
+          "body": "If a technical error on our side prevents report generation after your check is submitted, the credit used will be restored to your balance. Credits are not restored for checks that complete but whose results you find unsatisfactory."
         },
         "acceptable": {
           "title": "Acceptable use",
-          "body": "Do not submit illegal, harmful, unrelated, or unnecessary sensitive information."
+          "body": "Do not submit illegal, fraudulent, or harmful content, or content unrelated to used-car purchase analysis. Do not attempt to abuse, reverse-engineer, or overload the service. Violations may result in account suspension."
         },
         "account": {
           "title": "Account access",
-          "body": "You are responsible for keeping access to your account secure."
+          "body": "You access AutoVerdict through your Google account. You are responsible for keeping your Google account secure. Do not share your session. Contact us promptly if you suspect unauthorized access to your account."
         },
         "liability": {
           "title": "Limitation of liability",
-          "body": "The service is provided as an MVP decision-support tool and liability is limited to the extent permitted by law."
+          "body": "AutoVerdict is provided as an MVP tool on an as-is basis. To the maximum extent permitted by applicable law, our liability for loss or damage arising from use of the service is limited to the amount paid for the credits directly involved."
         },
         "contact": {
           "title": "Contact",
-          "body": "Contact support@example.com for terms questions. This is a temporary placeholder address."
+          "body": "For questions about these terms, contact us at support@auto-verdict.app."
         }
       }
     },
@@ -528,7 +528,6 @@
       "cardTitle": "Tell AutoVerdict what to analyze",
       "cardBody": "Paste the listing text, seller messages, VIN, inspection notes, or ask specific questions. Add a listing link or photos if you have them.",
       "errorValidUrl": "Enter a valid URL.",
-      "errorOtomotoOnly": "For now, AutoVerdict can only crawl Otomoto.pl listings. You can still paste text from other sites into the main field.",
       "errorDescriptionRequired": "Add at least a short description, question, or copied listing text before analyzing.",
       "errorAnalysisInProgress": "An analysis is already in progress. Please wait for it to complete.",
       "errorGeneric": "Something went wrong.",
@@ -538,14 +537,15 @@
       "addPhotos": "Add photos",
       "addPhotosCount": "Add photos ({{count}}/{{max}})",
       "changeLink": "Change link",
-      "addOtomotoLink": "Add Otomoto link",
-      "linkAdded": "Otomoto link added",
+      "addOtomotoLink": "Add listing link",
+      "linkAdded": "Listing link added",
       "linkPlaceholder": "Paste listing URL",
       "addLink": "Add link",
       "cancel": "Cancel",
       "submitAnalyze": "Analyze with AI",
       "submitInProgress": "Analysis in progress…",
-      "submitSubmitting": "Submitting…"
+      "submitSubmitting": "Submitting…",
+      "checkingOtomoto": "Checking listing data"
     },
     "processing": {
       "title": "Analyzing your car details…",

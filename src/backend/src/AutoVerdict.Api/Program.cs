@@ -251,7 +251,7 @@ app.MapPost("/api/checks", async (
     if (!string.IsNullOrWhiteSpace(rawLink))
     {
         if (!TryNormalizeListingUrl(rawLink, out var normalized))
-            return Results.BadRequest("Only otomoto.pl listing URLs are accepted.");
+            return Results.BadRequest("The provided listing URL is not valid. Only http and https URLs are accepted.");
         listingUrl = normalized;
     }
 
@@ -604,10 +604,6 @@ static bool TryNormalizeListingUrl(string? rawUrl, out string normalized)
         return false;
 
     if (uri.Scheme is not ("http" or "https"))
-        return false;
-
-    string host = uri.IdnHost.ToLowerInvariant();
-    if (host != "otomoto.pl" && !host.EndsWith(".otomoto.pl", StringComparison.Ordinal))
         return false;
 
     var builder = new UriBuilder(uri) { Fragment = "" };

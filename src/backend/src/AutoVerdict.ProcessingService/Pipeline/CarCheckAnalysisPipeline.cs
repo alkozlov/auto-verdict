@@ -5,8 +5,10 @@ using AutoVerdict.Contracts.Listing;
 using AutoVerdict.Contracts.Messages;
 using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Infrastructure.AI;
+using AutoVerdict.Infrastructure.Persistence;
 using AutoVerdict.ProcessingService.Crawler;
 using AutoVerdict.ProcessingService.Parsing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.ProcessingService.Pipeline;
@@ -21,10 +23,12 @@ public sealed class CarCheckAnalysisPipeline(
     ReportValidator reportValidator,
     ReportRepairStage reportRepairStage,
     AiStageRunner stageRunner,
+    IServiceScopeFactory scopeFactory,
     IOptions<AiPipelineOptions> aiPipelineOptions,
     ILogger<CarCheckAnalysisPipeline> logger) : ICarCheckPipeline
 {
     private const string AnalysisFileName = "ai-analysis-result.md";
+    private const string FreeReviewModel = "claude-haiku-4-5";
     private readonly AiPipelineOptions _aiPipelineOptions = aiPipelineOptions.Value;
 
     public async Task<string> ExecuteAsync(
@@ -48,11 +52,17 @@ public sealed class CarCheckAnalysisPipeline(
                 ? new UserImageContent(crawlResult.ScreenshotBytes, "image/png")
                 : null);
 
-        var budget = new AiBudgetTracker(_aiPipelineOptions.HardBudgetEur);
-        var facts = await factExtractionStage.ExecuteAsync(evidence, budget, cancellationToken);
-        var risks = await riskAnalysisStage.ExecuteAsync(evidence, facts, budget, cancellationToken);
+        var isFreeReview = await IsFreeReviewAsync(message.UserId, message.CheckId, cancellationToken);
+        if (isFreeReview)
+            logger.LogInformation(
+                "Free review for check {CheckId}: all stages will use model {Model}.",
+                message.CheckId, FreeReviewModel);
 
-        var useOpusForReport = ShouldUseOpusForReport(risks, budget);
+        var budget = new AiBudgetTracker(_aiPipelineOptions.HardBudgetEur);
+        var facts = await factExtractionStage.ExecuteAsync(evidence, budget, isFreeReview, cancellationToken);
+        var risks = await riskAnalysisStage.ExecuteAsync(evidence, facts, budget, isFreeReview, cancellationToken);
+
+        var useOpusForReport = ShouldUseOpusForReport(risks, budget, isFreeReview);
         var report = await reportGenerationStage.ExecuteAsync(
             evidence,
             facts,
@@ -60,6 +70,7 @@ public sealed class CarCheckAnalysisPipeline(
             reportLanguage,
             budget,
             useOpusForReport,
+            isFreeReview,
             cancellationToken);
 
         var validation = reportValidator.Validate(report.Markdown, reportLanguage);
@@ -77,6 +88,7 @@ public sealed class CarCheckAnalysisPipeline(
                 validation,
                 reportLanguage,
                 budget,
+                isFreeReview,
                 cancellationToken);
 
             validation = reportValidator.Validate(finalMarkdown, reportLanguage);
@@ -93,11 +105,20 @@ public sealed class CarCheckAnalysisPipeline(
         return await SaveAnalysisAsync(message.CheckId, finalMarkdown, cancellationToken);
     }
 
-    private bool ShouldUseOpusForReport(RiskAnalysisResult risks, AiBudgetTracker budget)
+    private bool ShouldUseOpusForReport(RiskAnalysisResult risks, AiBudgetTracker budget, bool isFreeReview)
     {
-        var opusStage = _aiPipelineOptions.GetStage("OpusReview", "claude-opus-4-1", 8000);
+        var opusStage = _aiPipelineOptions.GetStage("OpusReview", "claude-opus-4-7", 8000);
         if (!opusStage.Enabled || !risks.NeedsEscalation)
             return false;
+
+        if (isFreeReview)
+        {
+            logger.LogInformation(
+                "Free review: OpusReview stage active using {Model}: {Reason}",
+                FreeReviewModel,
+                risks.EscalationReason);
+            return true;
+        }
 
         var estimatedCost = stageRunner.EstimateMaxCostEur(opusStage.Model, 6000, opusStage.MaxTokens);
         if (budget.CanSpend(estimatedCost))
@@ -115,6 +136,15 @@ public sealed class CarCheckAnalysisPipeline(
             budget.SpentEur,
             budget.HardBudgetEur);
         return false;
+    }
+
+    private async Task<bool> IsFreeReviewAsync(Guid userId, Guid checkId, CancellationToken ct)
+    {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return !await db.CarChecks
+            .AsNoTracking()
+            .AnyAsync(c => c.UserId == userId && c.CheckId != checkId, ct);
     }
 
     private async Task<CrawlPipelineResult> CrawlListingAsync(
