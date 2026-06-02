@@ -193,8 +193,10 @@ services:
     ports:
       - "3001:3000"
     networks:
-      - default
-      - caddy-gateway
+      default:
+      caddy-gateway:
+        aliases:
+          - grafana
 
 volumes:
   postgres_data:
