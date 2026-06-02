@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /garage
+Disallow: /auth
 
-Sitemap: https://autoverdict.com/sitemap.xml
+Sitemap: https://autoverdict.app/sitemap.xml
