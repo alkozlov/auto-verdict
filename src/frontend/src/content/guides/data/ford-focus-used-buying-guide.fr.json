@@ -1,0 +1,24 @@
+{
+  "make": "Ford",
+  "model": "Focus",
+  "years": "2011–2018 (Mk3) et 2018–aujourd'hui (Mk4)",
+  "title": "Ford Focus d'occasion : risques et quoi vérifier | AutoVerdict",
+  "description": "Acheter une Ford Focus d'occasion ? Quoi vérifier d'abord — la boîte automatique Powershift, la courroie humide EcoBoost et les questions clés au vendeur.",
+  "h1": "Acheter une Ford Focus d'occasion — guide d'achat",
+  "intro": "La Focus est une compacte d'occasion agile et abordable, mais quelques points de transmission bien connus méritent un contrôle attentif. Voici ce qu'il faut vérifier avant de la voir.",
+  "faq": [
+    {
+      "q": "Quelle boîte automatique de Ford Focus éviter ?",
+      "a": "La boîte à double embrayage sec « Powershift » montée sur beaucoup de Focus Mk3 (environ 2011–2016) a acquis une réputation d'à-coups et de problèmes d'embrayage. Une boîte manuelle, ou une automatique à convertisseur / 8 rapports plus récente, évite ce souci. Pour une voiture Powershift, examinez attentivement l'historique des réparations."
+    },
+    {
+      "q": "Le moteur Ford Focus EcoBoost est-il fiable ?",
+      "a": "Le 1.0 EcoBoost est un moteur apprécié, mais plusieurs utilisent une courroie de distribution « humide » baignant dans l'huile, à remplacer selon le plan ; sa négligence peut causer des soucis. Confirmez l'intervalle de remplacement et qu'il a été fait, et demandez tout historique de refroidissement ou de surchauffe sur les premiers exemplaires."
+    },
+    {
+      "q": "Focus d'occasion : manuelle ou automatique ?",
+      "a": "Pour les voitures de l'ère Mk3, une boîte manuelle contourne entièrement les inquiétudes Powershift et est souvent l'achat d'occasion le plus simple. Si vous voulez une automatique, privilégiez les voitures plus récentes avec un historique de boîte documenté."
+    }
+  ],
+  "updated": "2026-06-03"
+}

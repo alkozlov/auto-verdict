@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/languages";
+
 export interface GuideFaq {
   q: string;
   a: string;
@@ -24,7 +26,9 @@ export interface GuideMeta {
   updated: string;
 }
 
-/** A full guide: metadata + the markdown body authored in ./bodies/<slug>.md. */
+/** A full guide: metadata + the markdown body, resolved for a specific locale. */
 export interface Guide extends GuideMeta {
+  /** Locale of this resolved variant (derived from the file name). */
+  locale: Locale;
   bodyMarkdown: string;
 }

@@ -1,0 +1,24 @@
+{
+  "make": "Audi",
+  "model": "A4",
+  "years": "2015–2023 (B9)",
+  "title": "Używane Audi A4 (B9): poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Kupujesz używane Audi A4 B9? Co zweryfikować najpierw — serwis skrzyni S tronic, zużycie oleju w TFSI, elektronikę i właściwe pytania do sprzedającego.",
+  "h1": "Używane Audi A4 (B9) — poradnik zakupu",
+  "intro": "A4 B9 to dopracowana, bogato wyposażona limuzyna i kombi z rynku wtórnego, ale elektronika premium i skrzynie potrafią być kosztowne po gwarancji. Oto co sprawdzić, zanim obejrzysz auto.",
+  "faq": [
+    {
+      "q": "Czy używane Audi A4 B9 jest niezawodne?",
+      "a": "A4 B9 (2015–2023) jest ogólnie dobrze oceniane, z silnikami i skrzyniami dopracowanymi względem wcześniejszych generacji. Głównym ryzykiem kosztów eksploatacji jest droga elektronika oraz naprawa skrzyni dwusprzęgłowej w późniejszym okresie, dlatego liczą się historia serwisowa i dokładne sprawdzenie elektroniki."
+    },
+    {
+      "q": "Czy Audi A4 ma problem z zużyciem oleju?",
+      "a": "Większe zużycie oleju kojarzono raczej z niektórymi wcześniejszymi silnikami 2.0 TFSI niż z generacją B9. Mimo to w każdym używanym A4 warto zapytać właściciela o dolewki oleju oraz samodzielnie sprawdzić jego poziom i stan."
+    },
+    {
+      "q": "A4 z napędem quattro czy na przód?",
+      "a": "Napęd na cztery koła quattro poprawia trakcję i jest popularny w regionach z zimową aurą, ale dodaje nieco złożoności i kosztów. Do jazdy głównie po suchym mieście prostszy jest napęd na przód. Tak czy inaczej potwierdź, że odpowiedni serwis był wykonywany."
+    }
+  ],
+  "updated": "2026-06-03"
+}

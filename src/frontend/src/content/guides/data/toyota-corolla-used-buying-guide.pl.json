@@ -1,0 +1,24 @@
+{
+  "make": "Toyota",
+  "model": "Corolla",
+  "years": "2018–obecnie (E210)",
+  "title": "Używana Toyota Corolla: poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Kupujesz używaną Toyotę Corollę (też hybryda)? Co sprawdzić — kondycję baterii hybrydowej, stan hamulców, historię serwisową i pytania do sprzedającego.",
+  "h1": "Używana Toyota Corolla — poradnik zakupu",
+  "intro": "Corolla — i jej wersje hybrydowe — ma silną opinię niezawodnego auta, ale używana hybryda wciąż wymaga kilku konkretnych sprawdzeń. Oto co zweryfikować, zanim obejrzysz auto.",
+  "faq": [
+    {
+      "q": "Czy używana Toyota Corolla jest niezawodna?",
+      "a": "Corolla konsekwentnie należy do bardziej niezawodnych aut używanych, a układ hybrydowy jest dobrze sprawdzony. Najważniejsze jest potwierdzenie dobrej kondycji baterii hybrydowej, serwisu w ASO Toyoty lub u wykwalifikowanego specjalisty oraz dobrego stanu hamulców."
+    },
+    {
+      "q": "Jak długo wytrzymuje bateria hybrydowa w Corolli?",
+      "a": "Baterie hybrydowe Toyoty są zwykle trwałe, a udokumentowany serwis w ASO Toyoty w wielu krajach przedłuża gwarancję na baterię hybrydową. Zapytaj, czy wykonywano przeglądy układu hybrydowego i czy auto wciąż obejmuje jakaś gwarancja na baterię."
+    },
+    {
+      "q": "Czy hamulce w hybrydzie się zużywają?",
+      "a": "Hybrydy korzystają z hamowania rekuperacyjnego, więc hamulce cierne często służą długo — ale przez to mogą korodować lub zapiekać się z niedoużywania, zwłaszcza w wilgotnym klimacie. Zleć przegląd hamulców i nasłuchuj zgrzytów lub nierównego hamowania na jeździe próbnej."
+    }
+  ],
+  "updated": "2026-06-03"
+}

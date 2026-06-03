@@ -1,0 +1,24 @@
+{
+  "make": "Volkswagen",
+  "model": "Golf",
+  "years": "2012–2020 (Mk7 / Mk7.5)",
+  "title": "VW Golf (Mk7) d'occasion : risques et quoi vérifier | AutoVerdict",
+  "description": "Quoi vérifier avant d'acheter une Volkswagen Golf Mk7 d'occasion — entretien DSG, consommation d'huile des TSI, FAP diesel et les questions à poser au vendeur.",
+  "h1": "Acheter une VW Golf (Mk7) d'occasion — guide d'achat",
+  "intro": "La Golf Mk7 est l'une des occasions les plus achetées d'Europe — bien construite, mais les détails qui distinguent un bon exemplaire d'un coûteux sont faciles à manquer. Voici ce qu'il faut contrôler avant de contacter le vendeur.",
+  "faq": [
+    {
+      "q": "La VW Golf Mk7 est-elle fiable en occasion ?",
+      "a": "La Golf Mk7 est généralement considérée comme solide, mais son état dépend beaucoup de l'entretien — surtout la boîte DSG et, sur les diesels, le système d'échappement. Une voiture avec un historique d'entretien complet et justifié est un achat bien plus sûr que ne le laisse penser le seul kilométrage."
+    },
+    {
+      "q": "Quel est le problème le plus courant d'une Golf Mk7 d'occasion ?",
+      "a": "Les points fréquemment à vérifier incluent le comportement de la boîte DSG (hésitations ou à-coups), la consommation d'huile de certains moteurs essence TSI et les problèmes de FAP/EGR sur les diesels surtout utilisés sur de courts trajets. Ce ne sont pas des pannes garanties, mais des points à contrôler sur le véhicule précis."
+    },
+    {
+      "q": "Golf essence ou diesel en occasion ?",
+      "a": "Pour une conduite surtout urbaine et sur courts trajets, un TSI essence évite généralement les soucis d'échappement diesel. Pour un kilométrage annuel élevé et de l'autoroute, un 2.0 TDI peut convenir s'il a été entretenu selon le plan. Adaptez le moteur à votre usage réel."
+    }
+  ],
+  "updated": "2026-06-03"
+}

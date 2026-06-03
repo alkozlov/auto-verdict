@@ -26,6 +26,8 @@ export default function App() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/guides" element={<GuidesIndexPage />} />
       <Route path="/guides/:slug" element={<GuidePage />} />
+      <Route path="/:locale/guides" element={<GuidesIndexPage />} />
+      <Route path="/:locale/guides/:slug" element={<GuidePage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/dashboard" element={<Navigate to="/" replace />} />
       <Route path="/garage" element={<GarageLayout />}>
