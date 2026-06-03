@@ -12,7 +12,7 @@ interface PublicSeoProps {
   jsonLd?: JsonLd | JsonLd[];
 }
 
-const DEFAULT_ORIGIN = "https://autoverdict.com";
+const DEFAULT_ORIGIN = "https://autoverdict.app";
 
 function setMeta(selector: string, attr: "name" | "property", key: string, content: string) {
   let tag = document.head.querySelector<HTMLMetaElement>(selector);

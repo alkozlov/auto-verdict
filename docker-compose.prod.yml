@@ -15,6 +15,10 @@ services:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-frontend:${IMAGE_TAG}
     restart: unless-stopped
 
+  prerender:
+    image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-prerender:${IMAGE_TAG}
+    restart: unless-stopped
+
   postgres:
     restart: unless-stopped
 

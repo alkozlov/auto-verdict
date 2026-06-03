@@ -14,6 +14,16 @@ services:
       - default
       - caddy-gateway
 
+  # Dynamic rendering for crawlers: Caddy routes bot User-Agents here, this
+  # service renders the SPA with headless Chromium and returns full HTML.
+  prerender:
+    build:
+      context: ./src/prerender
+    container_name: auto-verdict-prerender
+    networks:
+      - default
+      - caddy-gateway
+
   api:
     build:
       context: ./src/backend
