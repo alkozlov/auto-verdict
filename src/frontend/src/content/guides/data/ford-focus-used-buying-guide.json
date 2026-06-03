@@ -1,0 +1,24 @@
+{
+  "make": "Ford",
+  "model": "Focus",
+  "years": "2011–2018 (Mk3) & 2018–present (Mk4)",
+  "title": "Used Ford Focus Buying Guide: Risks & What to Check | AutoVerdict",
+  "description": "Buying a used Ford Focus? What to check first — the Powershift automatic, EcoBoost wet belt, and the key questions to ask the seller before viewing.",
+  "h1": "Used Ford Focus Buying Guide",
+  "intro": "The Focus is a sharp-driving and affordable used hatchback, but a couple of well-known drivetrain points are worth checking carefully. Here is what to verify before you view one.",
+  "faq": [
+    {
+      "q": "Which Ford Focus automatic should I avoid?",
+      "a": "The dry dual-clutch 'Powershift' automatic fitted to many Mk3 Focus models (roughly 2011–2016) gained a reputation for shuddering and clutch problems. A manual, or a later torque-converter/8-speed automatic, avoids that concern. If buying a Powershift car, check its repair history carefully."
+    },
+    {
+      "q": "Is the Ford Focus EcoBoost engine reliable?",
+      "a": "The 1.0 EcoBoost is a well-liked engine but several use a 'wet' timing belt that runs in oil and needs replacing on schedule; neglect can cause problems. Confirm the belt service interval and whether it has been done, and ask about any coolant or overheating history on earlier units."
+    },
+    {
+      "q": "Manual or automatic Focus for buying used?",
+      "a": "For Mk3-era cars, a manual sidesteps the Powershift concerns entirely and is often the simpler used buy. If you want an automatic, prioritise later cars with a documented gearbox history."
+    }
+  ],
+  "updated": "2026-06-03"
+}

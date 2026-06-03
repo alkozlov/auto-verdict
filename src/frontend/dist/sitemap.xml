@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://autoverdict.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://autoverdict.com/how-it-works</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autoverdict.com/sample-report</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autoverdict.com/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autoverdict.com/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://autoverdict.com/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://autoverdict.com/contact</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://autoverdict.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://autoverdict.app/how-it-works</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autoverdict.app/sample-report</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autoverdict.app/pricing</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autoverdict.app/guides</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autoverdict.app/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://autoverdict.app/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://autoverdict.app/contact</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://autoverdict.app/guides/audi-a4-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/bmw-3-series-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/ford-focus-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/opel-astra-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/skoda-octavia-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/toyota-corolla-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/volkswagen-golf-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autoverdict.app/guides/volkswagen-passat-used-buying-guide</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>

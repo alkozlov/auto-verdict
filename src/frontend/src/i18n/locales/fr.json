@@ -112,7 +112,8 @@
       "label": "Navigation publique",
       "how": "Fonctionnement",
       "sample": "Exemple de rapport",
-      "pricing": "Tarifs"
+      "pricing": "Tarifs",
+      "guides": "Guides d'achat"
     },
     "footer": {
       "label": "Navigation du pied de page",

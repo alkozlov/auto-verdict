@@ -116,7 +116,8 @@
       "label": "Nawigacja publiczna",
       "how": "Jak to działa",
       "sample": "Przykładowy raport",
-      "pricing": "Cennik"
+      "pricing": "Cennik",
+      "guides": "Poradniki zakupowe"
     },
     "footer": {
       "label": "Nawigacja w stopce",
