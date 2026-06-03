@@ -2,6 +2,15 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'PRD'
+        type: choice
+        options:
+          - PRD
+          - TEST
 
 env:
   IMAGE_TAG: 1.${{ github.run_number }}
@@ -39,7 +48,7 @@ jobs:
           TEST_MODE=$(printf '%s\n' "$VPS_ENV" | grep '^TEST_MODE=' | cut -d'=' -f2 | tr -d ' \r\n')
           echo "vite_test_mode=${TEST_MODE:-false}" >> $GITHUB_OUTPUT
         env:
-          VPS_ENV: ${{ secrets.VPS_ENV }}
+          VPS_ENV: ${{ inputs.environment == 'PRD' && secrets.VPS_ENV_PRD || secrets.VPS_ENV_TEST }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -85,7 +94,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cat > ~/auto-verdict/.env << 'ENVEOF'
-            ${{ secrets.VPS_ENV }}
+            ${{ inputs.environment == 'PRD' && secrets.VPS_ENV_PRD || secrets.VPS_ENV_TEST }}
             ENVEOF
 
       - name: Deploy to VPS
