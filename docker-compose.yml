@@ -180,6 +180,29 @@ services:
   #   depends_on:
   #     - otel-collector
 
+  loki:
+    image: grafana/loki:3.4.3
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - loki_data:/loki
+      - ./infra/loki/config.yml:/etc/loki/config.yml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  promtail:
+    image: grafana/promtail:3.4.3
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./infra/promtail/config.yml:/etc/promtail/config.yml:ro
+    depends_on:
+      loki:
+        condition: service_healthy
+
   grafana:
     image: grafana/grafana:11.4.0
     environment:
@@ -192,6 +215,9 @@ services:
       - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3001:3000"
+    depends_on:
+      loki:
+        condition: service_healthy
     networks:
       - default
       - caddy-gateway
@@ -201,6 +227,7 @@ volumes:
   nats_data:
   seaweedfs_data:
   grafana_data:
+  loki_data:
 
 networks:
   caddy-gateway:
