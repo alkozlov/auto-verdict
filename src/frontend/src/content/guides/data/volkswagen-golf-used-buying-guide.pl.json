@@ -1,0 +1,24 @@
+{
+  "make": "Volkswagen",
+  "model": "Golf",
+  "years": "2012–2020 (Mk7 / Mk7.5)",
+  "title": "Używany VW Golf (Mk7): poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Co sprawdzić przed zakupem używanego Volkswagena Golfa Mk7 — serwis DSG, zużycie oleju w TSI, filtr DPF w dieslach i pytania do sprzedającego.",
+  "h1": "Używany Volkswagen Golf (Mk7) — poradnik zakupu",
+  "intro": "Golf Mk7 to jedno z najczęściej kupowanych aut używanych w Europie — dobrze zbudowane, ale szczegóły odróżniające zdrowy egzemplarz od kosztownego łatwo przeoczyć. Oto co zweryfikować, zanim skontaktujesz się ze sprzedającym.",
+  "faq": [
+    {
+      "q": "Czy używany VW Golf Mk7 jest niezawodny?",
+      "a": "Golf Mk7 uchodzi za solidne auto, ale jego stan zależy głównie od serwisowania — zwłaszcza skrzyni DSG oraz, w dieslach, układu oczyszczania spalin. Egzemplarz z pełną, udokumentowaną historią serwisową jest znacznie bezpieczniejszym wyborem, niż wskazywałby sam przebieg."
+    },
+    {
+      "q": "Jaka jest najczęstsza usterka używanego Golfa Mk7?",
+      "a": "Najczęściej warto sprawdzić pracę skrzyni DSG (szarpanie lub ociąganie), zużycie oleju w niektórych silnikach benzynowych TSI oraz problemy z DPF/EGR w dieslach jeżdżących głównie na krótkich trasach. To nie są pewne usterki — to punkty warte weryfikacji w konkretnym aucie."
+    },
+    {
+      "q": "Golf na benzynę czy diesel — co kupić używane?",
+      "a": "Do jazdy głównie po mieście i na krótkich trasach benzyna TSI zwykle pozwala uniknąć kłopotów z układem spalin diesla. Przy dużym rocznym przebiegu i jeździe po trasie 2.0 TDI ma sens, jeśli był serwisowany zgodnie z planem. Dopasuj silnik do tego, jak faktycznie jeździsz."
+    }
+  ],
+  "updated": "2026-06-03"
+}

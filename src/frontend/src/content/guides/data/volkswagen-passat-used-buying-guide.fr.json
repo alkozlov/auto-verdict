@@ -1,0 +1,24 @@
+{
+  "make": "Volkswagen",
+  "model": "Passat",
+  "years": "2014–2023 (B8)",
+  "title": "VW Passat (B8) d'occasion : risques et quoi vérifier | AutoVerdict",
+  "description": "Acheter une VW Passat B8 d'occasion ? Quoi vérifier d'abord — entretien DSG, système d'échappement 2.0 TDI, suspension adaptative et questions au vendeur.",
+  "h1": "Acheter une VW Passat (B8) d'occasion — guide d'achat",
+  "intro": "La Passat B8 est souvent une voiture familiale et de flotte à fort kilométrage, ce qui rend l'historique d'entretien plus important que d'habitude. Voici ce qu'il faut contrôler avant d'aller la voir.",
+  "faq": [
+    {
+      "q": "La VW Passat B8 est-elle fiable ?",
+      "a": "La Passat B8 est généralement une voiture fiable sur longue distance, mais beaucoup ont servi de véhicules de société ou de flotte avec un fort kilométrage. Un carnet d'entretien complet et des preuves d'entretien de la DSG et de l'échappement comptent plus que le seul compteur."
+    },
+    {
+      "q": "Quoi vérifier sur une Passat 2.0 TDI d'occasion ?",
+      "a": "Sur le 2.0 TDI courant, vérifiez que le FAP et l'EGR n'ont pas posé problème, que l'AdBlue (sur les versions récentes) fonctionne et que la boîte DSG passe les rapports en douceur. Demandez si la voiture a fait des trajets réguliers sur autoroute plutôt que seulement de courts trajets."
+    },
+    {
+      "q": "Une Passat à fort kilométrage vaut-elle la peine ?",
+      "a": "Une Passat bien entretenue à fort kilométrage peut être un bon achat, car ces moteurs sont conçus pour la distance. Le risque est une voiture aux entretiens sautés ou utilisée uniquement sur de courts trajets. C'est la documentation qui permet de les distinguer."
+    }
+  ],
+  "updated": "2026-06-03"
+}

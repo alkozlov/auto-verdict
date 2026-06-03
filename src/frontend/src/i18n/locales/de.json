@@ -112,7 +112,8 @@
       "label": "Öffentliche Navigation",
       "how": "So funktioniert es",
       "sample": "Beispielbericht",
-      "pricing": "Preise"
+      "pricing": "Preise",
+      "guides": "Kaufratgeber"
     },
     "footer": {
       "label": "Footer-Navigation",

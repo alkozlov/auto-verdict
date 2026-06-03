@@ -1,0 +1,24 @@
+{
+  "make": "BMW",
+  "model": "Seria 3",
+  "years": "2012–2019 (F30 / F31)",
+  "title": "Używane BMW serii 3 (F30): poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Co sprawdzić przed zakupem używanego BMW serii 3 F30 — łańcuch rozrządu w dieslach, układ chłodzenia, wycieki oleju, opony run-flat i pytania do sprzedającego.",
+  "h1": "Używane BMW serii 3 (F30) — poradnik zakupu",
+  "intro": "Seria 3 F30 to satysfakcjonujący zakup z rynku wtórnego, ale tylnonapędowa konstrukcja premium ma własną listę kontrolną. Oto co zweryfikować, zanim umówisz się na oględziny.",
+  "faq": [
+    {
+      "q": "Czy BMW serii 3 F30 jest niezawodne?",
+      "a": "F30 (2012–2019) to zwykle mocne auto używane, zwłaszcza serwisowane przez kogoś, kto zna BMW. Najbardziej warto sprawdzić łańcuch rozrządu we wcześniejszych dieslach, układ chłodzenia oraz drobne wycieki oleju typowe wraz z wiekiem."
+    },
+    {
+      "q": "Który silnik F30 ma problemy z łańcuchem rozrządu?",
+      "a": "Wcześniejsze diesle N47 zyskały opinię podatnych na zużycie łańcucha rozrządu, a jego umiejscowienie z tyłu silnika sprawia, że naprawa jest kosztowna. Późniejsze diesle B47 ten problem ograniczyły. W każdym dieslu F30 nasłuchuj kłapania łańcucha na zimnym rozruchu i zapytaj o ewentualne prace przy rozrządzie."
+    },
+    {
+      "q": "Czy muszę martwić się oponami run-flat?",
+      "a": "Wiele F30 jeździło na oponach run-flat i bez koła zapasowego. Run-flaty są droższe i dają twardszą jazdę. Sprawdź stan opon i zgodność marek oraz wlicz koszt wymiany w budżet."
+    }
+  ],
+  "updated": "2026-06-03"
+}

@@ -1,0 +1,24 @@
+{
+  "make": "BMW",
+  "model": "Série 3",
+  "years": "2012–2019 (F30 / F31)",
+  "title": "BMW Série 3 (F30) d'occasion : risques et quoi vérifier | AutoVerdict",
+  "description": "Quoi vérifier avant d'acheter une BMW Série 3 F30 d'occasion — chaîne de distribution diesel, refroidissement, fuites d'huile, pneus run-flat et questions vendeur.",
+  "h1": "Acheter une BMW Série 3 (F30) d'occasion — guide d'achat",
+  "intro": "La Série 3 F30 est une occasion gratifiante, mais l'ingénierie premium à propulsion a sa propre check-list. Voici ce qu'il faut contrôler avant d'organiser une visite.",
+  "faq": [
+    {
+      "q": "La BMW Série 3 F30 est-elle fiable ?",
+      "a": "La F30 (2012–2019) est généralement une bonne occasion, surtout entretenue par quelqu'un qui connaît BMW. Les points les plus à vérifier sont la chaîne de distribution sur les premiers diesels, le système de refroidissement et de légères fuites d'huile fréquentes avec l'âge."
+    },
+    {
+      "q": "Quel moteur F30 a des soucis de chaîne de distribution ?",
+      "a": "Les premiers moteurs diesel N47 ont acquis une réputation d'usure de la chaîne de distribution, et comme la chaîne est à l'arrière du moteur, la réparation est coûteuse. Les diesels B47 ultérieurs ont corrigé cela. Sur tout F30 diesel, écoutez un cliquetis de chaîne au démarrage à froid et demandez d'éventuels travaux de chaîne."
+    },
+    {
+      "q": "Dois-je m'inquiéter des pneus run-flat ?",
+      "a": "Beaucoup de F30 roulaient sur des pneus run-flat et sans roue de secours. Les run-flat sont plus chers et offrent un confort plus ferme. Vérifiez l'état des pneus et la correspondance des marques, et intégrez le coût de remplacement à votre budget."
+    }
+  ],
+  "updated": "2026-06-03"
+}

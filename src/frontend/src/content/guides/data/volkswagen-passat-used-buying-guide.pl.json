@@ -1,0 +1,24 @@
+{
+  "make": "Volkswagen",
+  "model": "Passat",
+  "years": "2014–2023 (B8)",
+  "title": "Używany VW Passat (B8): poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Kupujesz używanego VW Passata B8? Co sprawdzić w pierwszej kolejności — serwis DSG, układ spalin 2.0 TDI, zawieszenie adaptacyjne i pytania do sprzedającego.",
+  "h1": "Używany Volkswagen Passat (B8) — poradnik zakupu",
+  "intro": "Passat B8 to częste auto rodzinne i flotowe o wysokich przebiegach, dlatego historia serwisowa ma tu większe znaczenie niż zwykle. Oto co zweryfikować, zanim pojedziesz go obejrzeć.",
+  "faq": [
+    {
+      "q": "Czy VW Passat B8 jest niezawodny?",
+      "a": "Passat B8 to zwykle solidne auto do dużych przebiegów, ale wiele egzemplarzy służyło jako auta firmowe lub flotowe i pokonało wysokie kilometraże. Komplet dokumentacji serwisowej oraz dowody obsługi DSG i układu spalin liczą się bardziej niż sam wskazany przebieg."
+    },
+    {
+      "q": "Co sprawdzić w używanym Passacie 2.0 TDI?",
+      "a": "W popularnym 2.0 TDI sprawdź, czy DPF i EGR nie sprawiały problemów, czy układ AdBlue (w nowszych autach) działa poprawnie oraz czy skrzynia DSG zmienia biegi płynnie. Zapytaj, czy auto regularnie jeździło po trasie, a nie tylko na krótkich dystansach."
+    },
+    {
+      "q": "Czy Passat z wysokim przebiegiem warto kupić?",
+      "a": "Dobrze serwisowany Passat z wysokim przebiegiem może być rozsądnym wyborem, bo te silniki są przewidziane do dużych dystansów. Ryzykiem jest auto z pominiętymi przeglądami lub jeżdżące wyłącznie na krótkich trasach. To dokumentacja pozwala je odróżnić."
+    }
+  ],
+  "updated": "2026-06-03"
+}

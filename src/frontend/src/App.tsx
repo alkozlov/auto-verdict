@@ -6,6 +6,8 @@ import PricingPage from './app/pricing/page'
 import PrivacyPage from './app/privacy/page'
 import TermsPage from './app/terms/page'
 import ContactPage from './app/contact/page'
+import GuidesIndexPage from './app/guides/page'
+import GuidePage from './app/guides/[slug]/page'
 import AuthCallback from './app/auth/callback/page'
 import GarageLayout from './app/garage/layout'
 import CheckPage from './app/garage/check/page'
@@ -22,6 +24,10 @@ export default function App() {
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/guides" element={<GuidesIndexPage />} />
+      <Route path="/guides/:slug" element={<GuidePage />} />
+      <Route path="/:locale/guides" element={<GuidesIndexPage />} />
+      <Route path="/:locale/guides/:slug" element={<GuidePage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/dashboard" element={<Navigate to="/" replace />} />
       <Route path="/garage" element={<GarageLayout />}>

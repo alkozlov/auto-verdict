@@ -1,0 +1,24 @@
+{
+  "make": "Ford",
+  "model": "Focus",
+  "years": "2011–2018 (Mk3) i 2018–obecnie (Mk4)",
+  "title": "Używany Ford Focus: poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Kupujesz używanego Forda Focusa? Co sprawdzić najpierw — automat Powershift, mokry pasek rozrządu EcoBoost i kluczowe pytania do sprzedającego.",
+  "h1": "Używany Ford Focus — poradnik zakupu",
+  "intro": "Focus to zwinny i niedrogi hatchback z rynku wtórnego, ale kilka znanych kwestii układu napędowego warto sprawdzić uważnie. Oto co zweryfikować, zanim obejrzysz auto.",
+  "faq": [
+    {
+      "q": "Którego automatu w Fordzie Focusie unikać?",
+      "a": "Dwusprzęgłowy automat „Powershift” z suchym sprzęgłem montowany w wielu Focusach Mk3 (mniej więcej 2011–2016) zyskał opinię podatnego na szarpanie i problemy ze sprzęgłem. Manual lub późniejszy automat z przekładnią hydrokinetyczną / 8-biegowy pozwala tego uniknąć. Kupując auto z Powershiftem, dokładnie sprawdź historię napraw."
+    },
+    {
+      "q": "Czy silnik Ford Focus EcoBoost jest niezawodny?",
+      "a": "1.0 EcoBoost to lubiany silnik, ale część egzemplarzy ma „mokry” pasek rozrządu pracujący w oleju, który wymaga terminowej wymiany; zaniedbanie może powodować problemy. Potwierdź interwał i fakt wymiany paska oraz zapytaj o ewentualne kłopoty z układem chłodzenia we wcześniejszych egzemplarzach."
+    },
+    {
+      "q": "Focus z manualem czy automatem na rynku wtórnym?",
+      "a": "W autach z epoki Mk3 manual całkowicie omija obawy o Powershift i często jest prostszym zakupem używanym. Jeśli chcesz automat, postaw na późniejsze auta z udokumentowaną historią skrzyni."
+    }
+  ],
+  "updated": "2026-06-03"
+}

@@ -99,7 +99,7 @@ export function PublicLayout({ children }: Props) {
             </p>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-400" aria-label={t("public.footer.label")}>
-            {[...NAV, { href: "/privacy", key: "home.footer.privacy" }, { href: "/terms", key: "home.footer.terms" }, { href: "/contact", key: "home.footer.contact" }].map((item) => (
+            {[...NAV, { href: "/guides", key: "public.nav.guides" }, { href: "/privacy", key: "home.footer.privacy" }, { href: "/terms", key: "home.footer.terms" }, { href: "/contact", key: "home.footer.contact" }].map((item) => (
               <Link key={item.href} to={item.href} className="hover:text-white">
                 {t(item.key)}
               </Link>

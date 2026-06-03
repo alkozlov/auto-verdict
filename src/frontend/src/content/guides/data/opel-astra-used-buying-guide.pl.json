@@ -1,0 +1,24 @@
+{
+  "make": "Opel",
+  "model": "Astra",
+  "years": "2015–2021 (Astra K)",
+  "title": "Używany Opel Astra (K): poradnik zakupu i co sprawdzić | AutoVerdict",
+  "description": "Co sprawdzić przed zakupem używanego Opla Astry K — łańcuch rozrządu w turbobenzynach, DPF w dieslu, elektrykę i pytania do sprzedającego.",
+  "h1": "Używany Opel Astra (K) — poradnik zakupu",
+  "intro": "Astra K to lekki, oszczędny i niedrogi hatchback rodzinny z rynku wtórnego. Kilka kwestii silnikowych i elektrycznych warto sprawdzić. Oto co zweryfikować, zanim obejrzysz auto.",
+  "faq": [
+    {
+      "q": "Czy Opel Astra K jest niezawodny?",
+      "a": "Astra K (2015–2021) uchodzi za solidne, oszczędne auto używane. Najbardziej warto sprawdzić łańcuch rozrządu w niektórych turbobenzynach, filtr cząstek stałych w dieslach oraz okazjonalne usterki elektryki."
+    },
+    {
+      "q": "Co sprawdzić w turbobenzynowym silniku Astry?",
+      "a": "Niektóre małe turbobenzyny mają łańcuch rozrządu; nasłuchuj kłapania na zimnym rozruchu i zapytaj o ewentualne prace przy łańcuchu lub napinaczu. Sprawdź też, czy układ chłodzenia działa normalnie, i zapytaj o zużycie oleju."
+    },
+    {
+      "q": "Astra na benzynę czy diesel do krótkich tras?",
+      "a": "Do głównie krótkich tras miejskich benzynowa Astra zwykle pozwala uniknąć problemów z filtrem cząstek stałych. Diesel sprawdza się przy większych przebiegach trasowych. Dopasuj silnik do typowej jazdy i sprawdź historię DPF w każdym dieslu."
+    }
+  ],
+  "updated": "2026-06-03"
+}
