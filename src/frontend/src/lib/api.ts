@@ -55,6 +55,22 @@ export const api = {
     list: (page = 1, pageSize = 20) =>
       request<CarCheckResponse[]>(`/checks?page=${page}&pageSize=${pageSize}`),
     get: (id: string) => request<CarCheckResponse>(`/checks/${id}`),
+    downloadPdf: async (id: string, filename: string): Promise<void> => {
+      const token = getToken();
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`/api/checks/${id}/pdf`, { headers });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
     create: async (params: {
       description: string;
       link?: string;

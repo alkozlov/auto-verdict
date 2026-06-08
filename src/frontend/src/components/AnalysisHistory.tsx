@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { CarCheckResponse } from "@/lib/api";
+import { api, type CarCheckResponse } from "@/lib/api";
 import { StatusBadge } from "./StatusBadge";
 import { useTranslation } from "react-i18next";
 
@@ -35,7 +36,25 @@ export function AnalysisHistory({
   onPageChange,
 }: Props) {
   const { t } = useTranslation();
+  const [downloading, setDownloading] = useState<Set<string>>(new Set());
   const showPager = page > 1 || hasNextPage;
+
+  async function handleDownload(e: React.MouseEvent, check: CarCheckResponse) {
+    e.stopPropagation();
+    if (downloading.has(check.checkId)) return;
+    setDownloading((prev) => new Set([...prev, check.checkId]));
+    try {
+      const title = check.title ?? check.listingUrl ?? "report";
+      const safe = title.replace(/[^a-zA-Z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 60);
+      await api.checks.downloadPdf(check.checkId, `autoverdict-${safe || "report"}.pdf`);
+    } finally {
+      setDownloading((prev) => {
+        const next = new Set(prev);
+        next.delete(check.checkId);
+        return next;
+      });
+    }
+  }
 
   return (
     <section>
@@ -115,10 +134,27 @@ export function AnalysisHistory({
                             : c.failureReason ?? t("garage.history.analysisFailed")}
                         </p>
                       </div>
-                      <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand opacity-80 transition-opacity group-hover:opacity-100">
-                        {t("garage.history.view")}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
+                      <div className="mt-1 flex shrink-0 items-center gap-2">
+                        {c.status === "Completed" && (
+                          <button
+                            onClick={(e) => handleDownload(e, c)}
+                            disabled={downloading.has(c.checkId)}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-dim transition-colors hover:border-white/20 hover:text-hi disabled:cursor-not-allowed disabled:opacity-40"
+                            title="Download PDF"
+                          >
+                            {downloading.has(c.checkId) ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Download className="h-3.5 w-3.5" />
+                            )}
+                            PDF
+                          </button>
+                        )}
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-brand opacity-80 transition-opacity group-hover:opacity-100">
+                          {t("garage.history.view")}
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                      </div>
                     </div>
                   </button>
                 </li>

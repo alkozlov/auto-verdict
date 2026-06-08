@@ -1,5 +1,6 @@
 using System.IO;
 using System.Security.Claims;
+using AutoVerdict.Api;
 using System.Text;
 using System.Text.Json;
 using AutoVerdict.Application.Auth;
@@ -22,6 +23,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -375,6 +378,48 @@ app.MapGet("/api/checks/{id:guid}", async (
     }
 
     return Results.Ok(ToResponse(check, report));
+}).RequireAuthorization();
+
+app.MapGet("/api/checks/{id:guid}/pdf", async (
+    Guid id,
+    HttpContext ctx,
+    AppDbContext db,
+    IDocumentStorageClient storage,
+    CancellationToken ct) =>
+{
+    var userId = GetUserId(ctx);
+    if (userId is null) return Results.Unauthorized();
+
+    var check = await db.CarChecks
+        .Where(c => c.CheckId == id && c.UserId == userId.Value)
+        .FirstOrDefaultAsync(ct);
+
+    if (check is null)
+        return Results.NotFound();
+
+    if (check.Status != CarCheckStatus.Completed || check.AnalysisStorageKey is null)
+        return Results.BadRequest("Report is not ready.");
+
+    try
+    {
+        var (markdownBytes, _) = await storage.DownloadAsync(check.AnalysisStorageKey, ct);
+        var markdown = Encoding.UTF8.GetString(markdownBytes);
+
+        var title = check.Title ?? check.ListingUrl ?? "Car Analysis Report";
+        var pdfBytes = ReportPdfGenerator.Generate(title, check.ListingUrl, check.CreatedAt, markdown);
+
+        var safeTitle = new string(title.Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray())
+            .Trim('-');
+        safeTitle = string.IsNullOrEmpty(safeTitle) ? "report" : safeTitle[..Math.Min(safeTitle.Length, 60)];
+
+        return Results.File(pdfBytes, contentType: "application/pdf",
+            fileDownloadName: $"autoverdict-{safeTitle}.pdf");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "PDF generation failed for check {CheckId}.", id);
+        return Results.Problem("Failed to generate PDF.");
+    }
 }).RequireAuthorization();
 
 // ── Payments ──────────────────────────────────────────────────────────────────
