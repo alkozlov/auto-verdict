@@ -146,7 +146,7 @@ services:
 
   seaweedfs:
     image: chrislusf/seaweedfs:3.85
-    command: ["server", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data"]
+    command: ["server", "-ip.bind=0.0.0.0", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data"]
     volumes:
       - seaweedfs_data:/data
       - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
