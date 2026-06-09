@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, Loader2 } from "lucide-react";
 import { api, type CarCheckResponse } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ReportMarkdownViewer } from "@/components/ReportMarkdownViewer";
@@ -84,6 +84,19 @@ export default function ReportPage() {
   const { id } = useParams<{ id: string }>();
   const [check, setCheck] = useState<CarCheckResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownload() {
+    if (!check || downloading) return;
+    setDownloading(true);
+    try {
+      const title = check.title ?? check.listingUrl ?? "report";
+      const safe = title.replace(/[^a-zA-Z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 60);
+      await api.checks.downloadPdf(check.checkId, `autoverdict-${safe || "report"}.pdf`);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -200,6 +213,20 @@ export default function ReportPage() {
             >
               Back to reports
             </Link>
+            {check.status === "Completed" && (
+              <button
+                onClick={handleDownload}
+                disabled={downloading}
+                className="inline-flex items-center gap-2 rounded-lg border border-white/8 px-5 py-2.5 text-sm text-dim transition-colors hover:text-hi disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {downloading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                Download PDF
+              </button>
+            )}
           </div>
         </>
       )}
