@@ -154,7 +154,7 @@ services:
       - default
       - caddy-gateway
     healthcheck:
-      test: ["CMD-SHELL", "nc -z $$(hostname -i) 9333 && nc -z $$(hostname -i) 8333"]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9333 && nc -z 127.0.0.1 8333"]
       interval: 10s
       timeout: 5s
       retries: 10
