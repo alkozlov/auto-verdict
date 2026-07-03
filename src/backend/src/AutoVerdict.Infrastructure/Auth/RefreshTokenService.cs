@@ -52,10 +52,14 @@ public sealed class RefreshTokenService(
         {
             // A token revoked by rotation (ReplacedByTokenHash set) may be presented
             // again within a short grace window — near-simultaneous refreshes from
-            // multiple tabs. Late reuse, or reuse of a family-revoked token
+            // multiple tabs — but only while the family is still alive: a revoked
+            // family (logout/theft) must never be resurrected via a within-grace
+            // ancestor. Late reuse, or reuse of a family-revoked token
             // (ReplacedByTokenHash null), is a theft signal: kill the family.
             var withinGrace = token.ReplacedByTokenHash is not null
-                && now - token.RevokedAt.Value <= ReuseGraceWindow;
+                && now - token.RevokedAt.Value <= ReuseGraceWindow
+                && await db.RefreshTokens.AnyAsync(
+                    t => t.FamilyId == token.FamilyId && t.RevokedAt == null, ct);
             if (!withinGrace)
             {
                 await RevokeFamilyInternalAsync(token.FamilyId, now, ct);

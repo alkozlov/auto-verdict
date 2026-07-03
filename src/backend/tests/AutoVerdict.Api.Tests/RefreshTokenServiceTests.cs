@@ -151,6 +151,38 @@ public sealed class RefreshTokenServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Rotate_WithinGraceAfterLogout_FailsAndFamilyStaysDead()
+    {
+        var rawA = await _service.CreateFamilyAsync(_userId);          // t=0: A
+        var rotated = await _service.RotateAsync(rawA);                // t=0: A -> B
+        Assert.True(rotated.Succeeded);
+
+        await _service.RevokeFamilyAsync(rotated.NewToken!);           // logout kills the family
+
+        // Still within A's 60s rotation grace — must NOT resurrect the dead family.
+        _clock.Advance(TimeSpan.FromSeconds(30));
+        var result = await _service.RotateAsync(rawA);
+
+        Assert.False(result.Succeeded);
+        var rows = await _db.RefreshTokens.ToListAsync();
+        Assert.Equal(2, rows.Count);                        // no new live token minted
+        Assert.All(rows, t => Assert.NotNull(t.RevokedAt)); // family stays dead
+    }
+
+    [Fact]
+    public async Task Rotate_ReuseAtExactlyGraceBoundary_RotatesNormally()
+    {
+        var raw = await _service.CreateFamilyAsync(_userId);
+        var first = await _service.RotateAsync(raw);
+        Assert.True(first.Succeeded);
+
+        _clock.Advance(TimeSpan.FromSeconds(60)); // exactly at the boundary — inclusive
+        var second = await _service.RotateAsync(raw);
+
+        Assert.True(second.Succeeded);
+    }
+
+    [Fact]
     public async Task Rotate_ReusedAfterGraceWindow_RevokesFamily()
     {
         var raw = await _service.CreateFamilyAsync(_userId);
