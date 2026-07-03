@@ -16,7 +16,7 @@ The backend issues a single 30-day JWT and has no refresh mechanism. The fronten
 
 - **Access token:** existing HS256 JWT, lifetime **30 minutes** (`Auth:JwtExpirationMinutes`, replaces `JwtExpirationDays`). Claims unchanged (`sub`, `email`, `jti`).
 - **Refresh token:** 256-bit cryptographically random value. Only its **SHA-256 hash** is stored. Lifetime **30 days, sliding**: every refresh issues a new token (new 30-day window) and revokes the old row.
-- **Rotation & theft detection:** tokens belong to a `FamilyId` (one family per login). Presenting an already-rotated/revoked token revokes the entire family → user must re-login.
+- **Rotation & theft detection:** tokens belong to a `FamilyId` (one family per login). Presenting an already-rotated/revoked token **more than 60 seconds after its revocation** revokes the entire family → user must re-login. Reuse **within 60 seconds** is treated as a legitimate concurrent refresh (multi-tab restore, double-fire) and rotates normally, issuing another child in the same family. *(Amended 2026-07-03 after review: strict revocation caused spurious logouts for multi-tab users and left an unguarded rotation race.)*
 
 ### `refresh_tokens` table
 
