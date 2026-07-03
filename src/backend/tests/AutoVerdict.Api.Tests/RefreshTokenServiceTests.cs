@@ -108,7 +108,8 @@ public sealed class RefreshTokenServiceTests : IDisposable
         var first = await _service.RotateAsync(raw);
         Assert.True(first.Succeeded);
 
-        // Present the OLD token again — theft signal.
+        // Move past the reuse grace window, then present the OLD token again — theft signal.
+        _clock.Advance(TimeSpan.FromSeconds(61));
         var reuse = await _service.RotateAsync(raw);
 
         Assert.False(reuse.Succeeded);
@@ -118,6 +119,50 @@ public sealed class RefreshTokenServiceTests : IDisposable
         // The rotated (previously valid) token must no longer work either.
         var afterTheft = await _service.RotateAsync(first.NewToken!);
         Assert.False(afterTheft.Succeeded);
+    }
+
+    [Fact]
+    public async Task Rotate_ReusedWithinGraceWindow_RotatesNormally()
+    {
+        var raw = await _service.CreateFamilyAsync(_userId);
+        var original = await _db.RefreshTokens.SingleAsync();
+        var familyId = original.FamilyId;
+
+        var first = await _service.RotateAsync(raw);
+        Assert.True(first.Succeeded);
+        var firstChildHash = original.ReplacedByTokenHash;
+        Assert.NotNull(firstChildHash);
+
+        // Second tab presents the same original token 30s later — concurrent refresh.
+        _clock.Advance(TimeSpan.FromSeconds(30));
+        var second = await _service.RotateAsync(raw);
+
+        Assert.True(second.Succeeded);
+        var rows = await _db.RefreshTokens.ToListAsync();
+        Assert.Equal(3, rows.Count);
+        Assert.All(rows, t => Assert.Equal(familyId, t.FamilyId)); // same family
+
+        var children = rows.Where(t => t.Id != original.Id).ToList();
+        Assert.Equal(2, children.Count);
+        Assert.All(children, t => Assert.Null(t.RevokedAt)); // both children active
+
+        // Original's chain pointer still references the FIRST child — not overwritten.
+        Assert.Equal(firstChildHash, original.ReplacedByTokenHash);
+    }
+
+    [Fact]
+    public async Task Rotate_ReusedAfterGraceWindow_RevokesFamily()
+    {
+        var raw = await _service.CreateFamilyAsync(_userId);
+        var first = await _service.RotateAsync(raw);
+        Assert.True(first.Succeeded);
+
+        _clock.Advance(TimeSpan.FromSeconds(61));
+        var reuse = await _service.RotateAsync(raw);
+
+        Assert.False(reuse.Succeeded);
+        var rows = await _db.RefreshTokens.ToListAsync();
+        Assert.All(rows, t => Assert.NotNull(t.RevokedAt));
     }
 
     [Fact]

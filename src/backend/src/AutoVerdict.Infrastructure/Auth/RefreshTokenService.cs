@@ -17,6 +17,8 @@ public sealed class RefreshTokenService(
     IOptions<AuthOptions> options,
     TimeProvider clock)
 {
+    private static readonly TimeSpan ReuseGraceWindow = TimeSpan.FromSeconds(60);
+
     private readonly int _lifetimeDays = options.Value.RefreshTokenExpirationDays;
 
     public async Task<string> CreateFamilyAsync(Guid userId, CancellationToken ct = default)
@@ -48,9 +50,17 @@ public sealed class RefreshTokenService(
 
         if (token.RevokedAt is not null)
         {
-            // Reuse of a rotated/revoked token — assume theft, kill the family.
-            await RevokeFamilyInternalAsync(token.FamilyId, now, ct);
-            return RefreshResult.Failure;
+            // A token revoked by rotation (ReplacedByTokenHash set) may be presented
+            // again within a short grace window — near-simultaneous refreshes from
+            // multiple tabs. Late reuse, or reuse of a family-revoked token
+            // (ReplacedByTokenHash null), is a theft signal: kill the family.
+            var withinGrace = token.ReplacedByTokenHash is not null
+                && now - token.RevokedAt.Value <= ReuseGraceWindow;
+            if (!withinGrace)
+            {
+                await RevokeFamilyInternalAsync(token.FamilyId, now, ct);
+                return RefreshResult.Failure;
+            }
         }
 
         if (token.ExpiresAt <= now)
@@ -59,8 +69,10 @@ public sealed class RefreshTokenService(
         var newRaw = GenerateRawToken();
         var newHash = Hash(newRaw);
 
-        token.RevokedAt = now;
-        token.ReplacedByTokenHash = newHash;
+        // Within-grace reuse keeps the original revocation metadata; only a fresh
+        // rotation stamps these fields.
+        token.RevokedAt ??= now;
+        token.ReplacedByTokenHash ??= newHash;
 
         db.RefreshTokens.Add(new RefreshToken
         {
