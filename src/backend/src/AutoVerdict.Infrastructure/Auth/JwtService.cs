@@ -26,7 +26,7 @@ public sealed class JwtService(IOptions<AuthOptions> options)
             issuer: _options.JwtIssuer,
             audience: _options.JwtAudience,
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(_options.JwtExpirationDays),
+            expires: DateTime.UtcNow.AddMinutes(_options.JwtExpirationMinutes),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
