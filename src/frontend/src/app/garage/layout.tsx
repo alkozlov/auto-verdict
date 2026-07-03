@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getToken } from "@/lib/auth";
+import { refreshAccessToken } from "@/lib/auth";
 import { api, type MeResponse } from "@/lib/api";
 import { GarageContext } from "@/lib/garage-context";
 import { Sidebar } from "@/components/Sidebar";
@@ -26,19 +26,20 @@ export default function GarageLayout() {
   }, []);
 
   useEffect(() => {
-    if (!getToken()) {
-      navigate("/", { replace: true });
-      return;
-    }
-    api
-      .me()
-      .then((data) => {
+    (async () => {
+      const ok = await refreshAccessToken();
+      if (!ok) {
+        navigate("/", { replace: true });
+        return;
+      }
+      try {
+        const data = await api.me();
         setMe(data);
         setReady(true);
-      })
-      .catch(() => {
+      } catch {
         navigate("/", { replace: true });
-      });
+      }
+    })();
   }, [navigate]);
 
   if (!ready) {

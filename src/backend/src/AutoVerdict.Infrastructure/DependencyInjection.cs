@@ -158,6 +158,8 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<JwtService>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<RefreshTokenService>();
         services.AddScoped<IUserAuthService, UserAuthService>();
 
         return services;

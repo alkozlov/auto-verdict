@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TestModeBanner } from "@/components/TestModeBanner";
-import { getToken } from "@/lib/auth";
+import { getAccessToken, refreshAccessToken } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -25,7 +25,11 @@ export function PublicLayout({ children }: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setLoggedIn(!!getToken());
+    if (getAccessToken()) {
+      setLoggedIn(true);
+      return;
+    }
+    refreshAccessToken().then(setLoggedIn);
   }, []);
 
   const cta = loggedIn ? (

@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Car, FileText, Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { removeToken } from "@/lib/auth";
+import { logout } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
 import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -39,8 +39,8 @@ export function MobileNav({ me }: Props) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  function signOut() {
-    removeToken();
+  async function signOut() {
+    await logout();
     navigate("/");
   }
 
