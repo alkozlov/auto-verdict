@@ -75,7 +75,7 @@ public sealed class RefreshTokenServiceTests : IDisposable
         Assert.Equal(_userId, result.UserId);
         Assert.Equal("user@example.com", result.UserEmail);
 
-        var rows = await _db.RefreshTokens.OrderBy(t => t.CreatedAt).ToListAsync();
+        var rows = (await _db.RefreshTokens.ToListAsync()).OrderBy(t => t.CreatedAt).ToList();
         Assert.Equal(2, rows.Count);
         Assert.NotNull(rows[0].RevokedAt);              // old revoked
         Assert.Equal(rows[1].TokenHash, rows[0].ReplacedByTokenHash);
