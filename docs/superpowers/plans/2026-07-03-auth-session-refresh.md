@@ -309,9 +309,15 @@ public sealed class RefreshTokenServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task RevokeFamily_UnknownToken_DoesNotThrow()
+    public async Task RevokeFamily_UnknownToken_DoesNotThrowAndChangesNothing()
     {
+        var raw = await _service.CreateFamilyAsync(_userId);
+
         await _service.RevokeFamilyAsync("garbage");
+
+        var row = await _db.RefreshTokens.SingleAsync();
+        Assert.Null(row.RevokedAt); // existing session untouched
+        _ = raw;
     }
 }
 ```
@@ -678,6 +684,8 @@ git commit -m "feat: refresh-cookie auth endpoints (refresh, logout, cookie on O
 
 ### Task 5: Frontend — in-memory token + single-flight refresh + authFetch
 
+> **Execution note:** Tasks 5 and 6 are executed together as ONE task (per human decision 2026-07-03): the lib rewrite breaks the four caller files until Task 6 updates them, and no commit may have a red `npm run build`. Do all Task 5 + Task 6 steps, then build, then commit once.
+
 **Files:**
 - Rewrite: `src/frontend/src/lib/auth.ts`
 - Modify: `src/frontend/src/lib/api.ts`
@@ -804,17 +812,7 @@ Then update the three hand-rolled fetches to use `authFetch` (delete their local
   ```
   (Keep each function's existing `if (!res.ok) throw` + `res.json()`/blob handling.)
 
-- [ ] **Step 3: Type-check**
-
-Run (from `src/frontend`): `npm run build`
-Expected: FAILS — `Sidebar.tsx`, `MobileNav.tsx`, `app/garage/layout.tsx`, `app/auth/callback/page.tsx` still import removed functions (`removeToken`, `getToken`). That's Task 6; do not fix here.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/frontend/src/lib
-git commit -m "feat: in-memory access token with single-flight refresh and authFetch"
-```
+- [ ] **Step 3: Continue directly into Task 6** (no build or commit yet — the four caller files still import the removed functions and the build is red until Task 6's steps are done).
 
 ---
 
@@ -896,11 +894,11 @@ In `components/Sidebar.tsx` and `components/MobileNav.tsx`, replace the `removeT
 Run (from `src/frontend`): `npm run build`
 Expected: PASS, no type errors. Also run `npm run lint` — no new warnings.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit (covers Task 5 + Task 6 changes together)**
 
 ```bash
 git add src/frontend
-git commit -m "feat: cookie-based session boot, callback without URL token, revoking sign-out"
+git commit -m "feat: in-memory access token, single-flight refresh, cookie session boot"
 ```
 
 ---
