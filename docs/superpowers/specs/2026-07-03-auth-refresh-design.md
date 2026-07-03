@@ -1,6 +1,6 @@
 # Auth Session Refresh — Design
 
-**Date:** 2026-07-03 · **Status:** Approved
+**Date:** 2026-07-03 · **Status:** Implemented
 
 ## Problem
 
