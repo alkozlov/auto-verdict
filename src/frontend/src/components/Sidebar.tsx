@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Car, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { removeToken } from "@/lib/auth";
+import { logout } from "@/lib/auth";
 import type { MeResponse } from "@/lib/api";
 import { PurchaseCreditsModal } from "@/components/PurchaseCreditsModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -25,8 +25,8 @@ export function Sidebar({ me }: Props) {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
-  function signOut() {
-    removeToken();
+  async function signOut() {
+    await logout();
     navigate("/");
   }
 

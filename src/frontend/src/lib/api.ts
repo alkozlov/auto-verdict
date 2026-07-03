@@ -1,14 +1,32 @@
-import { getToken } from "./auth";
+import { getAccessToken, refreshAccessToken, setAccessToken } from "./auth";
 import { i18n } from "@/i18n";
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
+async function authFetch(
+  input: string,
+  init: RequestInit = {},
+  allowRetry = true,
+): Promise<Response> {
   const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string>),
+    ...(init.headers as Record<string, string>),
   };
+  const token = getAccessToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(`/api${path}`, { ...options, headers });
+  const res = await fetch(input, { ...init, headers });
+
+  if (res.status === 401 && allowRetry) {
+    if (await refreshAccessToken()) {
+      return authFetch(input, init, false);
+    }
+    setAccessToken(null);
+    window.location.assign("/?session=expired");
+    throw new Error("401: session expired");
+  }
+  return res;
+}
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const res = await authFetch(`/api${path}`, options);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`${res.status}: ${text || res.statusText}`);
@@ -56,10 +74,7 @@ export const api = {
       request<CarCheckResponse[]>(`/checks?page=${page}&pageSize=${pageSize}`),
     get: (id: string) => request<CarCheckResponse>(`/checks/${id}`),
     downloadPdf: async (id: string, filename: string): Promise<void> => {
-      const token = getToken();
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      const res = await fetch(`/api/checks/${id}/pdf`, { headers });
+      const res = await authFetch(`/api/checks/${id}/pdf`);
       if (!res.ok) throw new Error(`${res.status}`);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -76,15 +91,12 @@ export const api = {
       link?: string;
       images?: File[];
     }): Promise<CarCheckResponse> => {
-      const token = getToken();
       const form = new FormData();
       form.append("description", params.description);
       form.append("reportLocale", i18n.language);
       if (params.link) form.append("link", params.link);
       params.images?.forEach((img, i) => form.append(`image${i}`, img));
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      const res = await fetch("/api/checks", { method: "POST", headers, body: form });
+      const res = await authFetch("/api/checks", { method: "POST", body: form });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(`${res.status}: ${text || res.statusText}`);
@@ -105,14 +117,10 @@ export const api = {
 
   uploads: {
     upload: async (file: File): Promise<FileUploadResponse> => {
-      const token = getToken();
       const form = new FormData();
       form.append("file", file);
-      const headers: Record<string, string> = {};
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-      const res = await fetch("/api/uploads", {
+      const res = await authFetch("/api/uploads", {
         method: "POST",
-        headers,
         body: form,
       });
       if (!res.ok) {
