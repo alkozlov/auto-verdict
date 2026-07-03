@@ -1,5 +1,5 @@
 services:
-  api:
+  auto-verdict-api:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-api:${IMAGE_TAG}
     restart: unless-stopped
     environment:
@@ -11,11 +11,11 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
-  frontend:
+  auto-verdict-frontend:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-frontend:${IMAGE_TAG}
     restart: unless-stopped
 
-  prerender:
+  auto-verdict-prerender:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-prerender:${IMAGE_TAG}
     restart: unless-stopped
 
@@ -34,5 +34,5 @@ services:
   promtail:
     restart: unless-stopped
 
-  grafana:
+  auto-verdict-grafana:
     restart: unless-stopped

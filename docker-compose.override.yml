@@ -1,5 +1,5 @@
 services:
-  api:
+  auto-verdict-api:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
@@ -10,7 +10,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_ENVIRONMENT: Development
 
-  frontend:
+  auto-verdict-frontend:
     environment:
       NODE_ENV: development
     ports:

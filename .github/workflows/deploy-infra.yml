@@ -50,4 +50,4 @@ jobs:
           script: |
             cd ~/auto-verdict
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d \
-              postgres nats seaweedfs loki promtail grafana
+              postgres nats seaweedfs loki promtail auto-verdict-grafana

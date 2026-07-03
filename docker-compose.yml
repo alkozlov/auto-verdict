@@ -1,14 +1,17 @@
 name: auto-verdict
 
 services:
-  frontend:
+  # Services attached to the shared caddy-gateway network carry the
+  # auto-verdict- prefix in their *service name*: compose publishes the service
+  # name as a DNS alias on every attached network, so unprefixed names (api,
+  # frontend, ...) collide with other projects on the gateway.
+  auto-verdict-frontend:
     build:
       context: ./src/frontend
       args:
         VITE_TEST_MODE: ${TEST_MODE:-false}
-    container_name: auto-verdict-frontend
     depends_on:
-      api:
+      auto-verdict-api:
         condition: service_started
     networks:
       - default
@@ -16,15 +19,14 @@ services:
 
   # Dynamic rendering for crawlers: Caddy routes bot User-Agents here, this
   # service renders the SPA with headless Chromium and returns full HTML.
-  prerender:
+  auto-verdict-prerender:
     build:
       context: ./src/prerender
-    container_name: auto-verdict-prerender
     networks:
       - default
       - caddy-gateway
 
-  api:
+  auto-verdict-api:
     build:
       context: ./src/backend
       dockerfile: src/AutoVerdict.Api/Dockerfile
@@ -150,9 +152,6 @@ services:
     volumes:
       - seaweedfs_data:/data
       - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
-    networks:
-      - default
-      - caddy-gateway
     healthcheck:
       test: ["CMD-SHELL", "nc -z 127.0.0.1 9333 && nc -z 127.0.0.1 8333"]
       interval: 10s
@@ -216,7 +215,7 @@ services:
       loki:
         condition: service_healthy
 
-  grafana:
+  auto-verdict-grafana:
     image: grafana/grafana:11.4.0
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
