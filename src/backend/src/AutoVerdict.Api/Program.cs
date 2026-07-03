@@ -73,6 +73,8 @@ var testMode = string.Equals(builder.Configuration["TEST_MODE"], "true", StringC
 
 var app = builder.Build();
 
+const string RefreshCookieName = "av_refresh";
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -128,7 +130,8 @@ app.MapGet("/api/auth/google", (HttpContext ctx) =>
 app.MapGet("/api/auth/google/complete", async (
     HttpContext ctx,
     IUserAuthService userAuthService,
-    JwtService jwtService,
+    RefreshTokenService refreshTokenService,
+    IOptions<AuthOptions> authOpts,
     CancellationToken ct) =>
 {
     var result = await ctx.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -146,8 +149,45 @@ app.MapGet("/api/auth/google/complete", async (
 
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-    var token = jwtService.GenerateToken(user.Id, user.Email);
-    return Results.Redirect($"/auth/callback?token={Uri.EscapeDataString(token)}");
+    var refreshToken = await refreshTokenService.CreateFamilyAsync(user.Id, ct);
+    SetRefreshCookie(ctx, refreshToken, authOpts.Value.RefreshTokenExpirationDays);
+    return Results.Redirect("/auth/callback");
+});
+
+app.MapPost("/api/auth/refresh", async (
+    HttpContext ctx,
+    RefreshTokenService refreshTokenService,
+    JwtService jwtService,
+    IOptions<AuthOptions> authOpts,
+    CancellationToken ct) =>
+{
+    var raw = ctx.Request.Cookies[RefreshCookieName];
+    if (string.IsNullOrEmpty(raw))
+        return Results.Unauthorized();
+
+    var result = await refreshTokenService.RotateAsync(raw, ct);
+    if (!result.Succeeded)
+    {
+        ClearRefreshCookie(ctx);
+        return Results.Unauthorized();
+    }
+
+    SetRefreshCookie(ctx, result.NewToken!, authOpts.Value.RefreshTokenExpirationDays);
+    var accessToken = jwtService.GenerateToken(result.UserId!.Value, result.UserEmail!);
+    return Results.Ok(new { accessToken });
+});
+
+app.MapPost("/api/auth/logout", async (
+    HttpContext ctx,
+    RefreshTokenService refreshTokenService,
+    CancellationToken ct) =>
+{
+    var raw = ctx.Request.Cookies[RefreshCookieName];
+    if (!string.IsNullOrEmpty(raw))
+        await refreshTokenService.RevokeFamilyAsync(raw, ct);
+
+    ClearRefreshCookie(ctx);
+    return Results.NoContent();
 });
 
 // ── Me ────────────────────────────────────────────────────────────────────────
@@ -662,6 +702,19 @@ static Guid? GetUserId(HttpContext ctx)
            ?? ctx.User.FindFirst("sub")?.Value;
     return Guid.TryParse(sub, out var id) ? id : null;
 }
+
+static void SetRefreshCookie(HttpContext ctx, string token, int days) =>
+    ctx.Response.Cookies.Append(RefreshCookieName, token, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Lax,
+        Path = "/api/auth",
+        MaxAge = TimeSpan.FromDays(days),
+    });
+
+static void ClearRefreshCookie(HttpContext ctx) =>
+    ctx.Response.Cookies.Delete(RefreshCookieName, new CookieOptions { Path = "/api/auth" });
 
 static string GetBaseUrl(HttpContext ctx)
 {
