@@ -13,7 +13,8 @@ public static class RetryDelays
 
     public static TimeSpan ForDelivery(ulong numDelivered)
     {
-        var index = Math.Clamp((int)numDelivered - 1, 0, Schedule.Length - 1);
-        return Schedule[index];
+        if (numDelivered <= 1) return Schedule[0];
+        if (numDelivered >= (ulong)Schedule.Length) return Schedule[^1];
+        return Schedule[(int)numDelivered - 1];
     }
 }

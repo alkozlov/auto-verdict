@@ -11,6 +11,7 @@ public sealed class RetryDelaysTests
     [InlineData(4ul, 30)]
     [InlineData(9ul, 30)]  // clamped
     [InlineData(0ul, 1)]   // defensive: metadata missing
+    [InlineData(ulong.MaxValue, 30)]
     public void ForDelivery_FollowsSchedule(ulong delivered, int expectedMinutes) =>
         Assert.Equal(TimeSpan.FromMinutes(expectedMinutes), RetryDelays.ForDelivery(delivered));
 }
