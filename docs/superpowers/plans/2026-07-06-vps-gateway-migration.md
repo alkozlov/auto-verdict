@@ -16,7 +16,7 @@
 - SeaweedFS image pinned to `chrislusf/seaweedfs:4.37` (what `:latest` already runs).
 - gateway-nats: `nats:2.10-alpine`, JetStream `store_dir /data`, `max_memory_store 1GB`, `max_file_store 10GB`, `http_port 8222`.
 - Backups: nightly `pg_dumpall` (all DBs), gzip, volume `postgres-backups`, 7-day retention.
-- autoverdict S3 identity: bucket-scoped actions only (`Read:auto-verdict-local` etc.), NO Admin. Bucket name stays `auto-verdict-local`.
+- autoverdict S3 identity: bucket-scoped actions only (`Read:auto-verdict-prd` etc.), NO Admin. Bucket name stays `auto-verdict-prd`.
 - Secrets NEVER go into git: real values are generated at execution time and handed to the human; this plan uses `<AV_PG_PASSWORD>`, `<AV_S3_ACCESS_KEY>`, `<AV_S3_SECRET_KEY>` placeholders.
 - auto-verdict compose changes are committed locally in Task 2 but pushed only at cutover (Task 7), so main never describes infra that prod isn't running yet.
 - Every data step has a verification gate; stop the migration at any failed gate before Task 7's env flip — until then nothing user-facing has changed.
@@ -286,10 +286,10 @@ Hand the human this identity block to append to the existing `identities` array 
         { "accessKey": "<AV_S3_ACCESS_KEY>", "secretKey": "<AV_S3_SECRET_KEY>" }
       ],
       "actions": [
-        "Read:auto-verdict-local",
-        "Write:auto-verdict-local",
-        "List:auto-verdict-local",
-        "Tagging:auto-verdict-local"
+        "Read:auto-verdict-prd",
+        "Write:auto-verdict-prd",
+        "List:auto-verdict-prd",
+        "Tagging:auto-verdict-prd"
       ]
     }
 ```
@@ -330,14 +330,14 @@ Gate: `\l` shows `autoverdict | autoverdict` owner; `psql -U autoverdict -d auto
 - [ ] **Step 2: bucket via weed shell (no S3 creds needed)**
 
 ```bash
-ssh vps 'docker exec vps-gateway-seaweedfs-1 sh -c "echo \"s3.bucket.create -name auto-verdict-local\" | weed shell -master localhost:9333"'
+ssh vps 'docker exec vps-gateway-seaweedfs-1 sh -c "echo \"s3.bucket.create -name auto-verdict-prd\" | weed shell -master localhost:9333"'
 ```
-Gate: `s3.bucket.list` shows `auto-verdict-local`.
+Gate: `s3.bucket.list` shows `auto-verdict-prd`.
 
 - [ ] **Step 3: S3 round-trip with the NEW autoverdict creds**
 
 ```bash
-ssh vps 'docker run --rm --network caddy-gateway --entrypoint sh minio/mc:RELEASE.2024-11-17T19-35-25Z -c "mc alias set gw http://gateway-seaweedfs:8333 <AV_S3_ACCESS_KEY> <AV_S3_SECRET_KEY> --api S3v4 && echo migration-test | mc pipe gw/auto-verdict-local/migration-test.txt && mc cat gw/auto-verdict-local/migration-test.txt && mc rm gw/auto-verdict-local/migration-test.txt"'
+ssh vps 'docker run --rm --network caddy-gateway --entrypoint sh minio/mc:RELEASE.2024-11-17T19-35-25Z -c "mc alias set gw http://gateway-seaweedfs:8333 <AV_S3_ACCESS_KEY> <AV_S3_SECRET_KEY> --api S3v4 && echo migration-test | mc pipe gw/auto-verdict-prd/migration-test.txt && mc cat gw/auto-verdict-prd/migration-test.txt && mc rm gw/auto-verdict-prd/migration-test.txt"'
 ```
 Gate: prints `migration-test`, removes cleanly. (Also proves the bucket-scoped identity works without Admin.)
 
@@ -355,7 +355,7 @@ IMPORTANT: the OLD instance must be addressed by container name `auto-verdict-se
 - [ ] **Step 2: aliases + detached mirror**
 
 ```bash
-ssh vps 'docker exec av-mirror mc alias set old http://auto-verdict-seaweedfs-1:8333 dev-access-key dev-secret-key --api S3v4 && docker exec av-mirror mc alias set new http://gateway-seaweedfs:8333 <AV_S3_ACCESS_KEY> <AV_S3_SECRET_KEY> --api S3v4 && docker exec -d av-mirror sh -c "mc mirror --preserve old/auto-verdict-local new/auto-verdict-local > /tmp/mirror.log 2>&1"'
+ssh vps 'docker exec av-mirror mc alias set old http://auto-verdict-seaweedfs-1:8333 dev-access-key dev-secret-key --api S3v4 && docker exec av-mirror mc alias set new http://gateway-seaweedfs:8333 <AV_S3_ACCESS_KEY> <AV_S3_SECRET_KEY> --api S3v4 && docker exec -d av-mirror sh -c "mc mirror --preserve old/auto-verdict-prd new/auto-verdict-prd > /tmp/mirror.log 2>&1"'
 ```
 
 - [ ] **Step 3: poll until done, then gate**
@@ -364,7 +364,7 @@ Poll every few minutes (21 GB local copy ≈ 5–15 min):
 ```bash
 ssh vps 'docker exec av-mirror sh -c "tail -3 /tmp/mirror.log; pgrep -f \"mc mirror\" >/dev/null && echo RUNNING || echo DONE"'
 ```
-Gate when DONE: `docker exec av-mirror mc diff old/auto-verdict-local new/auto-verdict-local` → empty output (allow new writes since mirror start; those re-sync in Task 7).
+Gate when DONE: `docker exec av-mirror mc diff old/auto-verdict-prd new/auto-verdict-prd` → empty output (allow new writes since mirror start; those re-sync in Task 7).
 
 ---
 
@@ -411,7 +411,7 @@ ssh vps 'for t in users car_checks refresh_tokens credit_ledger payment_orders o
 - [ ] **Step 4: final mirror delta + gate**
 
 ```bash
-ssh vps 'docker exec av-mirror mc mirror --preserve old/auto-verdict-local new/auto-verdict-local && docker exec av-mirror mc diff old/auto-verdict-local new/auto-verdict-local'
+ssh vps 'docker exec av-mirror mc mirror --preserve old/auto-verdict-prd new/auto-verdict-prd && docker exec av-mirror mc diff old/auto-verdict-prd new/auto-verdict-prd'
 ```
 Gate: `mc diff` output EMPTY (writers are stopped now).
 
@@ -425,7 +425,7 @@ S3_ACCESS_KEY=<AV_S3_ACCESS_KEY>
 S3_SECRET_KEY=<AV_S3_SECRET_KEY>
 GRAFANA_DB_PASSWORD=<AV_PG_PASSWORD>
 ```
-(`S3_BUCKET=auto-verdict-local` unchanged.) WAIT for confirmation.
+(`S3_BUCKET=auto-verdict-prd` unchanged.) WAIT for confirmation.
 
 - [ ] **Step 6: push + deploy**
 

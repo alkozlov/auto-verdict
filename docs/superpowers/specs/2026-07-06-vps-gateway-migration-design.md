@@ -9,7 +9,7 @@ auto-verdict runs its own postgres, NATS, and SeaweedFS on the VPS alongside the
 ## Decisions (made with user)
 
 - **Approach: copy-and-flip.** pg_dump/restore + `mc mirror`, then flip env vars. No volume transplants (gateway postgres already holds fartoff's cluster; SeaweedFS would jump 3.85→4.37 on live data).
-- **Migrate all 21 GB** of SeaweedFS data (raw evidence kept; disk has 111 GB free).
+- **Migrate all production objects (bucket auto-verdict-prd — 4 MiB actual data; the 21 GB on disk is SeaweedFS 1 GB volume-file preallocation)** of SeaweedFS data (raw evidence kept; disk has 111 GB free).
 - **Prep + cutover in one session** (~5–10 min API downtime at the flip).
 - **Nightly postgres backups added to the gateway now** (roadmap item folded in).
 - Loki/promtail/grafana **stay in auto-verdict** (per user, 2026-07-03).
@@ -27,7 +27,7 @@ auto-verdict runs its own postgres, NATS, and SeaweedFS on the VPS alongside the
 - `seaweedfs`: pin image **`chrislusf/seaweedfs:4.37`** (what `:latest` already runs); add alias **`gateway-seaweedfs`**, keep legacy `seaweedfs`.
 - New **`gateway-nats`**: `nats:2.10-alpine` (matches auto-verdict's current version), JetStream (`store_dir /data`, 1 GB mem / 10 GB file limits — same as auto-verdict's nats.conf), volume `gateway-nats-data`, `http_port 8222` healthcheck, on `caddy-gateway`. No client auth (internal-network trust, same as postgres today).
 - New **`postgres-backup`** sidecar: `postgres:17` image, shell loop — nightly `pg_dumpall -h postgres` (all DBs incl. fartoff) gzipped to volume `postgres-backups`, delete files older than 7 days. Credentials via existing `POSTGRES_FARTOFF_*` env (cluster superuser).
-- Secret `SEAWEEDFS_S3_CONFIG`: add `autoverdict` identity, freshly generated keys, actions scoped to bucket `auto-verdict-local` (`Read:auto-verdict-local`, `Write:...`, `List:...`, `Tagging:...` — no Admin). fartoff identity untouched.
+- Secret `SEAWEEDFS_S3_CONFIG`: add `autoverdict` identity, freshly generated keys, actions scoped to bucket `auto-verdict-prd` (`Read:auto-verdict-prd`, `Write:...`, `List:...`, `Tagging:...` — no Admin). fartoff identity untouched.
 
 ## auto-verdict repo changes
 
@@ -43,7 +43,7 @@ auto-verdict runs its own postgres, NATS, and SeaweedFS on the VPS alongside the
 - auto-verdict `VPS_ENV_PRD`:
   - `DATABASE_URL=Host=gateway-postgres;Port=5432;Database=autoverdict;Username=autoverdict;Password=<new>`
   - `NATS_URL=nats://gateway-nats:4222`
-  - `S3_ENDPOINT=http://gateway-seaweedfs:8333`, `S3_ACCESS_KEY=<new>`, `S3_SECRET_KEY=<new>` (`S3_BUCKET=auto-verdict-local` unchanged)
+  - `S3_ENDPOINT=http://gateway-seaweedfs:8333`, `S3_ACCESS_KEY=<new>`, `S3_SECRET_KEY=<new>` (`S3_BUCKET=auto-verdict-prd` unchanged)
   - `GRAFANA_DB_PASSWORD=<same as autoverdict db password>`
 
 ## Execution runbook (summary — full commands in the implementation plan)
@@ -51,7 +51,7 @@ auto-verdict runs its own postgres, NATS, and SeaweedFS on the VPS alongside the
 **Phase A — prep, zero auto-verdict downtime:**
 1. vps-gateway repo changes; user updates `SEAWEEDFS_S3_CONFIG`; deploy gateway (fartoff DB blip ~10 s; seaweedfs recreate seconds).
 2. Create `autoverdict` role + DB on gateway postgres (psql; generated password).
-3. Create bucket `auto-verdict-local` via `weed shell`; smoke-test new S3 creds (put/get/delete round-trip).
+3. Create bucket `auto-verdict-prd` via `weed shell`; smoke-test new S3 creds (put/get/delete round-trip).
 4. Initial `mc mirror` old → new (21 GB; one-off container attached to both `auto-verdict_default` and `caddy-gateway`).
 5. Create stream `AUTOVERDICT_CHECKS` on `gateway-nats` (one-off nats-box with the repo's stream JSON).
 6. Verify backup sidecar produced its first dump.
