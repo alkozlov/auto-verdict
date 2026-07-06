@@ -1,6 +1,6 @@
 # Auto-Verdict → vps-gateway Infra Migration — Design
 
-**Date:** 2026-07-06 · **Status:** Approved
+**Date:** 2026-07-06 · **Status:** Implemented
 
 ## Problem
 
