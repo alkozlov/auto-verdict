@@ -114,6 +114,9 @@ jobs:
           envs: GHCR_PAT,GITHUB_ACTOR,IMAGE_TAG
           command_timeout: 15m
           script: |
+            # Fail the workflow on any error: a 2026-07-03 deploy silently
+            # failed mid-script (disk full) while the run still showed green.
+            set -e
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
             cd ~/auto-verdict
             sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$IMAGE_TAG/" .env
