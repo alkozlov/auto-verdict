@@ -111,6 +111,26 @@ public sealed class CreditReservationTests : IDisposable
     }
 
     [Fact]
+    public async Task Ledger_DuplicateRefundForSameCheck_ViolatesUniqueIndex()
+    {
+        var checkId = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+
+        _db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        {
+            Id = Guid.NewGuid(), UserId = _userId, Amount = 1,
+            Reason = "car_check_refunded", ReferenceId = checkId, CreatedAt = now,
+        });
+        _db.CreditLedgerEntries.Add(new CreditLedgerEntry
+        {
+            Id = Guid.NewGuid(), UserId = _userId, Amount = 1,
+            Reason = "car_check_refunded", ReferenceId = checkId, CreatedAt = now,
+        });
+
+        await Assert.ThrowsAsync<DbUpdateException>(() => _db.SaveChangesAsync());
+    }
+
+    [Fact]
     public async Task Failure_WithoutReservation_RefundsNothing()
     {
         // Simulates a whitelisted user's check or a pre-deploy check.

@@ -68,7 +68,17 @@ public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultServ
             });
         }
 
-        await db.SaveChangesAsync(cancellationToken);
-        await tx.CommitAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            await tx.CommitAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (
+            ex.InnerException?.Message.Contains("unique", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            // A concurrent terminal-failure call won the refund race; the
+            // rolled-back transaction discards this duplicate refund AND this
+            // call's status write — the winner already wrote both.
+        }
     }
 }
