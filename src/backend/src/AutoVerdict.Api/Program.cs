@@ -15,6 +15,7 @@ using AutoVerdict.Contracts.Reports;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure;
 using AutoVerdict.Infrastructure.Auth;
+using AutoVerdict.Infrastructure.Payments;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -528,8 +529,7 @@ app.MapPost("/api/payments/checkout", async (
 
 app.MapPost("/api/billing/webhooks/lemonsqueezy", async (
     HttpContext ctx,
-    IPaymentService paymentService,
-    AppDbContext db,
+    LemonSqueezyWebhookProcessor processor,
     CancellationToken ct) =>
 {
     using var reader = new StreamReader(ctx.Request.Body);
@@ -539,83 +539,8 @@ app.MapPost("/api/billing/webhooks/lemonsqueezy", async (
                  ?? ctx.Request.Headers["X-Lemon-Squeezy-Signature"].FirstOrDefault()
                  ?? string.Empty;
 
-    if (!paymentService.ValidateWebhookSignature(body, signature))
-        return Results.Unauthorized();
-
-    JsonDocument doc;
-    try { doc = JsonDocument.Parse(body); }
-    catch { return Results.Ok(); }
-
-    using (doc)
-    {
-        var root = doc.RootElement;
-
-        if (!root.TryGetProperty("meta", out var meta)) return Results.Ok();
-        if (!meta.TryGetProperty("event_name", out var eventNameProp)) return Results.Ok();
-        if (eventNameProp.GetString() != "order_created") return Results.Ok();
-
-        if (!root.TryGetProperty("data", out var data)) return Results.Ok();
-
-        var externalOrderId = data.TryGetProperty("id", out var idProp) ? idProp.GetString() : null;
-        if (string.IsNullOrEmpty(externalOrderId)) return Results.Ok();
-
-        // Only handle paid orders
-        var status = data.TryGetProperty("attributes", out var attrs)
-                  && attrs.TryGetProperty("status", out var statusProp)
-            ? statusProp.GetString() : null;
-        if (status != "paid") return Results.Ok();
-
-        if (!meta.TryGetProperty("custom_data", out var customData)) return Results.Ok();
-        if (!customData.TryGetProperty("user_id", out var userIdProp)) return Results.Ok();
-        if (!customData.TryGetProperty("package", out var packageProp)) return Results.Ok();
-
-        if (!Guid.TryParse(userIdProp.GetString(), out var userId)) return Results.Ok();
-        var packageKey = packageProp.GetString();
-        if (string.IsNullOrEmpty(packageKey)) return Results.Ok();
-
-        var package = CreditPackage.FindByKey(packageKey);
-        if (package is null) return Results.Ok();
-
-        // Idempotency check
-        var alreadyProcessed = await db.PaymentOrders
-            .AnyAsync(o => o.ExternalOrderId == externalOrderId, ct);
-        if (alreadyProcessed) return Results.Ok();
-
-        var now = DateTimeOffset.UtcNow;
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-
-        await db.Database.ExecuteSqlAsync(
-            $"""
-            UPDATE user_credits
-            SET "Balance" = "Balance" + {package.Credits}, "UpdatedAt" = NOW()
-            WHERE "UserId" = {userId}
-            """,
-            ct);
-
-        db.CreditLedgerEntries.Add(new CreditLedgerEntry
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            Amount = package.Credits,
-            Reason = "credit_purchase",
-            CreatedAt = now,
-        });
-
-        db.PaymentOrders.Add(new PaymentOrder
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            PackageKey = packageKey,
-            CreditsGranted = package.Credits,
-            ExternalOrderId = externalOrderId,
-            CreatedAt = now,
-        });
-
-        await db.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
-    }
-
-    return Results.Ok();
+    var outcome = await processor.ProcessAsync(body, signature, ct);
+    return outcome == WebhookOutcome.InvalidSignature ? Results.Unauthorized() : Results.Ok();
 }).DisableAntiforgery();
 
 // Dev-only: simulate a completed payment without Lemon Squeezy

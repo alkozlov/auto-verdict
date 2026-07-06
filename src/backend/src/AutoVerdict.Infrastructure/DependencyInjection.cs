@@ -142,6 +142,7 @@ public static class DependencyInjection
             services.AddScoped<IPaymentService, LemonSqueezyPaymentService>();
         else
             services.AddScoped<IPaymentService, MockPaymentService>();
+        services.AddScoped<LemonSqueezyWebhookProcessor>();
 
         services.Configure<NatsOptions>(opts =>
         {
