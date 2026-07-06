@@ -83,6 +83,7 @@ public static class DependencyInjection
                 && decimal.TryParse(rate, out var parsedRate))
                 opts.UsdToEurRate = parsedRate;
         });
+        services.AddSingleton<AiRetryPolicy>();
         services.AddSingleton<IAiClient, ClaudeAiClient>();
         services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
 
