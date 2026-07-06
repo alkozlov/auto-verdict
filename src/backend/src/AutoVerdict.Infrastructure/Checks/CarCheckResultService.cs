@@ -1,14 +1,12 @@
 using AutoVerdict.Application.Checks;
-using AutoVerdict.Contracts.Configuration;
 using AutoVerdict.Contracts.Enums;
 using AutoVerdict.Domain.Entities;
 using AutoVerdict.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace AutoVerdict.Infrastructure.Checks;
 
-public sealed class CarCheckResultService(AppDbContext db, IOptions<WhitelistOptions> whitelist) : ICarCheckResultService
+public sealed class CarCheckResultService(AppDbContext db) : ICarCheckResultService
 {
     public async Task RecordSuccessAsync(
         Guid checkId,
@@ -19,46 +17,12 @@ public sealed class CarCheckResultService(AppDbContext db, IOptions<WhitelistOpt
             .FirstOrDefaultAsync(c => c.CheckId == checkId, cancellationToken);
         if (check is null) return;
 
-        var now = DateTimeOffset.UtcNow;
-
-        await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
-
-        var userEmail = await db.Users
-            .Where(u => u.Id == check.UserId)
-            .Select(u => u.Email)
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (!whitelist.Value.Contains(userEmail ?? ""))
-        {
-            int rows = await db.Database.ExecuteSqlAsync(
-                $"""
-                UPDATE user_credits
-                SET "Balance" = "Balance" - 1, "UpdatedAt" = NOW()
-                WHERE "UserId" = {check.UserId} AND "Balance" >= 1
-                """,
-                cancellationToken);
-
-            if (rows == 0)
-                throw new InsufficientCreditsException();
-
-            db.CreditLedgerEntries.Add(new CreditLedgerEntry
-            {
-                Id = Guid.NewGuid(),
-                UserId = check.UserId,
-                Amount = -1,
-                Reason = "car_check_completed",
-                ReferenceId = checkId,
-                CreatedAt = now,
-            });
-        }
-
         check.AnalysisStorageKey = analysisStorageKey;
         check.Status = CarCheckStatus.Completed;
         check.FailureReason = null;
-        check.UpdatedAt = now;
+        check.UpdatedAt = DateTimeOffset.UtcNow;
 
         await db.SaveChangesAsync(cancellationToken);
-        await tx.CommitAsync(cancellationToken);
     }
 
     public async Task RecordFailureAsync(
@@ -71,10 +35,40 @@ public sealed class CarCheckResultService(AppDbContext db, IOptions<WhitelistOpt
         if (check is null) return;
 
         var now = DateTimeOffset.UtcNow;
+        await using var tx = await db.Database.BeginTransactionAsync(cancellationToken);
+
         check.Status = CarCheckStatus.Failed;
         check.FailureReason = reason;
         check.UpdatedAt = now;
 
+        // Ledger-driven idempotent refund: only if this check reserved a credit
+        // and was never refunded. Checks without a reservation (whitelisted
+        // users, checks created before reservations existed) refund nothing.
+        bool reserved = await db.CreditLedgerEntries
+            .AnyAsync(e => e.ReferenceId == checkId && e.Reason == "car_check_reserved", cancellationToken);
+        bool refunded = await db.CreditLedgerEntries
+            .AnyAsync(e => e.ReferenceId == checkId && e.Reason == "car_check_refunded", cancellationToken);
+
+        if (reserved && !refunded)
+        {
+            await db.UserCredits
+                .Where(c => c.UserId == check.UserId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(c => c.Balance, c => c.Balance + 1)
+                    .SetProperty(c => c.UpdatedAt, now), cancellationToken);
+
+            db.CreditLedgerEntries.Add(new CreditLedgerEntry
+            {
+                Id = Guid.NewGuid(),
+                UserId = check.UserId,
+                Amount = 1,
+                Reason = "car_check_refunded",
+                ReferenceId = checkId,
+                CreatedAt = now,
+            });
+        }
+
         await db.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
     }
 }

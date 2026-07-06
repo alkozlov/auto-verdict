@@ -30,15 +30,30 @@ public sealed class CarCheckService(AppDbContext db, IOptions<WhitelistOptions> 
             .Select(u => u.Email)
             .SingleOrDefaultAsync(cancellationToken);
 
+        var now = DateTimeOffset.UtcNow;
+
         if (!whitelist.Value.Contains(userEmail ?? ""))
         {
-            bool hasAvailableCredit = await db.UserCredits
-                .AnyAsync(c => c.UserId == userId && c.Balance >= 1, cancellationToken);
-            if (!hasAvailableCredit)
+            // Reserve the credit atomically at submission; refunded on terminal failure.
+            int rows = await db.UserCredits
+                .Where(c => c.UserId == userId && c.Balance >= 1)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(c => c.Balance, c => c.Balance - 1)
+                    .SetProperty(c => c.UpdatedAt, now), cancellationToken);
+            if (rows == 0)
                 throw new InsufficientCreditsException();
+
+            db.CreditLedgerEntries.Add(new CreditLedgerEntry
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Amount = -1,
+                Reason = "car_check_reserved",
+                ReferenceId = checkId,
+                CreatedAt = now,
+            });
         }
 
-        var now = DateTimeOffset.UtcNow;
         var title = description.Length <= 120 ? description.Trim() : description[..120].Trim() + "…";
 
         var check = new CarCheck
