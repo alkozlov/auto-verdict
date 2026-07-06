@@ -1,14 +1,32 @@
+# Local-development overrides. Auto-loaded by `podman compose up` (dev);
+# production explicitly passes -f docker-compose.yml -f docker-compose.prod.yml
+# and therefore never runs the postgres/nats/seaweedfs defined below — prod
+# uses the shared vps-gateway services instead.
 services:
   auto-verdict-api:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats-setup:
+        condition: service_completed_successfully
+      seaweedfs-setup:
+        condition: service_completed_successfully
 
-  processing-service:
+  auto-verdict-processing:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_ENVIRONMENT: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats-setup:
+        condition: service_completed_successfully
+      seaweedfs-setup:
+        condition: service_completed_successfully
 
   auto-verdict-frontend:
     environment:
@@ -16,17 +34,87 @@ services:
     ports:
       - "3000:80"
 
+  auto-verdict-grafana:
+    environment:
+      GRAFANA_DB_URL: postgres:5432
+
   postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-autoverdict}
+      POSTGRES_USER: ${POSTGRES_USER:-autoverdict}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-autoverdict}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nats:
+    image: nats:2.10-alpine
+    command: ["-c", "/etc/nats/nats.conf"]
+    volumes:
+      - nats_data:/data
+      - ./infra/nats/nats.conf:/etc/nats/nats.conf:ro
     ports:
       - "4222:4222"
       - "8222:8222"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  nats-setup:
+    image: natsio/nats-box:0.14.5
+    command:
+      - sh
+      - -c
+      - |
+        nats --server nats://nats:4222 stream add \
+          --config /etc/nats/streams/car-checks.json \
+          2>/dev/null || echo "Stream already exists"
+    volumes:
+      - ./infra/nats/streams:/etc/nats/streams:ro
+    depends_on:
+      nats:
+        condition: service_healthy
 
   seaweedfs:
+    image: chrislusf/seaweedfs:3.85
+    command: ["server", "-ip.bind=0.0.0.0", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data"]
+    volumes:
+      - seaweedfs_data:/data
+      - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
     ports:
       - "8333:8333"
       - "8888:8888"
       - "9333:9333"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9333 && nc -z 127.0.0.1 8333"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  seaweedfs-setup:
+    image: minio/mc:RELEASE.2024-11-17T19-35-25Z
+    entrypoint: sh
+    command:
+      - -c
+      - |
+        mc alias set local http://seaweedfs:8333 dev-access-key dev-secret-key --api S3v4
+        mc mb --ignore-existing local/auto-verdict-local
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  nats_data:
+  seaweedfs_data:

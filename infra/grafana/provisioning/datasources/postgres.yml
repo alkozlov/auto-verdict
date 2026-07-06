@@ -1,15 +1,18 @@
 apiVersion: 1
 
+# Host and password come from the container environment (GRAFANA_DB_URL /
+# GRAFANA_DB_PASSWORD set in docker-compose): prod points at the shared
+# gateway-postgres, local dev at the compose-override postgres.
 datasources:
   - name: PostgreSQL
     uid: postgresql
     type: grafana-postgresql-datasource
     access: proxy
-    url: postgres:5432
+    url: $__env{GRAFANA_DB_URL}
     database: autoverdict
     user: autoverdict
     secureJsonData:
-      password: autoverdict
+      password: $__env{GRAFANA_DB_PASSWORD}
     jsonData:
       sslmode: disable
       maxOpenConns: 10

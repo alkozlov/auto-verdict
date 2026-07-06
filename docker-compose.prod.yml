@@ -5,7 +5,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
 
-  processing-service:
+  auto-verdict-processing:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-processing-service:${IMAGE_TAG}
     restart: unless-stopped
     environment:
@@ -17,15 +17,6 @@ services:
 
   auto-verdict-prerender:
     image: ghcr.io/${GITHUB_ACTOR}/auto-verdict-prerender:${IMAGE_TAG}
-    restart: unless-stopped
-
-  postgres:
-    restart: unless-stopped
-
-  nats:
-    restart: unless-stopped
-
-  seaweedfs:
     restart: unless-stopped
 
   loki:

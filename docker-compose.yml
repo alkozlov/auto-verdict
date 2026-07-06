@@ -51,18 +51,13 @@ services:
       BILLING_SINGLE_PRODUCT: ${BILLING_SINGLE_PRODUCT:-}
       BILLING_PACK_3: ${BILLING_PACK_3:-}
       TEST_MODE: ${TEST_MODE:-false}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      nats-setup:
-        condition: service_completed_successfully
-      seaweedfs-setup:
-        condition: service_completed_successfully
     networks:
       - default
       - caddy-gateway
 
-  processing-service:
+  # Talks to the shared gateway postgres/nats/seaweedfs in production, so it
+  # joins caddy-gateway (auto-verdict- prefix per the shared-network convention).
+  auto-verdict-processing:
     build:
       context: ./src/backend
       dockerfile: src/AutoVerdict.ProcessingService/Dockerfile
@@ -96,80 +91,13 @@ services:
       PLAYWRIGHT_BROWSER_EXECUTABLE_PATH: ${PLAYWRIGHT_BROWSER_EXECUTABLE_PATH:-}
       WHITELIST_EMAILS: ${WHITELIST_EMAILS:-}
       TEST_MODE: ${TEST_MODE:-false}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      nats-setup:
-        condition: service_completed_successfully
-      seaweedfs-setup:
-        condition: service_completed_successfully
+    networks:
+      - default
+      - caddy-gateway
 
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-autoverdict}
-      POSTGRES_USER: ${POSTGRES_USER:-autoverdict}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-autoverdict}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  nats:
-    image: nats:2.10-alpine
-    command: ["-c", "/etc/nats/nats.conf"]
-    volumes:
-      - nats_data:/data
-      - ./infra/nats/nats.conf:/etc/nats/nats.conf:ro
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-
-  nats-setup:
-    image: natsio/nats-box:0.14.5
-    command:
-      - sh
-      - -c
-      - |
-        nats --server nats://nats:4222 stream add \
-          --config /etc/nats/streams/car-checks.json \
-          2>/dev/null || echo "Stream already exists"
-    volumes:
-      - ./infra/nats/streams:/etc/nats/streams:ro
-    depends_on:
-      nats:
-        condition: service_healthy
-
-  seaweedfs:
-    image: chrislusf/seaweedfs:3.85
-    command: ["server", "-ip.bind=0.0.0.0", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-dir=/data"]
-    volumes:
-      - seaweedfs_data:/data
-      - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
-    healthcheck:
-      test: ["CMD-SHELL", "nc -z 127.0.0.1 9333 && nc -z 127.0.0.1 8333"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 15s
-
-  seaweedfs-setup:
-    image: minio/mc:RELEASE.2024-11-17T19-35-25Z
-    entrypoint: sh
-    command:
-      - -c
-      - |
-        mc alias set local http://seaweedfs:8333 dev-access-key dev-secret-key --api S3v4
-        mc mb --ignore-existing local/auto-verdict-local
-    depends_on:
-      seaweedfs:
-        condition: service_healthy
+  # Local-dev postgres/nats/seaweedfs live in docker-compose.override.yml.
+  # Production uses the shared vps-gateway services (gateway-postgres,
+  # gateway-nats, gateway-seaweedfs) reached over the caddy-gateway network.
 
   # otel-collector:
   #   image: otel/opentelemetry-collector-contrib:0.118.0
@@ -221,6 +149,8 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
+      GRAFANA_DB_URL: ${GRAFANA_DB_URL:-gateway-postgres:5432}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:-autoverdict}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -235,9 +165,6 @@ services:
       - caddy-gateway
 
 volumes:
-  postgres_data:
-  nats_data:
-  seaweedfs_data:
   grafana_data:
   loki_data:
 
