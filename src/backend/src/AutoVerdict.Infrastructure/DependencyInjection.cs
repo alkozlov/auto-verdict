@@ -83,6 +83,7 @@ public static class DependencyInjection
                 && decimal.TryParse(rate, out var parsedRate))
                 opts.UsdToEurRate = parsedRate;
         });
+        services.AddSingleton<AiRetryPolicy>();
         services.AddSingleton<IAiClient, ClaudeAiClient>();
         services.AddSingleton<IAiAnalysisProvider, ClaudeAiAnalysisProvider>();
 
@@ -141,6 +142,7 @@ public static class DependencyInjection
             services.AddScoped<IPaymentService, LemonSqueezyPaymentService>();
         else
             services.AddScoped<IPaymentService, MockPaymentService>();
+        services.AddScoped<LemonSqueezyWebhookProcessor>();
 
         services.Configure<NatsOptions>(opts =>
         {

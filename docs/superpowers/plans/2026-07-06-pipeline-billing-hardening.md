@@ -17,7 +17,7 @@
 - AiRetryPolicy: max **3 attempts**, delays **2 s, 8 s** ±20 % jitter; retry ONLY rate-limit/5xx-service/transport errors and timeout-cancellation when the caller's token is NOT cancelled.
 - Retryable SDK exceptions (verified in Anthropic.dll 12.23): `AnthropicRateLimitException`, `AnthropicServiceException`, `AnthropicIOException` (+ BCL `HttpRequestException`, conditional `TaskCanceledException`). Non-retryable: `AnthropicBadRequestException`, `AnthropicUnauthorizedException`, `AnthropicForbiddenException`, `AnthropicNotFoundException`, everything else. The implementer must confirm each type's namespace with a one-off grep of the package XML/dll and adjust `using`s only.
 - Intermediate transient attempts must NOT set `Status = Failed` and must NOT publish `CarCheckFailed`.
-- No schema migrations. No frontend changes. Whitelisted users (existing `WhitelistOptions`) never reserve/refund.
+- One schema migration (human-approved 2026-07-06 after Task 3 review): filtered unique index on `credit_ledger_entries (ReferenceId, Reason) WHERE ReferenceId IS NOT NULL` — the DB-level guard against double refunds. No other schema changes. No frontend changes. Whitelisted users (existing `WhitelistOptions`) never reserve/refund.
 - Tests live in `src/backend/tests/AutoVerdict.Api.Tests`; run from `src/backend` with `dotnet test tests/AutoVerdict.Api.Tests`. Current suite: 12 tests — all must stay green.
 - Work on branch `feature/pipeline-billing-hardening` (created from main before Task 1).
 - Every commit message ends with trailer: `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.

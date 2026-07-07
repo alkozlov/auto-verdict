@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AutoVerdict.Infrastructure\AutoVerdict.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\AutoVerdict.ProcessingService\AutoVerdict.ProcessingService.csproj" />
   </ItemGroup>
 
 </Project>

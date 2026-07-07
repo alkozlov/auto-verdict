@@ -20,6 +20,8 @@ public sealed class CarCheckConsumer(
     IServiceScopeFactory scopeFactory,
     ILogger<CarCheckConsumer> logger) : BackgroundService
 {
+    private const int MaxDeliver = 5;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Connecting to NATS at {Url}", natsOptions.Value.Url);
@@ -43,54 +45,88 @@ public sealed class CarCheckConsumer(
                 continue;
             }
 
-            var (shouldAck, _) = await ProcessMessageAsync(data, js, stoppingToken);
+            var numDelivered = msg.Metadata?.NumDelivered ?? 1;
+            var (shouldAck, retryDelay) = await ProcessMessageAsync(data, js, numDelivered, stoppingToken);
             if (shouldAck) await msg.AckAsync(cancellationToken: stoppingToken);
-            else await msg.NakAsync(cancellationToken: stoppingToken);
+            else await msg.NakAsync(opts: new AckOpts { NakDelay = retryDelay }, cancellationToken: stoppingToken);
         }
     }
 
-    private async Task<(bool shouldAck, bool processed)> ProcessMessageAsync(
+    private async Task<(bool shouldAck, TimeSpan retryDelay)> ProcessMessageAsync(
         CarCheckRequestedMessage data,
         NatsJSContext js,
+        ulong numDelivered,
         CancellationToken ct)
     {
         try
         {
-            logger.LogInformation("Processing check {CheckId}.", data.CheckId);
+            logger.LogInformation("Processing check {CheckId} (delivery {Delivery}).", data.CheckId, numDelivered);
 
-            if (await IsAlreadyCompletedAsync(data.CheckId, ct))
+            if (await IsTerminalAsync(data.CheckId, ct))
             {
                 logger.LogInformation(
-                    "Check {CheckId} is already completed; acknowledging duplicate message without reprocessing.",
-                    data.CheckId);
-                return (shouldAck: true, processed: false);
+                    "Check {CheckId} already terminal; acknowledging duplicate message.", data.CheckId);
+                return (true, default);
             }
+
+            await MarkProcessingAsync(data.CheckId, ct);
 
             var storageKey = await pipeline.ExecuteAsync(data, ct);
             await RecordAndPublishSuccessAsync(js, data, storageKey, ct);
 
             logger.LogInformation("Check {CheckId} completed.", data.CheckId);
-            return (shouldAck: true, processed: true);
+            return (true, default);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
             throw;
         }
+        catch (PermanentCheckFailureException ex)
+        {
+            logger.LogError(ex, "Permanent failure for check {CheckId}; not retrying.", data.CheckId);
+            var recorded = await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
+            if (!recorded && numDelivered < MaxDeliver)
+                return (false, RetryDelays.ForDelivery(numDelivered)); // recording failed - let redelivery retry it
+            return (true, default);
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to process check {CheckId}.", data.CheckId);
-            await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
-            return (shouldAck: false, processed: false);
+            if (numDelivered >= MaxDeliver)
+            {
+                logger.LogError(ex,
+                    "Check {CheckId} failed on final attempt {Attempt}; marking failed.",
+                    data.CheckId, numDelivered);
+                await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
+                return (true, default); // no deliveries left either way; failure already logged loudly
+            }
+
+            var delay = RetryDelays.ForDelivery(numDelivered);
+            logger.LogWarning(ex,
+                "Transient failure for check {CheckId} (attempt {Attempt}/{Max}); retrying in {Delay}.",
+                data.CheckId, numDelivered, MaxDeliver, delay);
+            return (false, delay);
         }
     }
 
-    private async Task<bool> IsAlreadyCompletedAsync(Guid checkId, CancellationToken ct)
+    private async Task<bool> IsTerminalAsync(Guid checkId, CancellationToken ct)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         return await db.CarChecks
             .AsNoTracking()
-            .AnyAsync(c => c.CheckId == checkId && c.Status == CarCheckStatus.Completed, ct);
+            .AnyAsync(c => c.CheckId == checkId &&
+                (c.Status == CarCheckStatus.Completed || c.Status == CarCheckStatus.Failed), ct);
+    }
+
+    private async Task MarkProcessingAsync(Guid checkId, CancellationToken ct)
+    {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.CarChecks
+            .Where(c => c.CheckId == checkId && c.Status == CarCheckStatus.Pending)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(c => c.Status, CarCheckStatus.Processing)
+                .SetProperty(c => c.UpdatedAt, DateTimeOffset.UtcNow), ct);
     }
 
     private async Task RecordAndPublishSuccessAsync(
@@ -110,17 +146,25 @@ public sealed class CarCheckConsumer(
             cancellationToken: ct);
     }
 
-    private async Task TryRecordAndPublishFailureAsync(
+    /// <summary>
+    /// Records the terminal failure and publishes the failed event. Returns true when the
+    /// failure was recorded (the event publish is best-effort: a publish error still returns
+    /// true because the check IS terminally recorded); false only when recording itself threw.
+    /// Never throws — the consumer loop must not crash.
+    /// </summary>
+    private async Task<bool> TryRecordAndPublishFailureAsync(
         NatsJSContext js,
         CarCheckRequestedMessage data,
         string reason,
         CancellationToken ct)
     {
+        var recorded = false;
         try
         {
             await using var scope = scopeFactory.CreateAsyncScope();
             var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
             await resultService.RecordFailureAsync(data.CheckId, reason, ct);
+            recorded = true;
 
             await js.PublishAsync(
                 NatsSubjects.CarCheckFailed,
@@ -132,6 +176,7 @@ public sealed class CarCheckConsumer(
         {
             logger.LogError(ex, "Failed to record failure for check {CheckId}.", data.CheckId);
         }
+        return recorded;
     }
 
     private static async Task<INatsJSConsumer> CreateConsumerAsync(NatsJSContext js, CancellationToken ct) =>
@@ -142,7 +187,7 @@ public sealed class CarCheckConsumer(
                 FilterSubject = NatsSubjects.CarCheckRequested,
                 DeliverPolicy = ConsumerConfigDeliverPolicy.All,
                 AckPolicy = ConsumerConfigAckPolicy.Explicit,
-                MaxDeliver = 5,
+                MaxDeliver = MaxDeliver,
                 AckWait = TimeSpan.FromMinutes(10),
             },
             ct);

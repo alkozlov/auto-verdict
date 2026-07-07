@@ -59,6 +59,18 @@ public sealed class CarCheckAnalysisPipeline(
                 message.CheckId, FreeReviewModel);
 
         var budget = new AiBudgetTracker(_aiPipelineOptions.HardBudgetEur);
+        var priorSpend = await GetPriorSpendAsync(message.CheckId, cancellationToken);
+        if (priorSpend > 0)
+        {
+            budget.Add(priorSpend);
+            logger.LogInformation(
+                "Check {CheckId} carries {PriorSpend} EUR of AI spend from previous attempts.",
+                message.CheckId, priorSpend);
+        }
+        if (budget.SpentEur >= budget.HardBudgetEur)
+            throw new PermanentCheckFailureException(
+                $"AI budget exhausted for this check across attempts ({budget.SpentEur} of {budget.HardBudgetEur} EUR).");
+
         var facts = await factExtractionStage.ExecuteAsync(evidence, budget, isFreeReview, cancellationToken);
         var risks = await riskAnalysisStage.ExecuteAsync(evidence, facts, budget, isFreeReview, cancellationToken);
 
@@ -93,7 +105,7 @@ public sealed class CarCheckAnalysisPipeline(
 
             validation = reportValidator.Validate(finalMarkdown, reportLanguage);
             if (!validation.IsValid)
-                throw new InvalidOperationException(
+                throw new PermanentCheckFailureException(
                     "AI report failed validation after repair: " + string.Join("; ", validation.Errors));
         }
 
@@ -145,6 +157,13 @@ public sealed class CarCheckAnalysisPipeline(
         return !await db.CarChecks
             .AsNoTracking()
             .AnyAsync(c => c.UserId == userId && c.CheckId != checkId, ct);
+    }
+
+    private async Task<decimal> GetPriorSpendAsync(Guid checkId, CancellationToken ct)
+    {
+        await using var scope = scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return await AiSpend.SumPriorForCheckAsync(db, checkId, ct);
     }
 
     private async Task<CrawlPipelineResult> CrawlListingAsync(

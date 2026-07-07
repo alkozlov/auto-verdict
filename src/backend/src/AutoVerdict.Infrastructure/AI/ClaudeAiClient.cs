@@ -10,10 +10,12 @@ public sealed class ClaudeAiClient : IAiClient
     private const string ProviderName = "Claude";
 
     private readonly AnthropicClient _client;
+    private readonly AiRetryPolicy _retryPolicy;
 
-    public ClaudeAiClient(IOptions<ClaudeOptions> options)
+    public ClaudeAiClient(IOptions<ClaudeOptions> options, AiRetryPolicy retryPolicy)
     {
         _client = new AnthropicClient { ApiKey = options.Value.ApiKey };
+        _retryPolicy = retryPolicy;
     }
 
     public async Task<AiTextResponse> CreateTextAsync(
@@ -36,7 +38,9 @@ public sealed class ClaudeAiClient : IAiClient
             ],
         };
 
-        Message response = await _client.Messages.Create(parameters, cancellationToken: cancellationToken);
+        Message response = await _retryPolicy.ExecuteAsync(
+            ct => _client.Messages.Create(parameters, cancellationToken: ct),
+            cancellationToken);
 
         var text = response.Content
             .Select(b => b.Value)
