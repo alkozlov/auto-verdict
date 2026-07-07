@@ -84,7 +84,9 @@ public sealed class CarCheckConsumer(
         catch (PermanentCheckFailureException ex)
         {
             logger.LogError(ex, "Permanent failure for check {CheckId}; not retrying.", data.CheckId);
-            await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
+            var recorded = await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
+            if (!recorded && numDelivered < MaxDeliver)
+                return (false, RetryDelays.ForDelivery(numDelivered)); // recording failed - let redelivery retry it
             return (true, default);
         }
         catch (Exception ex)
@@ -95,7 +97,7 @@ public sealed class CarCheckConsumer(
                     "Check {CheckId} failed on final attempt {Attempt}; marking failed.",
                     data.CheckId, numDelivered);
                 await TryRecordAndPublishFailureAsync(js, data, ex.Message, ct);
-                return (true, default);
+                return (true, default); // no deliveries left either way; failure already logged loudly
             }
 
             var delay = RetryDelays.ForDelivery(numDelivered);
@@ -144,17 +146,25 @@ public sealed class CarCheckConsumer(
             cancellationToken: ct);
     }
 
-    private async Task TryRecordAndPublishFailureAsync(
+    /// <summary>
+    /// Records the terminal failure and publishes the failed event. Returns true when the
+    /// failure was recorded (the event publish is best-effort: a publish error still returns
+    /// true because the check IS terminally recorded); false only when recording itself threw.
+    /// Never throws — the consumer loop must not crash.
+    /// </summary>
+    private async Task<bool> TryRecordAndPublishFailureAsync(
         NatsJSContext js,
         CarCheckRequestedMessage data,
         string reason,
         CancellationToken ct)
     {
+        var recorded = false;
         try
         {
             await using var scope = scopeFactory.CreateAsyncScope();
             var resultService = scope.ServiceProvider.GetRequiredService<ICarCheckResultService>();
             await resultService.RecordFailureAsync(data.CheckId, reason, ct);
+            recorded = true;
 
             await js.PublishAsync(
                 NatsSubjects.CarCheckFailed,
@@ -166,6 +176,7 @@ public sealed class CarCheckConsumer(
         {
             logger.LogError(ex, "Failed to record failure for check {CheckId}.", data.CheckId);
         }
+        return recorded;
     }
 
     private static async Task<INatsJSConsumer> CreateConsumerAsync(NatsJSContext js, CancellationToken ct) =>
